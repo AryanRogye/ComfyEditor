@@ -12,12 +12,22 @@ class TextViewController: NSViewController {
     
     let fontManager = NSFontManager.shared
     
-    let scrollView = NSScrollView()
-    let textView = NSTextView()
+    /// Our Implementation of a NSScrollView
+    /// Lets us hook into `new delegates`
+    let scrollView = ComfyScrollView()
     
+    /// Our Implementation of a NSTextView
+    let textView = ComfyTextView()
+    
+    /// Text Delegate 
     let textViewDelegate = EditorCommandCenter.shared.textViewDelegate
     
-    var isAppActive: Bool { NSApplication.shared.isActive }
+    let magnificationDelegate = EditorCommandCenter.shared.magnificationDelegate
+    
+    /// Flag to know if the app is focussed or not
+    internal var isAppActive: Bool {
+        NSApplication.shared.isActive
+    }
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -36,19 +46,10 @@ class TextViewController: NSViewController {
         let root = NSView()
         self.view = root
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.allowsMagnification = true
-        scrollView.minMagnification = 0.5
-        scrollView.maxMagnification = 4.0
+        scrollView.magnificationDelegate = magnificationDelegate
         
-        textView.isEditable = true
-        textView.isSelectable = true
-        textView.isRichText = true
         textView.delegate = textViewDelegate
-        textView.allowsDocumentBackgroundColorChange = true
-        textView.usesFontPanel = true
-        textView.usesRuler = true
-        
+    
         scrollView.documentView = textView
         root.addSubview(scrollView)
         
@@ -130,10 +131,8 @@ extension TextViewController {
             updateFont(range, storage: storage, increase: true)
             textViewDelegate.forceFontRefresh(textView: textView)
         } else {
-            scrollView.magnification = min(
-                scrollView.magnification + 0.1,
-                scrollView.maxMagnification
-            )
+            let newMag = scrollView.magnification + 0.1
+            scrollView.setZoom(newMag)
         }
     }
     
@@ -145,10 +144,8 @@ extension TextViewController {
             updateFont(range, storage: storage, increase: false)
             textViewDelegate.forceFontRefresh(textView: textView)
         } else {
-            scrollView.magnification = max(
-                scrollView.magnification - 0.1,
-                scrollView.minMagnification
-            )
+            let newMag = scrollView.magnification - 0.1
+            scrollView.setZoom(newMag)
         }
     }
     

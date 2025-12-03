@@ -12,6 +12,7 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     @Published var range: NSRange?
     @Published var font: NSFont?
     
+    
     func textViewDidChangeSelection(_ notification: Notification) {
         guard let textView = notification.object as? NSTextView else { return }
         
@@ -36,6 +37,8 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     }
     
     public func getCurrentFont(textView: NSTextView) -> NSFont? {
+        
+        /// if User is Selecting something, AND range > 0
         if let range = range, range.length > 0, let storage = textView.textStorage {
                 var isUniform = false
                 var nsFont: NSFont?
@@ -54,7 +57,8 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
                     return nil
                 }
         }
-    
+        
+        /// What size is under the cursor
         let currentAttrs = textView.typingAttributes
         return currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
     }

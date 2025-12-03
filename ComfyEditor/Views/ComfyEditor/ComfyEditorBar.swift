@@ -54,11 +54,33 @@ extension View {
     }
 }
 
+enum ComfyEditorBarMode {
+    case toolbar
+    case topBar
+}
+
 struct ComfyEditorBar: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
+    var mode: ComfyEditorBarMode = .toolbar
     
     var body: some View {
+        switch mode {
+        case .toolbar: toolbar
+        case .topBar: topBar
+        }
+    }
+    
+    @ViewBuilder
+    private var toolbar: some View {
+        AnyView {
+            ToolbarItem(placement: .navigation) {
+                Image(systemName: "sidebar.left")
+            }
+        }
+    }
+    
+    private var topBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ComfyEditorBarButton(onPress: {}) {
@@ -72,9 +94,10 @@ struct ComfyEditorBar: View {
                 
                 Text("\(editorCommandCenter.currentFont, default: "_")")
                     .ComfyEditorBarButtonContainer(color: .clear, strokeColor: .gray.opacity(0.5))
-            }.padding(.horizontal)
+            }
+            .padding(.horizontal)
+            /// no height, the height is decided by its content
+            .frame(maxWidth: .infinity)
         }
-        /// no height, the height is decided by its content
-        .frame(maxWidth: .infinity)
     }
 }
