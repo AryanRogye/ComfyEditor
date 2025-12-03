@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		9B1F34EA2EDFDBAF0054D352 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B1F34E92EDFDBAF0054D352 /* KeyboardShortcuts */; };
+		9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = ComfyEditor.icon; sourceTree = "<group>"; };
 		9BB0B6972EDBD7000040A42F /* ComfyEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComfyEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -37,6 +39,7 @@
 		9BB0B68E2EDBD6FF0040A42F = {
 			isa = PBXGroup;
 			children = (
+				9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */,
 				9BB0B6992EDBD7000040A42F /* ComfyEditor */,
 				9BB0B6982EDBD7000040A42F /* Products */,
 			);
@@ -118,6 +121,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +261,7 @@
 		9BB0B6A32EDBD7010040A42F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ComfyEditor;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -289,7 +293,7 @@
 		9BB0B6A42EDBD7010040A42F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ComfyEditor;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
