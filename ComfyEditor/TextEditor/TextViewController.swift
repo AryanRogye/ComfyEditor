@@ -122,19 +122,9 @@ extension TextViewController {
 // MARK: - Increase / Decrease Font
 extension TextViewController {
     
-    internal func updateFont(_ range: NSRange, storage: NSTextStorage, increase: Bool) {
-        storage.enumerateAttribute(.font, in: range, options: []) { value, subRange, _ in
-            guard let font = value as? NSFont else { return }
-            
-            let delta: CGFloat = increase ? 1.0 : -1.0
-            let newSize = max(1, font.pointSize + delta)
-            
-            let newFont = fontManager.convert(font, toSize: newSize)
-            storage.addAttribute(.font, value: newFont, range: subRange)
-        }
-    }
-    
     public func increaseFontOrZoomIn() {
+        guard isAppActive else { return }
+
         if let range = textViewDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: true)
@@ -148,6 +138,8 @@ extension TextViewController {
     }
     
     public func decreaseFontOrZoomOut() {
+        guard isAppActive else { return }
+
         if let range = textViewDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: false)
@@ -157,6 +149,18 @@ extension TextViewController {
                 scrollView.magnification - 0.1,
                 scrollView.minMagnification
             )
+        }
+    }
+    
+    internal func updateFont(_ range: NSRange, storage: NSTextStorage, increase: Bool) {
+        storage.enumerateAttribute(.font, in: range, options: []) { value, subRange, _ in
+            guard let font = value as? NSFont else { return }
+            
+            let delta: CGFloat = increase ? 1.0 : -1.0
+            let newSize = max(1, font.pointSize + delta)
+            
+            let newFont = fontManager.convert(font, toSize: newSize)
+            storage.addAttribute(.font, value: newFont, range: subRange)
         }
     }
 }

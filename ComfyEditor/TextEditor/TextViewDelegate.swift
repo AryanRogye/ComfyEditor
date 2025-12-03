@@ -35,13 +35,26 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
         font = getCurrentFont(textView: textView)
     }
     
-    public func getCurrentFont(textView: NSTextView) -> NSFont {
-        if let range = range, range.length > 0 {
-            if let storage = textView.textStorage {
-                let attrs = storage.attributes(at: range.location, effectiveRange: nil)
-                return attrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
-            }
+    public func getCurrentFont(textView: NSTextView) -> NSFont? {
+        if let range = range, range.length > 0, let storage = textView.textStorage {
+                var isUniform = false
+                var nsFont: NSFont?
+                
+                storage.enumerateAttribute(.font, in: range, options: .longestEffectiveRangeNotRequired) { value, subRange, stop in
+                    // If the first run covers the whole range, it's all one font.
+                    isUniform = (subRange == range)
+                    nsFont = value as? NSFont
+                    
+                    // Stop immediately; we don't need to look further.
+                    stop.pointee = true
+                }
+                if isUniform {
+                    return nsFont
+                } else {
+                    return nil
+                }
         }
+    
         let currentAttrs = textView.typingAttributes
         return currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
     }
