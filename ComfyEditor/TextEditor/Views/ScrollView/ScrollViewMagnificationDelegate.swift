@@ -4,6 +4,7 @@
 //
 //  Created by Aryan Rogye on 12/2/25.
 //
+
 import AppKit
 
 protocol ScrollViewMagnificationDelegate: AnyObject {
