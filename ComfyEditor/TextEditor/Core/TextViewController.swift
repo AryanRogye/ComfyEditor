@@ -40,6 +40,11 @@ class TextViewController: NSViewController {
     override func viewDidAppear() {
         super.viewDidAppear()
         EditorCommandCenter.shared.currentEditor = self
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.view.window?.makeFirstResponder(self.textView)
+        }
     }
     
     override func loadView() {

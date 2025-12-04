@@ -16,7 +16,8 @@ struct ComfyEditorApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                ComfyEditorScreen()
+                ComfyEditorHome()
+//                ComfyEditorScreen()
             }
         }
         .windowStyle(.hiddenTitleBar)

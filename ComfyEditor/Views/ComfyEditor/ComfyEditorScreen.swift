@@ -8,23 +8,12 @@
 import SwiftUI
 
 struct ComfyEditorScreen: View {
-    @State private var source = """
-    // InfoView.swift
-    // DigitalDetoxBreath
     
-    import SwiftUI
-    
-    struct InfoView: View {
-        var body: some View {
-            Text("Hello")
-        }
-    }
-    """
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
 
     var body: some View {
         VStack(spacing: 0) {
-            Editor(text: $source)
+            Editor(text: .constant(""))
                 .frame(minWidth: 600, minHeight: 400)
         }
         .toolbar {
