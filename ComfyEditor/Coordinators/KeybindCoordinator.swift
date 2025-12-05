@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TextEditor
 import LocalShortcuts
 
 extension LocalShortcuts.Name {

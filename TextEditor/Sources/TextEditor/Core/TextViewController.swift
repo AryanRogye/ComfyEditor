@@ -8,7 +8,7 @@
 import AppKit
 import Combine
 
-class TextViewController: NSViewController {
+public class TextViewController: NSViewController {
     
     let fontManager = NSFontManager.shared
     
@@ -37,7 +37,7 @@ class TextViewController: NSViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidAppear() {
+    public override func viewDidAppear() {
         super.viewDidAppear()
         EditorCommandCenter.shared.currentEditor = self
         
@@ -47,7 +47,7 @@ class TextViewController: NSViewController {
         }
     }
     
-    override func loadView() {
+    public override func loadView() {
         let root = NSView()
         self.view = root
         

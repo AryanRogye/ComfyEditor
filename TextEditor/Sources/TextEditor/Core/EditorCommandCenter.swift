@@ -10,16 +10,16 @@ import AppKit
 import Combine
 
 @Observable @MainActor
-final class EditorCommandCenter {
-    @ObservationIgnored static let shared = EditorCommandCenter()
+public final class EditorCommandCenter {
+    @ObservationIgnored public static let shared = EditorCommandCenter()
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     
     let textViewDelegate = TextViewDelegate()
     let magnificationDelegate = MagnificationDelegate()
     
-    var isBoldEnabled: Bool = false
-    var currentFont: CGFloat? = nil
-    var magnification: CGFloat = 4.0
+    public var isBoldEnabled: Bool = false
+    public var currentFont: CGFloat? = nil
+    public var magnification: CGFloat = 4.0
     
     init() {
         textViewDelegate.$font
@@ -38,15 +38,15 @@ final class EditorCommandCenter {
     
     weak var currentEditor : TextViewController?
     
-    func increaseFont() {
+    public func increaseFont() {
         currentEditor?.increaseFontOrZoomIn()
     }
     
-    func decreaseFont() {
+    public func decreaseFont() {
         currentEditor?.decreaseFontOrZoomOut()
     }
     
-    func toggleBold() {
+    public func toggleBold() {
         currentEditor?.toggleBold()
         isBoldEnabled = currentEditor?.isCurrentlyBold() ?? false
     }

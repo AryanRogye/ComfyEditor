@@ -45,6 +45,7 @@ struct CustomCommands: Commands {
         }
         CommandMenu("Editor") {
             Toggle("Vim Mode", isOn: $settingsCoordinator.isVimEnabled)
+            Toggle("Show Scrollbar", isOn: $settingsCoordinator.showScrollbar)
         }
     }
 }

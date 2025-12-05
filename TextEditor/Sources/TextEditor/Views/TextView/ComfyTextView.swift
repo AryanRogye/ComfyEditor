@@ -77,19 +77,18 @@ final class ComfyTextView: NSTextView {
     init() {
         let textStorage = NSTextStorage()
         let layoutManager = NSLayoutManager()
-        // 2. Initialize container with a size (required for the cursor to know where to be)
-        // We use a large height so it can scroll, and match width later.
-        let containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
-        let textContainer = NSTextContainer(size: containerSize)
-
         
-        // 3. Crucial: Tell the container to resize when the view resizes
+        let textContainer = NSTextContainer()
         textContainer.widthTracksTextView = true
         
         textStorage.addLayoutManager(layoutManager)
         layoutManager.addTextContainer(textContainer)
         
         super.init(frame: .zero, textContainer: textContainer)
+        
+        isVerticallyResizable = true
+        isHorizontallyResizable = false
+        autoresizingMask = [.width]
 
         isEditable = true
         isSelectable = true

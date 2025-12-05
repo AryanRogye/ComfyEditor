@@ -13,6 +13,10 @@ final class ComfyScrollView: NSScrollView {
     init() {
         super.init(frame: .zero)
         
+        hasVerticalScroller = true
+        hasHorizontalScroller = false
+        autohidesScrollers = true
+        
         translatesAutoresizingMaskIntoConstraints = false
         allowsMagnification = true
         magnification = 4.0

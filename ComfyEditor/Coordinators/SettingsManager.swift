@@ -10,6 +10,7 @@ import Defaults
 
 extension Defaults.Keys {
     static let isVimEnabled = Key<Bool>("isVimEnabled", default: false)
+    static let showScrollbar = Key<Bool>("showScrollbar", default: true)
 }
 
 @Observable @MainActor
@@ -25,6 +26,11 @@ final class SettingsCoordinator {
     var isVimEnabled: Bool = Defaults[.isVimEnabled]  {
         didSet {
             Defaults[.isVimEnabled] = isVimEnabled
+        }
+    }
+    var showScrollbar: Bool = Defaults[.showScrollbar] {
+        didSet {
+            Defaults[.showScrollbar] = showScrollbar
         }
     }
     

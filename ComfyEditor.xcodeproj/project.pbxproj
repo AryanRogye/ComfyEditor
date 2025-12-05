@@ -10,6 +10,7 @@
 		9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */; };
 		9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7212EE26ED400B64D36 /* LocalShortcuts */; };
 		9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7242EE2972B00B64D36 /* Defaults */; };
+		9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7592EE2B89500B64D36 /* TextEditor */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */,
+				9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */,
 				9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,6 +79,7 @@
 			packageProductDependencies = (
 				9B2CD7212EE26ED400B64D36 /* LocalShortcuts */,
 				9B2CD7242EE2972B00B64D36 /* Defaults */,
+				9B2CD7592EE2B89500B64D36 /* TextEditor */,
 			);
 			productName = ComfyEditor;
 			productReference = 9BB0B6972EDBD7000040A42F /* ComfyEditor.app */;
@@ -109,6 +112,7 @@
 			packageReferences = (
 				9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */,
 				9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */,
+				9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BB0B6982EDBD7000040A42F /* Products */;
@@ -354,6 +358,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = LocalShortcuts;
 		};
+		9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = TextEditor;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -376,6 +384,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
+		};
+		9B2CD7592EE2B89500B64D36 /* TextEditor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TextEditor;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

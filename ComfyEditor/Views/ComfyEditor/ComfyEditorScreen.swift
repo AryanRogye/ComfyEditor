@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TextEditor
 
 struct ComfyEditorScreen: View {
     
@@ -14,7 +15,11 @@ struct ComfyEditorScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Editor(text: .constant(""), settingsCoordinator: settingsCoordinator)
+            ComfyTextEditor(
+                text: .constant(""),
+                showScrollbar: $settingsCoordinator.showScrollbar,
+                isInVimMode: $settingsCoordinator.isVimEnabled
+            )
                 .frame(minWidth: 600, minHeight: 400)
         }
         .toolbar {
