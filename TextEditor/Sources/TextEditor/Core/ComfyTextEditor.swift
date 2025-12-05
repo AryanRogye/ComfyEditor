@@ -44,7 +44,9 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         
         /// Update if is inVimMode or not
         if nsViewController.vimEngine.isInVimMode != isInVimMode {
-            nsViewController.vimEngine.isInVimMode = isInVimMode
+            DispatchQueue.main.async {
+                nsViewController.vimEngine.isInVimMode = isInVimMode
+            }
         }
         
         if nsViewController.scrollView.hasVerticalScroller != showScrollbar {

@@ -6,7 +6,8 @@
 //
 
 enum VimState: String {
-    case normal = "Normal"
+    /// Sometimes alternal `Vim` in its mode is normal
+    case normal = "Vim"
     case insert = "Insert"
     case visual = "Visual"
 }

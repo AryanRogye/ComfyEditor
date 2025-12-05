@@ -73,6 +73,14 @@ final class ComfyTextView: NSTextView {
         NSGraphicsContext.restoreGraphicsState()
     }
     
+    override func keyDown(with event: NSEvent) {
+        if vimEngine.isInVimMode {
+            handleVimEvent(event)
+            return
+        }
+        super.keyDown(with: event)
+    }
+
     init(vimEngine: VimEngine) {
         
         self.vimEngine = vimEngine

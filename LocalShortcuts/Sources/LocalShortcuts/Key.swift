@@ -42,7 +42,7 @@ extension LocalShortcuts {
         case upArrow
         case downArrow
         
-        static func activeKeys(event: NSEvent) -> [Key] {
+        public static func activeKeys(event: NSEvent) -> [Key] {
             // Attempt to create a Key from the event; if successful, wrap it in an array.
             if let key = Key(from: event) {
                 return [key]
