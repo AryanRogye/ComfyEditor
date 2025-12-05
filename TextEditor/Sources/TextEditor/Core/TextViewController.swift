@@ -10,18 +10,22 @@ import Combine
 
 public class TextViewController: NSViewController {
     
+    /// macOS Given font manager
     let fontManager = NSFontManager.shared
     
+    // MARK: - View's
     /// Our Implementation of a NSScrollView
     /// Lets us hook into `new delegates`
     let scrollView = ComfyScrollView()
-    
     /// Our Implementation of a NSTextView
     let textView = ComfyTextView()
     
-    /// Text Delegate 
-    let textViewDelegate = EditorCommandCenter.shared.textViewDelegate
+    let vimBottomView = VimBottomView()
     
+    // MARK: - Delegates
+    /// Text Delegate
+    let textViewDelegate = EditorCommandCenter.shared.textViewDelegate
+    /// Magnification Delegate
     let magnificationDelegate = EditorCommandCenter.shared.magnificationDelegate
     
     /// Flag to know if the app is focussed or not
@@ -29,6 +33,7 @@ public class TextViewController: NSViewController {
         NSApplication.shared.isActive
     }
     
+    // MARK: - Init
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,28 +46,44 @@ public class TextViewController: NSViewController {
         super.viewDidAppear()
         EditorCommandCenter.shared.currentEditor = self
         
+        /// Helps when the text editor is brought back into view
+        /// for some reason if the request is:
+        ///     NavigationLink -> NSViewControllerRepresentable -> NSViewController
+        ///     without the following, nothing would show
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.view.window?.makeFirstResponder(self.textView)
         }
     }
     
+    // MARK: - Load View
     public override func loadView() {
         let root = NSView()
+        root.wantsLayer = true
         self.view = root
         
+        /// Assign ScrollView Delegate
         scrollView.magnificationDelegate = magnificationDelegate
         
+        /// Assign TextView delegate
         textView.delegate = textViewDelegate
     
         scrollView.documentView = textView
         root.addSubview(scrollView)
+        root.addSubview(vimBottomView)
         
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: root.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: root.bottomAnchor)
+            // instead of pinning scroll bottom to root:
+            scrollView.bottomAnchor.constraint(equalTo: vimBottomView.topAnchor)
+        ])
+        NSLayoutConstraint.activate([
+            vimBottomView.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+            vimBottomView.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+            vimBottomView.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            vimBottomView.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
 }
@@ -107,16 +128,20 @@ extension TextViewController {
         }
     }
     
+    /// Internal function to get if is bold under a range
     internal func isCurrentlyBold(_ range: NSRange, in storage: NSTextStorage) -> BoldFontInfo {
         let attrs = storage.attributes(at: range.location, effectiveRange: nil)
         let currentFont = attrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
         return (fontManager.traits(of: currentFont).contains(.boldFontMask), attrs, currentFont)
     }
+    /// Internal function to get if is bold in general
+    /// Returns `(Bool, [NSAttributedString.Key : Any], NSFont)`
     internal func isCurrentlyBold() -> BoldFontInfo {
         let currentAttrs = textView.typingAttributes
         let currentFont = currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
         return (fontManager.traits(of: currentFont).contains(.boldFontMask), currentAttrs, currentFont)
     }
+    /// Public function to get if is bold `no information`
     public func isCurrentlyBold() -> Bool {
         let currentAttrs = textView.typingAttributes
         let currentFont = currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
@@ -128,6 +153,9 @@ extension TextViewController {
 // MARK: - Increase / Decrease Font
 extension TextViewController {
     
+    /// Public function to increase the font or zoom in
+    /// If is selecting something, then it increases the font under it
+    /// if is not, then zooms in
     public func increaseFontOrZoomIn() {
         guard isAppActive else { return }
 
@@ -141,6 +169,9 @@ extension TextViewController {
         }
     }
     
+    /// Public function to increase the font or zoom in
+    /// If is selecting something, then it decreases the font under it
+    /// if is not, then zooms out
     public func decreaseFontOrZoomOut() {
         guard isAppActive else { return }
 
@@ -154,6 +185,7 @@ extension TextViewController {
         }
     }
     
+    /// Internal function to update the font, is useful while increasing/decreasing font
     internal func updateFont(_ range: NSRange, storage: NSTextStorage, increase: Bool) {
         storage.enumerateAttribute(.font, in: range, options: []) { value, subRange, _ in
             guard let font = value as? NSFont else { return }

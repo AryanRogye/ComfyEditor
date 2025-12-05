@@ -35,6 +35,13 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     
     public func makeNSViewController(context: Context) -> TextViewController {
         let viewController = TextViewController()
+        
+        viewController.vimBottomView.update(
+            with: isInVimMode
+            ? ""
+            : viewController.vimBottomView.defaultText
+        )
+        
         return viewController
     }
     
@@ -43,6 +50,11 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         /// Update if is inVimMode or not
         if nsViewController.textView.isInVimMode != isInVimMode {
             nsViewController.textView.isInVimMode = isInVimMode
+            nsViewController.vimBottomView.update(
+                with: isInVimMode
+                ? ""
+                : nsViewController.vimBottomView.defaultText
+            )
         }
         
         if nsViewController.scrollView.hasVerticalScroller != showScrollbar {
