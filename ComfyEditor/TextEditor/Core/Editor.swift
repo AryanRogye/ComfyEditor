@@ -18,6 +18,8 @@ struct Editor: NSViewControllerRepresentable {
     }
     
     func updateNSViewController(_ nsViewController: TextViewController, context: Context) {
-        
+        if nsViewController.textView.isInVimMode != settingsCoordinator.isVimEnabled {
+            nsViewController.textView.isInVimMode = settingsCoordinator.isVimEnabled
+        }
     }
 }
