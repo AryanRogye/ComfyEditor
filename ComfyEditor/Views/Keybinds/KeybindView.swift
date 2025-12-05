@@ -7,6 +7,7 @@
 
 import SwiftUI
 import KeyboardShortcuts
+import LocalShortcuts
 
 struct KeybindView: View {
     var body: some View {
@@ -14,17 +15,17 @@ struct KeybindView: View {
             HStack {
                 Text("Bold")
                 Spacer()
-                KeyboardShortcuts.Recorder(for: .toggleBold)
+                LocalShortcuts.LocalShortcutsRecorder(for: .toggleBold)
             }.padding(.horizontal, 8)
             HStack {
                 Text("Increase Font/Zoom In")
                 Spacer()
-                KeyboardShortcuts.Recorder(for: .increaseFont)
+                LocalShortcuts.LocalShortcutsRecorder(for: .increaseFont)
             }.padding(.horizontal, 8)
             HStack {
                 Text("Decrease Font/Zoom out")
                 Spacer()
-                KeyboardShortcuts.Recorder(for: .decreaseFont)
+                LocalShortcuts.LocalShortcutsRecorder(for: .decreaseFont)
             }.padding(.horizontal, 8)
         }
         .frame(width: 400, height: 400)

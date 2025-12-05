@@ -6,25 +6,28 @@
 //
 
 import SwiftUI
-import KeyboardShortcuts
+import LocalShortcuts
 
-extension KeyboardShortcuts.Name {
-    static let toggleBold = Self("ToggleBold", default: .init(.b, modifiers: [.command]))
-    static let increaseFont = Self("IncreaseFont", default: .init(.equal, modifiers: [.command]))
-    static let decreaseFont = Self("DecreaseFont", default: .init(.minus , modifiers: [.command]))
+extension LocalShortcuts.Name {
+    /// Toggle Bold
+    static let toggleBold = LocalShortcuts.Name(
+        "ToggleBold",
+        .init(modifier: [.command], keys: [.b])
+    )
+    /// Increase Font
+    static let increaseFont = LocalShortcuts.Name(
+        "IncreaseFont",
+        .init(modifier: [.command], keys: [.equal])
+    )
+    /// Decrease Font
+    static let decreaseFont = LocalShortcuts.Name(
+        "IncreaseFont",
+        .init(modifier: [.command], keys: [.minus])
+    )
 }
 
 @Observable @MainActor
 class KeybindCoordinator {
-    
-    /// Keyboard shortcut for toggling bold
-    private(set) var toggleBold : KeyboardShortcuts.Name
-    
-    /// Keyboard shortcut for increasing font
-    private(set) var increaseFont : KeyboardShortcuts.Name
-    
-    /// Keyboard shortcut for decreasing font
-    private(set) var decreaseFont : KeyboardShortcuts.Name
     
     /// Internal flag to let us know if the keybindings view is getting shown or not
     private(set) var isShowing: Bool = false
@@ -34,25 +37,21 @@ class KeybindCoordinator {
     init(windowCoordinator: WindowCoordinator) {
         self.windowCoordinator = windowCoordinator
         
-        self.toggleBold = .toggleBold
-        self.increaseFont = .increaseFont
-        self.decreaseFont = .decreaseFont
-        
         handleKeybinds()
     }
 }
 
 extension KeybindCoordinator {
     func handleKeybinds() {
-        KeyboardShortcuts.onKeyDown(for: .increaseFont, action: {
-            EditorCommandCenter.shared.increaseFont()
-        })
-        KeyboardShortcuts.onKeyDown(for: .decreaseFont, action: {
-            EditorCommandCenter.shared.decreaseFont()
-        })
-        KeyboardShortcuts.onKeyDown(for: .toggleBold, action: {
+        LocalShortcuts.Name.onKeyDown(for: .toggleBold) {
             EditorCommandCenter.shared.toggleBold()
-        })
+        }
+        LocalShortcuts.Name.onKeyDown(for: .increaseFont) {
+            EditorCommandCenter.shared.increaseFont()
+        }
+        LocalShortcuts.Name.onKeyDown(for: .decreaseFont) {
+            EditorCommandCenter.shared.decreaseFont()
+        }
     }
 }
 
