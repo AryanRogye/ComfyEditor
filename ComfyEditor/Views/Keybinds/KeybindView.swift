@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import KeyboardShortcuts
 import LocalShortcuts
 
 struct KeybindView: View {

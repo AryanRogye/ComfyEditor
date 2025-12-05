@@ -10,10 +10,11 @@ import SwiftUI
 struct ComfyEditorScreen: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
+    @Bindable var settingsCoordinator : SettingsCoordinator
 
     var body: some View {
         VStack(spacing: 0) {
-            Editor(text: .constant(""))
+            Editor(text: .constant(""), settingsCoordinator: settingsCoordinator)
                 .frame(minWidth: 600, minHeight: 400)
         }
         .toolbar {
@@ -49,6 +50,15 @@ struct ComfyEditorScreen: View {
                     Text("\(editorCommandCenter.magnification, specifier: "%.1f")")
                 }
                 .padding(6)
+            }
+            ToolbarItemGroup {
+                Text("V")
+                    .bold()
+                    .padding(6)
+                    .background(settingsCoordinator.isVimEnabled ? Color.accentColor : Color.clear)
+                    .foregroundColor(settingsCoordinator.isVimEnabled ? .white : .primary)
+                    .cornerRadius(4)
+                    .padding(.trailing, 8)
             }
             
         }

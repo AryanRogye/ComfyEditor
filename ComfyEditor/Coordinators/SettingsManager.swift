@@ -6,6 +6,11 @@
 //
 
 import AppKit
+import Defaults
+
+extension Defaults.Keys {
+    static let isVimEnabled = Key<Bool>("isVimEnabled", default: false)
+}
 
 @Observable @MainActor
 final class SettingsCoordinator {
@@ -17,15 +22,20 @@ final class SettingsCoordinator {
     let applicationSupport: URL
     let configPath: URL
     
+    var isVimEnabled: Bool = Defaults[.isVimEnabled]  {
+        didSet {
+            Defaults[.isVimEnabled] = isVimEnabled
+        }
+    }
+    
     init(windowCoordinator: WindowCoordinator) {
         self.windowCoordinator = windowCoordinator
         applicationSupport = Self.comfyEditorConfigDirectory()
         configPath = Self.getOrCreateConfigJson()
-        print("Done Init")
-        print("App Support:", applicationSupport.path)
-        print("Config Path:", configPath.path)
     }
-    
+}
+
+extension SettingsCoordinator {
     /// creates or gets the config.json file in the applicationSupport folder
     static func getOrCreateConfigJson() -> URL {
         let fm = FileManager.default

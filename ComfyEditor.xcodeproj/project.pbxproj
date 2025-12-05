@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9B1F34EA2EDFDBAF0054D352 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B1F34E92EDFDBAF0054D352 /* KeyboardShortcuts */; };
 		9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */; };
 		9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7212EE26ED400B64D36 /* LocalShortcuts */; };
+		9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7242EE2972B00B64D36 /* Defaults */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +30,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */,
 				9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */,
-				9B1F34EA2EDFDBAF0054D352 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +75,8 @@
 			);
 			name = ComfyEditor;
 			packageProductDependencies = (
-				9B1F34E92EDFDBAF0054D352 /* KeyboardShortcuts */,
 				9B2CD7212EE26ED400B64D36 /* LocalShortcuts */,
+				9B2CD7242EE2972B00B64D36 /* Defaults */,
 			);
 			productName = ComfyEditor;
 			productReference = 9BB0B6972EDBD7000040A42F /* ComfyEditor.app */;
@@ -107,8 +107,8 @@
 			mainGroup = 9BB0B68E2EDBD6FF0040A42F;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				9B1F34E82EDFDBAF0054D352 /* XCLocalSwiftPackageReference "KeyboardShortcuts" */,
 				9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */,
+				9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BB0B6982EDBD7000040A42F /* Products */;
@@ -350,24 +350,32 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		9B1F34E82EDFDBAF0054D352 /* XCLocalSwiftPackageReference "KeyboardShortcuts" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = KeyboardShortcuts;
-		};
 		9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = LocalShortcuts;
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCSwiftPackageProductDependency section */
-		9B1F34E92EDFDBAF0054D352 /* KeyboardShortcuts */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = KeyboardShortcuts;
+/* Begin XCRemoteSwiftPackageReference section */
+		9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.6;
+			};
 		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
 		9B2CD7212EE26ED400B64D36 /* LocalShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LocalShortcuts;
+		};
+		9B2CD7242EE2972B00B64D36 /* Defaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */;
+			productName = Defaults;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

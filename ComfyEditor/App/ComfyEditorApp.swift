@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import KeyboardShortcuts
 
 @main
 struct ComfyEditorApp: App {
@@ -17,7 +16,7 @@ struct ComfyEditorApp: App {
         WindowGroup {
             NavigationStack {
                 ComfyEditorHome()
-//                ComfyEditorScreen()
+                    .environment(appDelegate.appCoordinator.settingsCoordinator)
             }
         }
         .windowStyle(.hiddenTitleBar)
@@ -43,6 +42,9 @@ struct CustomCommands: Commands {
             Button(action: keybindCoordinator.showWindow) {
                 Label("Keybindings", systemImage: "keyboard")
             }
+        }
+        CommandMenu("Editor") {
+            Toggle("Vim Mode", isOn: $settingsCoordinator.isVimEnabled)
         }
     }
 }
