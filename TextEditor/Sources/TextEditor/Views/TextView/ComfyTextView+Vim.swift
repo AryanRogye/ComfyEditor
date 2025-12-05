@@ -9,7 +9,7 @@ import AppKit
 
 extension ComfyTextView {
     override func keyDown(with event: NSEvent) {
-        if isInVimMode { return }
+        if vimEngine.isInVimMode { return }
         super.keyDown(with: event)
     }
 }

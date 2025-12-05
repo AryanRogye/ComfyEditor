@@ -14,12 +14,11 @@ final class ComfyTextView: NSTextView {
         set { /* ignore external changes */ }
     }
     
-    var isInVimMode = false
-    
+    var vimEngine : VimEngine
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
         
-        if !isInVimMode  {
+        if !vimEngine.isInVimMode {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
@@ -74,7 +73,10 @@ final class ComfyTextView: NSTextView {
         NSGraphicsContext.restoreGraphicsState()
     }
     
-    init() {
+    init(vimEngine: VimEngine) {
+        
+        self.vimEngine = vimEngine
+        
         let textStorage = NSTextStorage()
         let layoutManager = NSLayoutManager()
         

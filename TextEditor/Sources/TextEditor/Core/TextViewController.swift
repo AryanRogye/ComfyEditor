@@ -13,14 +13,17 @@ public class TextViewController: NSViewController {
     /// macOS Given font manager
     let fontManager = NSFontManager.shared
     
+    let vimEngine = VimEngine()
+    
     // MARK: - View's
     /// Our Implementation of a NSScrollView
     /// Lets us hook into `new delegates`
     let scrollView = ComfyScrollView()
     /// Our Implementation of a NSTextView
-    let textView = ComfyTextView()
+    lazy var textView = ComfyTextView(vimEngine: vimEngine)
     
-    let vimBottomView = VimBottomView()
+    /// Bottom Bar for Vim Command Input, etc
+    lazy var vimBottomView = VimBottomView(vimEngine: vimEngine)
     
     // MARK: - Delegates
     /// Text Delegate

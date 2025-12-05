@@ -9,8 +9,11 @@ import SwiftUI
 
 public struct ComfyTextEditor: NSViewControllerRepresentable {
     
+    /// Text to type into
     @Binding var text: String
+    /// Boolean if is in VimMode or not
     @Binding var isInVimMode: Bool
+    /// Boolean if is showing scrollbar or not
     @Binding var showScrollbar: Bool
     
     public init(
@@ -32,29 +35,16 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         self._isInVimMode = .constant(false)
     }
     
-    
     public func makeNSViewController(context: Context) -> TextViewController {
         let viewController = TextViewController()
-        
-        viewController.vimBottomView.update(
-            with: isInVimMode
-            ? ""
-            : viewController.vimBottomView.defaultText
-        )
-        
         return viewController
     }
     
     public func updateNSViewController(_ nsViewController: TextViewController, context: Context) {
         
         /// Update if is inVimMode or not
-        if nsViewController.textView.isInVimMode != isInVimMode {
-            nsViewController.textView.isInVimMode = isInVimMode
-            nsViewController.vimBottomView.update(
-                with: isInVimMode
-                ? ""
-                : nsViewController.vimBottomView.defaultText
-            )
+        if nsViewController.vimEngine.isInVimMode != isInVimMode {
+            nsViewController.vimEngine.isInVimMode = isInVimMode
         }
         
         if nsViewController.scrollView.hasVerticalScroller != showScrollbar {

@@ -6,14 +6,19 @@
 //
 
 import AppKit
+import Combine
 
 final class VimBottomView: NSView {
     
-    let vimText = NSTextField(labelWithString: "Vim Mode Not Enabled")
-    let defaultText: String = "Vim Mode Not Enabled"
+    var vimEngine : VimEngine
+    lazy var vimText = NSTextField(labelWithString: vimEngine.commandLine)
     
-    override init(frame: NSRect) {
-        super.init(frame: frame)
+    var cancellables: Set<AnyCancellable> = []
+    
+    init(vimEngine: VimEngine) {
+        self.vimEngine = vimEngine
+        super.init(frame: .zero)
+        
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
         layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
@@ -24,10 +29,6 @@ final class VimBottomView: NSView {
     
     required init?(coder: NSCoder) { fatalError() }
     
-    public func update(with text: String) {
-        vimText.stringValue = text
-    }
-    
     private func setup() {
         vimText.translatesAutoresizingMaskIntoConstraints = false
         addSubview(vimText)
@@ -36,5 +37,22 @@ final class VimBottomView: NSView {
             vimText.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
             vimText.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+    }
+}
+
+
+extension VimBottomView {
+    
+    /// Current Flow is `isInVimMode?` -> `commandLine`
+    /// Command line changes which the textView has to show back
+    func observeCommandLine() {
+        vimEngine.$commandLine
+            .sink { [weak self] commandLine in
+                guard let self else { return }
+                if vimText.stringValue != commandLine {
+                    vimText.stringValue = commandLine
+                }
+            }
+            .store(in: &cancellables)
     }
 }
