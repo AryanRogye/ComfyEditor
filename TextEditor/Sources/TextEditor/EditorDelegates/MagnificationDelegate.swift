@@ -8,6 +8,7 @@
 import AppKit
 import Combine
 
+@MainActor
 final class MagnificationDelegate: NSObject, ScrollViewMagnificationDelegate, ObservableObject {
     
     @Published var magnification: CGFloat = 4.0
