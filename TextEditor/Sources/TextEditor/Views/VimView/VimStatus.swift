@@ -13,13 +13,13 @@ struct VimStatus: View {
     
     /// This is dependent on if vim is enabled or not
     var opacity: CGFloat {
-        vimEngine.isInVimMode ? 0.8 : 0.5
+        vimEngine.isInVimMode ? 0.8 : 0
     }
     var shouldShow: Bool {
         vimEngine.isInVimMode
     }
     var opacityBackground: CGFloat {
-        vimEngine.isInVimMode ? 0.3 : 0.2
+        vimEngine.isInVimMode ? 0.3 : 0
     }
     var color: Color {
         switch vimEngine.state {

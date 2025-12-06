@@ -22,7 +22,7 @@ final class VimBottomView: NSView {
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
         layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
-        layer?.borderColor = .black
+        layer?.borderColor = NSColor(.gray.opacity(0.3)).cgColor
         layer?.borderWidth = 1
         setup()
     }

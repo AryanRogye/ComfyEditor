@@ -46,6 +46,10 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         if nsViewController.vimEngine.isInVimMode != isInVimMode {
             DispatchQueue.main.async {
                 nsViewController.vimEngine.isInVimMode = isInVimMode
+                
+                /// Update's the insertion point
+                nsViewController.textView.updateInsertionPointStateAndRestartTimer(true)
+
             }
         }
         

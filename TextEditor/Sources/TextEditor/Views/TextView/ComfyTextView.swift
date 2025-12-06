@@ -9,22 +9,36 @@ import AppKit
 
 final class ComfyTextView: NSTextView {
     
+    struct InsertionPoint {
+        let rect: NSRect
+        let color: NSColor
+    }
+    
     override var insertionPointColor: NSColor? {
-        get { .systemRed }          // your color
+        get { .controlAccentColor }
         set { /* ignore external changes */ }
     }
     
     var vimEngine : VimEngine
+    var originalInsertionPoint : InsertionPoint?
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
         
+        // If the blink cycle is off, don't draw anything
+        guard flag else { return }
+
+        /// if User is not using vim mode then draw regular
         if !vimEngine.isInVimMode {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
         
-        // If the blink cycle is off, don't draw anything
-        guard flag else { return }
+        
+        /// if in VimMode and we're in insert, then just draw the regular cursor
+        if vimEngine.state == .insert {
+            super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
+            return
+        }
         
         var blockRect = rect
         var charWidth: CGFloat = 8.0 // Default fallback width
@@ -75,7 +89,10 @@ final class ComfyTextView: NSTextView {
     
     override func keyDown(with event: NSEvent) {
         if vimEngine.isInVimMode {
-            handleVimEvent(event)
+            if handleVimEvent(event) {
+                /// if vimEvent is ok to type then we can type
+                super.keyDown(with: event)
+            }
             return
         }
         super.keyDown(with: event)
