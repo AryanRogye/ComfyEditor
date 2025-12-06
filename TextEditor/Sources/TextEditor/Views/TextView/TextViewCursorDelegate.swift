@@ -7,6 +7,7 @@
 
 import AppKit
 
+@MainActor
 protocol TextViewCursorDelegate: AnyObject {
     var isOnNewline: Bool { get }
     func textViewDidChangeSelection(_ notification: Notification)

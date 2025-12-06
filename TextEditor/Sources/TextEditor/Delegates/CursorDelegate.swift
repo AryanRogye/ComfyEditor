@@ -8,9 +8,10 @@
 import AppKit
 import Combine
 
+@MainActor
 final class CursorDelegate: NSObject, TextViewCursorDelegate, ObservableObject {
     
-    @Published var charUnderCursor: String?
+    @Published var charUnderCursor: Character?
     @Published var isOnNewline: Bool = false
     
     func textViewDidChangeSelection(_ notification: Notification) {
@@ -20,24 +21,39 @@ final class CursorDelegate: NSObject, TextViewCursorDelegate, ObservableObject {
         updateCharUnderCursor(textView, range: range)
     }
     
-    private func updateCharUnderCursor(_ textView: NSTextView, range: NSRange) {
-        let ns = textView.string as NSString
+    /// Function is useful for many reasons:
+    ///   - Determine what character is under the caret
+    ///   - Resolved a bug, with the insertion point
+    ///     - if the insertion point is at a \n, it would draw the insertion point all
+    ///       the way to the end of the document, instead of the block of newline
+    ///     - we now keep a flag isOnNewline to help with that
+    private func updateCharUnderCursor(
+        _ textView: NSTextView,
+        range: NSRange
+    ) {
+        let string = textView.string
+        let utf16Count = string.utf16.count
         
-        guard ns.length > 0 else {
-            charUnderCursor = nil
-            isOnNewline = false
+        guard utf16Count > 0 else {
+            reset()
+            return
+        }
+        guard range.location < utf16Count else {
+            reset()
             return
         }
         
-        let caret = min(range.location, max(ns.length - 1, 0))
+        /// Get Index by getting the start ----> offsetting by caret
+        let idx = String.Index(utf16Offset: range.location, in: string)
+        /// Get Character at Index from above
+        let ch : Character = string[idx]
         
-        guard ns.length > 0 else {
-            charUnderCursor = nil
-            return
-        }
-        
-        let uni = ns.character(at: caret)
-        charUnderCursor = String(UnicodeScalar(uni)!)
-        isOnNewline = (charUnderCursor == "\n")
+        charUnderCursor = ch
+        isOnNewline = ch == "\n"
+    }
+    
+    private func reset() {
+        charUnderCursor = nil
+        isOnNewline = false
     }
 }

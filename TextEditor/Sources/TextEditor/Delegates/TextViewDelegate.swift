@@ -7,6 +7,7 @@
 import Combine
 import AppKit
 
+@MainActor
 final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     
     @Published var range: NSRange?
@@ -19,16 +20,14 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
         let hasSelection = range.length > 0
         // Use hasSelection (e.g., update UI, enable actions, etc.)
         if hasSelection {
-            extractSelectedText(textView, range: range)
+            /// Set range of selection here
+            self.range = range
             font = getCurrentFont(textView: textView)
         } else {
+            /// if nothing selected, we nullify range
             self.range = nil
             font = getCurrentFont(textView: textView)
         }
-    }
-    
-    func extractSelectedText(_ textView: NSTextView, range: NSRange) {
-        self.range = range
     }
     
     public func forceFontRefresh(textView: NSTextView) {
@@ -57,6 +56,7 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
             }
         }
         
+        /// IF nothing is selected by the user
         /// What size is under the cursor
         let currentAttrs = textView.typingAttributes
         return currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)

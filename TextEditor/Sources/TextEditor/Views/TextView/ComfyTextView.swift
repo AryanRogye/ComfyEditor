@@ -67,10 +67,8 @@ final class ComfyTextView: NSTextView {
                     // It's a newline; use the width of 'm' as a placeholder
                     charWidth = font?.pointSize ?? 12
                 }
-                print("Not at end of document")
             }
             else {
-                print("At end of document")
                 // End of document; use the width of 'm'
                 if let font = self.font {
                     charWidth = "m".size(withAttributes: [.font: font]).width
