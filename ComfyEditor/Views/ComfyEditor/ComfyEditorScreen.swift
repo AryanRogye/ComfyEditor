@@ -12,11 +12,25 @@ struct ComfyEditorScreen: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
+    
+    @State var text: String = """
+        TESTING SOMETHING asdfasdf
+        sfasdf YO WHATS UP BRO asdfasdf asdf 
+        asdf asfasd fasdf asdf asdf asdf asdf asdf asdf asfdasdfasdf a
+        as asd;fasd asdf asdf asdf as dfas df
+        df asdf asdf asdf asdf asdf asdf asdf sadflkjjjjj;j 
+        asdf kjl;k kj ;j kk j; ;kj kj k jj j j j j j j j 
+        as asdf asdf asdf asdf asdf asdf asdf asdf asdf 
+        df
+        asdf asdf asdf asdf as df
+        as
+        df
+        """
 
     var body: some View {
         VStack(spacing: 0) {
             ComfyTextEditor(
-                text: .constant(""),
+                text: $text,
                 showScrollbar: $settingsCoordinator.showScrollbar,
                 isInVimMode: $settingsCoordinator.isVimEnabled
             )

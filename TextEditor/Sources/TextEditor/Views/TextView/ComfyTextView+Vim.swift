@@ -38,6 +38,18 @@ extension ComfyTextView {
         modifier: [],
         keys: [.k]
     )
+    static let move_word_next = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.w]
+    )
+    static let move_word_back = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.b]
+    )
+    static let move_end_line = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.A]
+    )
 
     
     internal func handleVimEvent(_ event: NSEvent) -> Bool {
@@ -49,6 +61,15 @@ extension ComfyTextView {
         
         
         var didJustInsert: Bool = false
+        var didJustMoveToEndOfLine: Bool = false
+        /// Used as validation
+//        print("SET" + Self.move_end_line.modifiers())
+//        print("SET" + Self.move_end_line.keyValues())
+//        print("====================================")
+//        print("INPUT" + shortcut.modifiers())
+//        print("INPUT" + shortcut.keyValues())
+//        print("====================================")
+
         switch shortcut {
             
         case Self.normal_mode:
@@ -80,13 +101,28 @@ extension ComfyTextView {
             if vimEngine.state == .normal  {
                 moveDown(self)
             }
+        case Self.move_word_next:
+            if vimEngine.state == .normal {
+                moveWordRight(self)
+                moveRight(self)
+            }
+        case Self.move_word_back:
+            if vimEngine.state == .normal {
+                moveWordLeft(self)
+            }
+        case Self.move_end_line:
+            if vimEngine.state == .normal {
+                didJustMoveToEndOfLine = true
+                moveToRightEndOfLine(self)
+                vimEngine.state = .insert
+            }
         default:                break
         }
         
         /// Update's the insertion point
         updateInsertionPointStateAndRestartTimer(true)
         
-        if didJustInsert {
+        if didJustInsert || didJustMoveToEndOfLine {
             return false
         }
         

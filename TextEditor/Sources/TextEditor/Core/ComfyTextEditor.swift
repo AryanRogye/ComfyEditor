@@ -37,6 +37,7 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     
     public func makeNSViewController(context: Context) -> TextViewController {
         let viewController = TextViewController()
+        viewController.textView.string = text
         return viewController
     }
     

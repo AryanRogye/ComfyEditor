@@ -11,7 +11,7 @@ extension LocalShortcuts {
     @MainActor
     public enum Key: String, Codable, CaseIterable, Hashable {
         // Letters
-        case a, b, c, d, e, f, g, h, i, j, k, l, m
+        case a, A, b, c, d, e, f, g, h, i, j, k, l, m
         case n, o, p, q, r, s, t, u, v, w, x, y, z
         
         // Numbers
@@ -61,6 +61,7 @@ extension LocalShortcuts.Key {
         if let chars = event.charactersIgnoringModifiers, let first = chars.first {
             switch first {
             case "a": key = .a
+            case "A": key = .A
             case "b": key = .b
             case "c": key = .c
             case "d": key = .d
