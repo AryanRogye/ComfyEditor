@@ -15,6 +15,7 @@ public final class EditorCommandCenter {
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     
     let cursorDelegate = CursorDelegate()
+    let textViewDelegate = TextViewDelegate()
     let magnificationDelegate = MagnificationDelegate()
     
     public var isBoldEnabled: Bool = false
@@ -22,7 +23,7 @@ public final class EditorCommandCenter {
     public var magnification: CGFloat = 4.0
     
     init() {
-        cursorDelegate.$font
+        textViewDelegate.$font
             .sink { [weak self] font in
                 guard let self else { return }
                 self.currentFont = font?.pointSize
