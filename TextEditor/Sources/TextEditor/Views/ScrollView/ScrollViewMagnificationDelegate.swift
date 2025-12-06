@@ -10,3 +10,4 @@ import AppKit
 protocol ScrollViewMagnificationDelegate: AnyObject {
     func scrollView(_ scrollView: NSScrollView, didChangeMagnification magnification: CGFloat)
 }
+

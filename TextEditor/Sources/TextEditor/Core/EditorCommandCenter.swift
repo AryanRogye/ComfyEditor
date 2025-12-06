@@ -14,6 +14,7 @@ public final class EditorCommandCenter {
     @ObservationIgnored public static let shared = EditorCommandCenter()
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     
+    let cursorDelegate = CursorDelegate()
     let textViewDelegate = TextViewDelegate()
     let magnificationDelegate = MagnificationDelegate()
     

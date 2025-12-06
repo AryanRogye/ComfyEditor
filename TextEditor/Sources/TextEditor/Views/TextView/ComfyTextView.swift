@@ -19,23 +19,27 @@ final class ComfyTextView: NSTextView {
         set { /* ignore external changes */ }
     }
     
+    var cursorDelegate: TextViewCursorDelegate?
+    
     var vimEngine : VimEngine
     var originalInsertionPoint : InsertionPoint?
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
-        
         // If the blink cycle is off, don't draw anything
         guard flag else { return }
-
+        
         /// if User is not using vim mode then draw regular
         if !vimEngine.isInVimMode {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
         
-        
         /// if in VimMode and we're in insert, then just draw the regular cursor
         if vimEngine.state == .insert {
+            super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
+            return
+        }
+        guard let cursorDelegate else {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
@@ -44,11 +48,15 @@ final class ComfyTextView: NSTextView {
         var charWidth: CGFloat = 8.0 // Default fallback width
         
         // 1. Calculate the width of the character under the cursor
-        if let layoutManager = layoutManager, let textContainer = textContainer {
+        if let layoutManager = layoutManager, let textContainer = textContainer, !cursorDelegate.isOnNewline {
+            
+            /// Get location of the index of the character
             let charIndex = self.selectedRange().location
             
+            let endOfDocument = self.textStorage?.length ?? 0
+            
             // Check if we are inside the text (not at the very end)
-            if charIndex < (self.textStorage?.length ?? 0) {
+            if charIndex < endOfDocument {
                 let glyphIndex = layoutManager.glyphIndexForCharacter(at: charIndex)
                 let glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
                 
@@ -59,7 +67,8 @@ final class ComfyTextView: NSTextView {
                     // It's a newline; use the width of 'm' as a placeholder
                     charWidth = font?.pointSize ?? 12
                 }
-            } else {
+            }
+            else {
                 // End of document; use the width of 'm'
                 if let font = self.font {
                     charWidth = "m".size(withAttributes: [.font: font]).width
@@ -97,7 +106,7 @@ final class ComfyTextView: NSTextView {
         }
         super.keyDown(with: event)
     }
-
+    
     init(vimEngine: VimEngine) {
         
         self.vimEngine = vimEngine
@@ -116,13 +125,32 @@ final class ComfyTextView: NSTextView {
         isVerticallyResizable = true
         isHorizontallyResizable = false
         autoresizingMask = [.width]
-
+        
         isEditable = true
         isSelectable = true
         isRichText = true
         allowsDocumentBackgroundColorChange = true
         usesFontPanel = true
         usesRuler = true
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(selectionDidChange(_:)),
+            name: NSTextView.didChangeSelectionNotification,
+            object: self
+        )
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSTextView.didChangeSelectionNotification,
+                                                  object: self
+        )
+    }
+    
+    @objc func selectionDidChange(_ notification: Notification) {
+        guard let cursorDelegate else { return }
+        cursorDelegate.textViewDidChangeSelection(notification)
     }
     
     required init?(coder: NSCoder) {
