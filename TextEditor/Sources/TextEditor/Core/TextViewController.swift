@@ -27,7 +27,7 @@ public class TextViewController: NSViewController {
     
     // MARK: - Delegates
     /// Text Delegate
-    let textViewDelegate = EditorCommandCenter.shared.textViewDelegate
+    let cursorDelegate = EditorCommandCenter.shared.cursorDelegate
     /// Magnification Delegate
     let magnificationDelegate = EditorCommandCenter.shared.magnificationDelegate
     
@@ -69,7 +69,7 @@ public class TextViewController: NSViewController {
         scrollView.magnificationDelegate = magnificationDelegate
         
         /// Assign TextView delegate
-        textView.delegate = textViewDelegate
+        textView.cursorDelegate = cursorDelegate
     
         scrollView.documentView = textView
         root.addSubview(scrollView)
@@ -105,7 +105,7 @@ extension TextViewController {
         guard isAppActive else { return }
         
         /// See if TextView is currently selected or not
-        if let range = textViewDelegate.range {
+        if let range = cursorDelegate.range {
             guard let storage = textView.textStorage else { return }
             let (isBold, _, currentFont) = isCurrentlyBold(range, in: storage)
             
@@ -162,10 +162,10 @@ extension TextViewController {
     public func increaseFontOrZoomIn() {
         guard isAppActive else { return }
 
-        if let range = textViewDelegate.range, range.length > 0 {
+        if let range = cursorDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: true)
-            textViewDelegate.forceFontRefresh(textView: textView)
+            cursorDelegate.forceFontRefresh(textView: textView)
         } else {
             let newMag = scrollView.magnification + 0.1
             scrollView.setZoom(newMag)
@@ -178,10 +178,10 @@ extension TextViewController {
     public func decreaseFontOrZoomOut() {
         guard isAppActive else { return }
 
-        if let range = textViewDelegate.range, range.length > 0 {
+        if let range = cursorDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: false)
-            textViewDelegate.forceFontRefresh(textView: textView)
+            cursorDelegate.forceFontRefresh(textView: textView)
         } else {
             let newMag = scrollView.magnification - 0.1
             scrollView.setZoom(newMag)
