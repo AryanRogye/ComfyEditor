@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import LocalShortcuts
 
 final class ComfyTextView: NSTextView {
     
@@ -23,6 +24,7 @@ final class ComfyTextView: NSTextView {
     
     var vimEngine : VimEngine
     var originalInsertionPoint : InsertionPoint?
+    var lastShortcut: LocalShortcuts.Shortcut?
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
         // If the blink cycle is off, don't draw anything
@@ -115,7 +117,9 @@ final class ComfyTextView: NSTextView {
         let layoutManager = NSLayoutManager()
         
         let textContainer = NSTextContainer()
+        
         textContainer.widthTracksTextView = true
+        textContainer.heightTracksTextView = false
         
         textStorage.addLayoutManager(layoutManager)
         layoutManager.addTextContainer(textContainer)
@@ -125,6 +129,11 @@ final class ComfyTextView: NSTextView {
         isVerticallyResizable = true
         isHorizontallyResizable = false
         autoresizingMask = [.width]
+        
+        maxSize = NSSize(
+            width: CoreFoundation.CGFloat.greatestFiniteMagnitude,
+            height: CoreFoundation.CGFloat.greatestFiniteMagnitude
+        )
         
         isEditable = true
         isSelectable = true

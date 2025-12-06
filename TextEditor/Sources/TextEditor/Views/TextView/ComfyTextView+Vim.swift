@@ -50,7 +50,25 @@ extension ComfyTextView {
         modifier: [.shift],
         keys: [.A]
     )
-
+    static let bottom_of_file = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.G]
+    )
+    static let g_modifier = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.g]
+    )
+    static let top_of_file = [
+        LocalShortcuts.Shortcut(
+            modifier: [],
+            keys: [.g]
+        ),
+        LocalShortcuts.Shortcut(
+            modifier: [],
+            keys: [.g]
+        )
+    ]
+    
     
     internal func handleVimEvent(_ event: NSEvent) -> Bool {
         /// we can get the key from the event
@@ -63,13 +81,13 @@ extension ComfyTextView {
         var didJustInsert: Bool = false
         var didJustMoveToEndOfLine: Bool = false
         /// Used as validation
-//        print("SET" + Self.move_end_line.modifiers())
-//        print("SET" + Self.move_end_line.keyValues())
-//        print("====================================")
-//        print("INPUT" + shortcut.modifiers())
-//        print("INPUT" + shortcut.keyValues())
-//        print("====================================")
-
+        //        print("SET" + Self.move_end_line.modifiers())
+        //        print("SET" + Self.move_end_line.keyValues())
+        //        print("====================================")
+        //        print("INPUT" + shortcut.modifiers())
+        //        print("INPUT" + shortcut.keyValues())
+        //        print("====================================")
+        
         switch shortcut {
             
         case Self.normal_mode:
@@ -116,8 +134,27 @@ extension ComfyTextView {
                 moveToRightEndOfLine(self)
                 vimEngine.state = .insert
             }
+        case Self.bottom_of_file:
+            if vimEngine.state == .normal {
+                moveToEndOfDocument(self)
+            }
+        case Self.g_modifier:
+            if vimEngine.state == .normal {
+                if let lastShortcut = lastShortcut {
+                    let top_of_file_pattern : [LocalShortcuts.Shortcut] =  [
+                        lastShortcut,
+                        Self.g_modifier
+                    ]
+                    if top_of_file_pattern == Self.top_of_file {
+                        moveToBeginningOfDocument(self)
+                    }
+                }
+            }
         default:                break
         }
+        
+        
+        lastShortcut = shortcut
         
         /// Update's the insertion point
         updateInsertionPointStateAndRestartTimer(true)

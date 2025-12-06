@@ -11,8 +11,15 @@ extension LocalShortcuts {
     @MainActor
     public enum Key: String, Codable, CaseIterable, Hashable {
         // Letters
-        case a, A, b, c, d, e, f, g, h, i, j, k, l, m
-        case n, o, p, q, r, s, t, u, v, w, x, y, z
+        case a, A,
+             b, B,
+             c, C,
+             d, D,
+             e, E,
+             f, F,
+             g, G,
+             h, i, j, k, l, m,
+             n, o, p, q, r, s, t, u, v, w, x, y, z
         
         // Numbers
         case zero = "0"
@@ -63,11 +70,17 @@ extension LocalShortcuts.Key {
             case "a": key = .a
             case "A": key = .A
             case "b": key = .b
+            case "B": key = .B
             case "c": key = .c
+            case "C": key = .C
             case "d": key = .d
+            case "D": key = .D
             case "e": key = .e
+            case "E": key = .E
             case "f": key = .f
+            case "F": key = .F
             case "g": key = .g
+            case "G": key = .G
             case "h": key = .h
             case "i": key = .i
             case "j": key = .j

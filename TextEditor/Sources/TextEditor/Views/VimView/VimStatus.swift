@@ -31,6 +31,7 @@ struct VimStatus: View {
     
     var body: some View {
         Text(vimEngine.state.rawValue)
+            .font(.system(size: 12, weight: .regular, design: .rounded))
             .opacity(opacity)
             .padding(.horizontal, 4)
             .padding(.vertical, 2)
@@ -38,6 +39,7 @@ struct VimStatus: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(color.opacity(opacityBackground))
             }
+            .padding(.vertical, 4)
     }
 }
 
