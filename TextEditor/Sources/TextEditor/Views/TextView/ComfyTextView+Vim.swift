@@ -66,17 +66,15 @@ extension ComfyTextView {
         LocalShortcuts.Shortcut(
             modifier: [],
             keys: [.g]
-        )
+        ),
     ]
-    
     
     internal func handleVimEvent(_ event: NSEvent) -> Bool {
         /// we can get the key from the event
-        let shortcut : LocalShortcuts.Shortcut = LocalShortcuts.Shortcut.getShortcut(event: event)
+        let shortcut: LocalShortcuts.Shortcut = LocalShortcuts.Shortcut.getShortcut(event: event)
         
         /// Shortcut holds all modifiers and keys
         /// First Check if is control c
-        
         
         var didJustInsert: Bool = false
         var didJustMoveToEndOfLine: Bool = false
@@ -90,53 +88,39 @@ extension ComfyTextView {
         
         switch shortcut {
             
+            /// User Requested Normal Mode
         case Self.normal_mode:
             vimEngine.state = .normal
-            switch shortcut {
-            default: break
-            }
-            
-            /// Insert Mode
+            /// User Requested Insert Mode
         case Self.insert_mode:
             vimEngine.state = .insert
             didJustInsert = true
             
-        case Self.visual_mode:  vimEngine.state = .visual
+        case Self.visual_mode: vimEngine.state = .visual
             
         case Self.move_left_one:
-            if vimEngine.state == .normal  {
+            if vimEngine.state == .normal {
                 moveLeft(self)
             }
         case Self.move_right_one:
-            if vimEngine.state == .normal  {
-                moveRight(self)
+            if vimEngine.state == .normal {
+                moveRight()
             }
         case Self.move_up_one:
-            if vimEngine.state == .normal  {
+            if vimEngine.state == .normal {
                 moveUp(self)
             }
         case Self.move_down_one:
-            if vimEngine.state == .normal  {
+            if vimEngine.state == .normal {
                 moveDown(self)
             }
         case Self.move_word_next:
             if vimEngine.state == .normal {
-                /// if next word is \n then move to that \n
-                if let cursorDelegate {
-                    if cursorDelegate.isOnNewline {
-                        moveRight(self)
-                        break
-                    }
-                    moveWordRight(self)
-                    /// if after moving, we're not on a newline, move right once more
-                    if !cursorDelegate.isOnNewline {
-                        moveRight(self)
-                    }
-                }
+                handleNextWord()
             }
         case Self.move_word_back:
             if vimEngine.state == .normal {
-                moveWordLeft(self)
+                handleLastWord()
             }
         case Self.move_end_line:
             if vimEngine.state == .normal {
@@ -151,18 +135,17 @@ extension ComfyTextView {
         case Self.g_modifier:
             if vimEngine.state == .normal {
                 if let lastShortcut = lastShortcut {
-                    let top_of_file_pattern : [LocalShortcuts.Shortcut] =  [
+                    let top_of_file_pattern: [LocalShortcuts.Shortcut] = [
                         lastShortcut,
-                        Self.g_modifier
+                        Self.g_modifier,
                     ]
                     if top_of_file_pattern == Self.top_of_file {
                         moveToBeginningOfDocument(self)
                     }
                 }
             }
-        default:                break
+        default: break
         }
-        
         
         lastShortcut = shortcut
         
@@ -174,5 +157,54 @@ extension ComfyTextView {
         }
         
         return vimEngine.state == .insert
+    }
+    
+    private func handleLastWord() {
+        if fsmEngine.isOnStartOfLine {
+            moveLeft()
+            EditorCommandCenter.shared.textViewDelegate.refresh(self)
+        }
+        if let count = fsmEngine.lastWordLength {
+            moveLeft(count)
+        } else {
+            moveWordLeft(self)
+        }
+    }
+    private func handleNextWord() {
+        /// if we're on a newline, then just move down and to start of the line
+        if fsmEngine.isOnNewLine {
+            moveDownAndStartOfLine()
+            return
+        }
+        
+        if let count = fsmEngine.nextWordLength {
+            moveRight(count)
+            if fsmEngine.isOnNewLine {
+                moveDownAndStartOfLine()
+            }
+        } else {
+            /// just move word right
+            moveWordRight(self)
+        }
+    }
+    
+    /// Represents Vim-style `w` behavior across lines.
+    ///
+    /// Example:
+    ///
+    ///     something here testing o
+    ///                         ^ cursor (*HERE*)
+    ///     testing something out here too
+    ///
+    /// Pressing `w` moves the cursor to:
+    ///
+    ///     something here testing o
+    ///     testing something out here too
+    ///     ^ cursor (*HERE*)
+    /// Because next word is newline, on newline, we call our function
+    /// to move down and to the start of the line
+    private func moveDownAndStartOfLine() {
+        moveDown(self)
+        moveToBeginningOfLine(self)
     }
 }

@@ -17,13 +17,13 @@ final class ComfyTextView: NSTextView {
     
     override var insertionPointColor: NSColor? {
         get { .controlAccentColor }
-        set { /* ignore external changes */ }
+        set { /* ignore external changes */  }
     }
     
-    var cursorDelegate: TextViewCursorDelegate?
+    var vimEngine: VimEngine
+    var fsmEngine: FSMEngine
     
-    var vimEngine : VimEngine
-    var originalInsertionPoint : InsertionPoint?
+    var originalInsertionPoint: InsertionPoint?
     var lastShortcut: LocalShortcuts.Shortcut?
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
@@ -41,12 +41,7 @@ final class ComfyTextView: NSTextView {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
-        guard let cursorDelegate else {
-            super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
-            return
-        }
-        
-        handleVimInsertionPoint(rect, color, cursorDelegate: cursorDelegate)
+        handleVimInsertionPoint(rect, color)
     }
     
     override func keyDown(with event: NSEvent) {
@@ -60,9 +55,10 @@ final class ComfyTextView: NSTextView {
         super.keyDown(with: event)
     }
     
-    init(vimEngine: VimEngine) {
+    init(vimEngine: VimEngine, fsmEngine: FSMEngine) {
         
         self.vimEngine = vimEngine
+        self.fsmEngine = fsmEngine
         
         let textStorage = NSTextStorage()
         let layoutManager = NSLayoutManager()
@@ -92,27 +88,8 @@ final class ComfyTextView: NSTextView {
         allowsDocumentBackgroundColorChange = true
         usesFontPanel = true
         usesRuler = true
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(selectionDidChange(_:)),
-            name: NSTextView.didChangeSelectionNotification,
-            object: self
-        )
     }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSTextView.didChangeSelectionNotification,
-                                                  object: self
-        )
-    }
-    
-    @objc func selectionDidChange(_ notification: Notification) {
-        guard let cursorDelegate else { return }
-        cursorDelegate.textViewDidChangeSelection(notification)
-    }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

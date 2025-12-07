@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ComfyEditorHome: View {
-    
+
     @Environment(SettingsCoordinator.self) var settingsCoordinator
 
     // Adaptive grid for responsive layout

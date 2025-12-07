@@ -8,12 +8,12 @@
 import AppKit
 
 extension ComfyTextView {
-    func handleVimInsertionPoint(_ rect: NSRect, _ color: NSColor, cursorDelegate: TextViewCursorDelegate) {
+    func handleVimInsertionPoint(_ rect: NSRect, _ color: NSColor) {
         var blockRect = rect
         var charWidth: CGFloat = 8.0 // Default fallback width
         
         // 1. Calculate the width of the character under the cursor
-        if let layoutManager = layoutManager, let textContainer = textContainer, !cursorDelegate.isOnNewline {
+        if let layoutManager = layoutManager, let textContainer = textContainer, !fsmEngine.isOnNewLine {
             
             /// Get location of the index of the character
             let charIndex = self.selectedRange().location
