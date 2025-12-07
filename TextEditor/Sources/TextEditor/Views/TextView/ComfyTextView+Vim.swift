@@ -121,8 +121,18 @@ extension ComfyTextView {
             }
         case Self.move_word_next:
             if vimEngine.state == .normal {
-                moveWordRight(self)
-                moveRight(self)
+                /// if next word is \n then move to that \n
+                if let cursorDelegate {
+                    if cursorDelegate.isOnNewline {
+                        moveRight(self)
+                        break
+                    }
+                    moveWordRight(self)
+                    /// if after moving, we're not on a newline, move right once more
+                    if !cursorDelegate.isOnNewline {
+                        moveRight(self)
+                    }
+                }
             }
         case Self.move_word_back:
             if vimEngine.state == .normal {

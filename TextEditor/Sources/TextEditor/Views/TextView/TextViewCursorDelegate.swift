@@ -10,5 +10,7 @@ import AppKit
 @MainActor
 protocol TextViewCursorDelegate: AnyObject {
     var isOnNewline: Bool { get }
+    var isNextWordNewline: Bool { get }
+    var wordUnderCursor: String? { get }
     func textViewDidChangeSelection(_ notification: Notification)
 }
