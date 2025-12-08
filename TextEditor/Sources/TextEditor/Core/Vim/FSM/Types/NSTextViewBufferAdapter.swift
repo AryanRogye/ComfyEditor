@@ -15,6 +15,11 @@ extension FSMEngine {
             return textView
         }
         
+        public func getCursorPosition() -> NSRange? {
+            guard let textView else { return nil }
+            return textView.selectedRange
+        }
+        
         public func cursorPosition() -> Position {
             /// if no textView return 0,0
             guard let textView else {
