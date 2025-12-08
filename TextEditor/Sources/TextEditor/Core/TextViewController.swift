@@ -14,14 +14,13 @@ public class TextViewController: NSViewController {
     let fontManager = NSFontManager.shared
 
     let vimEngine = VimEngine()
-    let fsmEngine = FSMEngine()
 
     // MARK: - View's
     /// Our Implementation of a NSScrollView
     /// Lets us hook into `new delegates`
     let scrollView = ComfyScrollView()
     /// Our Implementation of a NSTextView
-    lazy var textView = ComfyTextView(vimEngine: vimEngine, fsmEngine: fsmEngine)
+    lazy var textView = ComfyTextView(vimEngine: vimEngine)
 
     /// Bottom Bar for Vim Command Input, etc
     lazy var vimBottomView = VimBottomView(vimEngine: vimEngine)
@@ -40,7 +39,7 @@ public class TextViewController: NSViewController {
     // MARK: - Init
     init() {
         super.init(nibName: nil, bundle: nil)
-        textDelegate.fsmEngine = fsmEngine
+        textDelegate.vimEngine = vimEngine
     }
 
     required init?(coder: NSCoder) {

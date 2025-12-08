@@ -21,7 +21,6 @@ final class ComfyTextView: NSTextView {
     }
     
     var vimEngine: VimEngine
-    var fsmEngine: FSMEngine
     
     var originalInsertionPoint: InsertionPoint?
     var lastShortcut: LocalShortcuts.Shortcut?
@@ -55,10 +54,9 @@ final class ComfyTextView: NSTextView {
         super.keyDown(with: event)
     }
     
-    init(vimEngine: VimEngine, fsmEngine: FSMEngine) {
+    init(vimEngine: VimEngine) {
         
         self.vimEngine = vimEngine
-        self.fsmEngine = fsmEngine
         
         let textStorage = NSTextStorage()
         let layoutManager = NSLayoutManager()
@@ -72,7 +70,8 @@ final class ComfyTextView: NSTextView {
         layoutManager.addTextContainer(textContainer)
         
         super.init(frame: .zero, textContainer: textContainer)
-        
+        self.vimEngine.fsmEngine.nsTextViewBuffer.textView = self
+
         isVerticallyResizable = true
         isHorizontallyResizable = false
         autoresizingMask = [.width]

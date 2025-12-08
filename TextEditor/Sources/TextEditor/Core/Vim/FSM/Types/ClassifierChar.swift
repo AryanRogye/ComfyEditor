@@ -1,12 +1,12 @@
 //
-//  FSMCharacter.swift
+//  ClassifierChar.swift
 //  TextEditor
 //
 //  Created by Aryan Rogye on 12/7/25.
 //
 
 extension FSMEngine {
-    public enum FSMCharacter {
+    public enum ClassifierChar {
         case word
         case space
         case newline
@@ -30,6 +30,14 @@ extension FSMEngine {
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
             "_",
         ]
+        
+        public static func line(_ line: String) -> [ClassifierChar] {
+            var list : [ClassifierChar] = []
+            for c in line {
+                list.append(.init(from: c))
+            }
+            return list
+        }
 
         public init(from c: Character) {
             if c == "\n" {

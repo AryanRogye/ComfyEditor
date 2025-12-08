@@ -30,16 +30,25 @@ struct VimStatus: View {
     }
     
     var body: some View {
-        Text(vimEngine.state.rawValue)
-            .font(.system(size: 12, weight: .regular, design: .rounded))
-            .opacity(opacity)
-            .padding(.horizontal, 4)
-            .padding(.vertical, 2)
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(color.opacity(opacityBackground))
-            }
-            .padding(.vertical, 4)
+        HStack {
+            Text(vimEngine.state.rawValue)
+                .font(.system(size: 12, weight: .regular, design: .rounded))
+                .opacity(opacity)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(color.opacity(opacityBackground))
+                }
+            Spacer()
+            Text("Line: \(vimEngine.position.map { String($0.line) } ?? "_")  Col: \(vimEngine.position.map { String($0.column) } ?? "_")")
+                .font(.system(size: 12, weight: .regular, design: .rounded))
+                .opacity(opacity)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+        }
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

@@ -13,11 +13,10 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     @Published var range: NSRange?
     @Published var font: NSFont?
 
-    weak var fsmEngine: FSMEngine?
+    weak var vimEngine: VimEngine?
     
     public func refresh(_ textView: NSTextView) {
         calculateRange(textView)
-        fsmEngineProcess(textView)
     }
 
     func textView(
@@ -25,76 +24,15 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
         in cellFrame: NSRect, at charIndex: Int
     ) {
         calculateRange(textView)
-        fsmEngineProcess(textView)
+        guard let vimEngine else { return }
+        vimEngine.updatePosition()
     }
 
     func textViewDidChangeSelection(_ notification: Notification) {
         guard let textView = notification.object as? NSTextView else { return }
         calculateRange(textView)
-        fsmEngineProcess(textView)
-    }
-
-    private func fsmEngineProcess(_ textView: NSTextView) {
-        guard let fsmEngine else {
-            print("FSM Engine Not Set")
-            return
-        }
-        let (line, idx) = getLine(textView)
-        if let line {
-            fsmEngine.processLine(line, idx)
-        }
-    }
-
-    /// Function gets the line where the caret is currently at
-    private func getLine(
-        _ textView: NSTextView
-    ) -> (String?, Int?) {
-        let range: NSRange = textView.selectedRange
-        let string = textView.string
-        let utf16Count = string.utf16.count
-
-        guard utf16Count > 0, range.location < utf16Count else {
-            return (nil, nil)
-        }
-
-        /// This idx is the current caret position
-        let idx = String.Index(
-            utf16Offset: range.location,
-            in: string
-        )
-
-        /// we can go back to find the last \n
-        var start = idx
-
-        // Check if we are already at a newline or need to go back
-        if start != string.startIndex && start < string.endIndex && string[start] == "\n" {
-            /// Return if is a newline
-            return ("\n", nil)
-        }
-
-        while start > string.startIndex {
-            let prevIdx = string.index(before: start)
-            if string[prevIdx] == "\n" {
-                /// UnCommenting brings back the \n before the line
-                //                                start = prevIdx
-                break
-            }
-            start = prevIdx
-        }
-
-        var end = idx
-        while end < string.endIndex {
-            let currentChar = string[end]
-            if currentChar == "\n" {
-                /// Include the newline character in the line
-                end = string.index(after: end)
-                break
-            }
-            end = string.index(after: end)
-        }
-        let cursorInLine = string.distance(from: start, to: idx)
-
-        return (String(string[start..<end]), cursorInLine)
+        guard let vimEngine else { return }
+        vimEngine.updatePosition()
     }
 
     private func calculateRange(_ textView: NSTextView) {

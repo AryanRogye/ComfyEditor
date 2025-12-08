@@ -152,6 +152,8 @@ extension ComfyTextView {
         /// Update's the insertion point
         updateInsertionPointStateAndRestartTimer(true)
         
+        refreshFSM()
+        
         if didJustInsert || didJustMoveToEndOfLine {
             return false
         }
@@ -160,32 +162,37 @@ extension ComfyTextView {
     }
     
     private func handleLastWord() {
-        if fsmEngine.isOnStartOfLine {
+        if vimEngine.fsmEngine.isOnStartOfLine {
             moveLeft()
-            EditorCommandCenter.shared.textViewDelegate.refresh(self)
+            print("===================================================================")
+            print("Count Before: \(vimEngine.fsmEngine.lastWordStartDistance ?? -1)")
+            refreshFSM()
         }
-        if let count = fsmEngine.lastWordLength {
+        if let count = vimEngine.fsmEngine.lastWordStartDistance {
+            print("USING COUNT \(count)")
+            print("===================================================================")
             moveLeft(count)
         } else {
             moveWordLeft(self)
         }
     }
     private func handleNextWord() {
+        vimEngine.handleNextWord()
         /// if we're on a newline, then just move down and to start of the line
-        if fsmEngine.isOnNewLine {
-            moveDownAndStartOfLine()
-            return
-        }
-        
-        if let count = fsmEngine.nextWordLength {
-            moveRight(count)
-            if fsmEngine.isOnNewLine {
-                moveDownAndStartOfLine()
-            }
-        } else {
-            /// just move word right
-            moveWordRight(self)
-        }
+//        if vimEngine.fsmEngine.isOnNewLine {
+//            moveDownAndStartOfLine()
+//            return
+//        }
+//        
+//        if let count = fsmEngine.nextWordStartDistance {
+//            moveRight(count)
+//            if fsmEngine.isOnNewLine {
+//                moveDownAndStartOfLine()
+//            }
+//        } else {
+//            /// just move word right
+//            moveWordRight(self)
+//        }
     }
     
     /// Represents Vim-style `w` behavior across lines.
@@ -206,5 +213,9 @@ extension ComfyTextView {
     private func moveDownAndStartOfLine() {
         moveDown(self)
         moveToBeginningOfLine(self)
+    }
+    
+    private func refreshFSM() {
+        EditorCommandCenter.shared.textViewDelegate.refresh(self)
     }
 }

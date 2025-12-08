@@ -38,6 +38,7 @@ final class VimBottomView: NSView {
         
         NSLayoutConstraint.activate([
             hosting.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            hosting.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             hosting.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
