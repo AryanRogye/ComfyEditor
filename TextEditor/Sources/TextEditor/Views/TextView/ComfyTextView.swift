@@ -69,7 +69,7 @@ final class ComfyTextView: NSTextView {
         layoutManager.addTextContainer(textContainer)
         
         super.init(frame: .zero, textContainer: textContainer)
-        self.vimEngine.fsmEngine.nsTextViewBuffer.textView = self
+        self.vimEngine.nsTextViewBuffer.textView = self
 
         isVerticallyResizable = true
         isHorizontallyResizable = false

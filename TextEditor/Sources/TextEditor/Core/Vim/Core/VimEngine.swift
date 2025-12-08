@@ -16,20 +16,20 @@ class VimEngine: ObservableObject {
     /// What the state of vim mode we are in
     @Published var state : VimState = .normal
     
-    @Published var position : FSMEngine.Position?
+    @Published var position : Position?
     @Published var isOnNewLine: Bool = false
     
     var lastShortcut: LocalShortcuts.Shortcut?
 
-    /// Engine Powering the Movement Logic
-    let fsmEngine = FSMEngine()
-    
+    public let nsTextViewBuffer = NSTextViewBufferAdapter()
+    internal lazy var motionEngine = MotionEngine(buffer: nsTextViewBuffer)
+
     var visualAnchorLocation: Int?
     
     public func updatePosition() {
-        let p = fsmEngine.nsTextViewBuffer.cursorPosition()
+        let p = nsTextViewBuffer.cursorPosition()
         position = p
-        if let c = fsmEngine.nsTextViewBuffer.char(at: p) {
+        if let c = nsTextViewBuffer.char(at: p) {
             isOnNewLine = c == "\n"
         }
     }
@@ -41,7 +41,7 @@ class VimEngine: ObservableObject {
     /// In NSTextView, `selectedRange.location` is always the start (left side).
     /// We need to know if we are selecting forwards or backwards to find the real head.
     var currentVisualHead: Int {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return 0 }
+        guard let textView = nsTextViewBuffer.textView else { return 0 }
         
         let range = textView.selectedRange
         let currentLocation = range.location
@@ -65,7 +65,7 @@ class VimEngine: ObservableObject {
     
     public func handleVimEvent(_ event: NSEvent) -> Bool {
         /// if not set just keep typing
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return true }
+        guard let textView = nsTextViewBuffer.textView else { return true }
         
         /// we can get the key from the event
         let shortcut: LocalShortcuts.Shortcut = LocalShortcuts.Shortcut.getShortcut(event: event)
@@ -160,7 +160,7 @@ class VimEngine: ObservableObject {
         /// If In Visual Mode
         if state == .visual {
             /// Get Cursor Position to move right by 1
-            if let range = fsmEngine.nsTextViewBuffer.getCursorPosition() {
+            if let range = nsTextViewBuffer.getCursorPosition() {
                 print("Updating Cursor Selection for Visual with: \(range.location)")
                 updateCursorAndSelection(to: range.location)
             }
@@ -191,30 +191,30 @@ class VimEngine: ObservableObject {
     /// Because next word is newline, on newline, we call our function
     /// to move down and to the start of the line
     private func moveDownAndStartOfLine() {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return }
+        guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveDown(textView)
         textView.moveToBeginningOfLine(textView)
     }
     
     private func refreshFSM() {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return }
+        guard let textView = nsTextViewBuffer.textView else { return }
         EditorCommandCenter.shared.textViewDelegate.refresh(textView)
     }
     private func enterVisualMode() {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return }
+        guard let textView = nsTextViewBuffer.textView else { return }
         visualAnchorLocation = textView.selectedRange.location
         state = .visual
     }
     
     func exitVisualMode() {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView else { return }
+        guard let textView = nsTextViewBuffer.textView else { return }
         visualAnchorLocation = nil
         let cursor = textView.selectedRange.location
         textView.setSelectedRange(NSRange(location: cursor, length: 0))
     }
 
     private func updateCursorAndSelection(to newCursor: Int) {
-        guard let textView = fsmEngine.nsTextViewBuffer.textView,
+        guard let textView = nsTextViewBuffer.textView,
               let textStorage = textView.textStorage else { return }
         
         let totalLength = textStorage.length
