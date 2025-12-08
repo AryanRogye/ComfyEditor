@@ -6,6 +6,10 @@ been vibing with building out a editor with `NSTextView`
 
 This project is an exploration of editor internals, input handling, and Vim-style navigation on macOS.
 
+<img width="1920" height="720" alt="Screenshot 2025-12-07 at 5 20 59 PM" src="https://github.com/user-attachments/assets/6ed76aba-37a7-49b7-a35b-d94a95fe41a3" />
+
+> Lol does not support syntax highlighting but u can paste in xcode code and it'll look like it has syntax colors cuz it keeps attributed text intact
+
 ## Notes
 - Vim-style cursor motion is implemented using a custom finite-state approach
   - **HOLY FUCK** didnt know the struggle for this
