@@ -15,8 +15,12 @@ struct ComfyEditorApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
+                #if JUST_EDITOR
+                ComfyEditorScreen(settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator)
+                #else
                 ComfyEditorHome()
                     .environment(appDelegate.appCoordinator.settingsCoordinator)
+                #endif
             }
         }
         .windowStyle(.hiddenTitleBar)
