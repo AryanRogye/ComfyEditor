@@ -12,5 +12,6 @@ extension FSMEngine {
         func cursorPosition() -> Position
         func lineCount() -> Int
         func line(at index: Int) -> String
+        func char(at pos: Position) -> Character?
     }
 }

@@ -23,7 +23,6 @@ final class ComfyTextView: NSTextView {
     var vimEngine: VimEngine
     
     var originalInsertionPoint: InsertionPoint?
-    var lastShortcut: LocalShortcuts.Shortcut?
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
         // If the blink cycle is off, don't draw anything
@@ -45,7 +44,7 @@ final class ComfyTextView: NSTextView {
     
     override func keyDown(with event: NSEvent) {
         if vimEngine.isInVimMode {
-            if handleVimEvent(event) {
+            if vimEngine.handleVimEvent(event) {
                 /// if vimEvent is ok to type then we can type
                 super.keyDown(with: event)
             }

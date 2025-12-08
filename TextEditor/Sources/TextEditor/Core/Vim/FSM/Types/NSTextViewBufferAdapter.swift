@@ -70,6 +70,35 @@ extension FSMEngine {
             return count
         }
         
+        public func char(at pos: Position) -> Character? {
+            guard let textView else { return nil }
+            guard let textStorage = textView.textStorage else { return nil }
+            
+            let text = textStorage.string as NSString
+            let row = pos.line
+            let col = pos.column
+            
+            var currentLine = 0
+            var result: Character? = nil
+            
+            text.enumerateSubstrings(in: NSRange(location: 0, length: text.length),
+                                     options: .byLines) { _, substringRange, enclosingRange, stop in
+                if currentLine == row {
+                    // Calculate the absolute position in the text
+                    let charPosition = substringRange.location + col
+                    
+                    // Check if column is within bounds of this line
+                    if charPosition < NSMaxRange(enclosingRange) && charPosition < text.length {
+                        let char = text.character(at: charPosition)
+                        result = Character(UnicodeScalar(char)!)
+                    }
+                    stop.pointee = true
+                }
+                currentLine += 1
+            }
+            
+            return result
+        }
         public func line(at index: Int) -> String {
             guard let textView else { return "" }
             guard let textStorage = textView.textStorage else { return "" }

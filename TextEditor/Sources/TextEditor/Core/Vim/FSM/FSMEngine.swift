@@ -18,14 +18,8 @@ public final class FSMEngine {
         self.motionEngine = MotionEngine(buffer: nsTextViewBuffer)
     }
     
-    public var nextWordStartDistance: Int?
-    public var lastWordStartDistance: Int?
-    
-    public var isOnStartOfLine: Bool = false
-    
-    /// Easy way to check if we are on a new line
-    public var isOnNewLine: Bool {
-        false
+    public func handleLastWordLeading() {
+        motionEngine?.lastWordLeading()
     }
     
     public func handleNextWordLeading() {

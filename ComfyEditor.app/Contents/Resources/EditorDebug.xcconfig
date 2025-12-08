@@ -1,0 +1,12 @@
+//
+//  EditorDebug.xcconfig
+//  ComfyEditor
+//
+//  Created by Aryan Rogye on 12/7/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+/// Configuration allows for us to open the editor to just the editor
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) JUST_EDITOR

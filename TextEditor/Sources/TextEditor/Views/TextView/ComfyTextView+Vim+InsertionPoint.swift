@@ -13,7 +13,7 @@ extension ComfyTextView {
         var charWidth: CGFloat = 8.0 // Default fallback width
         
         // 1. Calculate the width of the character under the cursor
-        if let layoutManager = layoutManager, let textContainer = textContainer, !vimEngine.fsmEngine.isOnNewLine {
+        if let layoutManager = layoutManager, let textContainer = textContainer, !vimEngine.isOnNewLine {
             
             /// Get location of the index of the character
             let charIndex = self.selectedRange().location
