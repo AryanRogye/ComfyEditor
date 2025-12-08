@@ -85,7 +85,10 @@ class VimEngine: ObservableObject {
             if state == .normal {
                 handleNextWordLeading()
             }
-            
+        case Self.move_word_next_trailing:
+            if state == .normal {
+                handleNextWordTrailing()
+            }
         case Self.move_word_back:
             if state == .normal {
                 handleLastWordLeading()

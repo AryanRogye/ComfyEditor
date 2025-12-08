@@ -12,6 +12,9 @@ extension VimEngine {
     func handleNextWordLeading() {
         fsmEngine.handleNextWordLeading()
     }
+    func handleNextWordTrailing() {
+        fsmEngine.handleNextWordTrailing()
+    }
     func moveLeft() {
         fsmEngine.nsTextViewBuffer.textView?.moveLeft(count: 1)
     }

@@ -27,6 +27,19 @@ extension FSMEngine {
             }
         }
         
+        func nextWordTrailing() {
+            guard let textView = buffer.getTextView() else { return }
+            var currentPos : Position = buffer.cursorPosition()
+            let line       : String   = buffer.line(at: currentPos.line)
+            
+            let classified = ClassifierChar.line(line)
+            if let dist = FSMEngine.calcNextWordTrailingDistance(states: classified, idx: currentPos.column), dist != 0 {
+                textView.moveRight(count: dist)
+            } else {
+                textView.moveRight(count: 1)
+            }
+        }
+        
         func nextWordLeading() {
             guard let textView = buffer.getTextView() else { return }
             var currentPos : Position = buffer.cursorPosition()

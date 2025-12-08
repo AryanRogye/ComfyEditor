@@ -22,6 +22,10 @@ public final class FSMEngine {
         motionEngine?.lastWordLeading()
     }
     
+    public func handleNextWordTrailing() {
+        motionEngine?.nextWordTrailing()
+    }
+    
     public func handleNextWordLeading() {
         motionEngine?.nextWordLeading()
     }

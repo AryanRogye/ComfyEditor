@@ -41,6 +41,10 @@ extension VimEngine {
         modifier: [],
         keys: [.w]
     )
+    static let move_word_next_trailing = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.e]
+    )
     static let move_word_back = LocalShortcuts.Shortcut(
         modifier: [],
         keys: [.b]
