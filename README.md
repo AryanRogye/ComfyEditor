@@ -57,7 +57,9 @@ A local package for in-app key handling.
   ```
 
 ### TextEditor
-My Implementation of the texteditor
+You can clone this repo and copy the `TextEditor` package directly into your app.
+
+#### Usage
 - ```swift
     ComfyTextEditor(
         text: $text,
