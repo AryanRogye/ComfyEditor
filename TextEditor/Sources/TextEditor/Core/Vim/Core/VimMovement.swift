@@ -6,42 +6,66 @@
 //
 
 extension VimEngine {
-    func handleLastWordLeading() {
-        let pos = motionEngine.lastWordLeading()
+    internal func handleLastWordLeading() {
+        let visualAnchorPos = nsTextViewBuffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos = motionEngine.lastWordLeading(visualAnchorPos)
         nsTextViewBuffer.moveTo(position: pos)
     }
-    func handleNextWordLeading() {
-        let pos = motionEngine.nextWordLeading()
+    internal func handleNextWordLeading() {
+        let visualAnchorPos = nsTextViewBuffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos = motionEngine.nextWordLeading(visualAnchorPos)
         nsTextViewBuffer.moveTo(position: pos)
     }
-    func handleNextWordTrailing() {
-        let pos = motionEngine.nextWordTrailing()
+    internal func handleNextWordTrailing() {
+        let visualAnchorPos = nsTextViewBuffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos = motionEngine.nextWordTrailing(visualAnchorPos)
         nsTextViewBuffer.moveTo(position: pos)
     }
-    func moveLeft() {
+    internal func moveLeft() {
         nsTextViewBuffer.textView?.moveLeft(count: 1)
     }
-    func moveRight() {
+    internal func moveRight() {
         nsTextViewBuffer.textView?.moveRight(count: 1)
     }
-    func moveUp() {
+    internal func moveUp() {
         guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveUp(textView)
     }
-    func moveDown() {
+    internal func moveDown() {
         guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveDown(textView)
     }
-    func moveToEndOfLine() {
+    internal func moveToEndOfLine() {
         guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveToRightEndOfLine(self)
     }
-    func moveToBottomOfFile() {
+    internal func moveToBottomOfFile() {
         guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveToEndOfDocument(textView)
     }
-    func moveToTopOfFile() {
+    internal func moveToTopOfFile() {
         guard let textView = nsTextViewBuffer.textView else { return }
         textView.moveToBeginningOfDocument(textView)
+    }
+    
+    /// Represents Vim-style `w` behavior across lines.
+    ///
+    /// Example:
+    ///
+    ///     something here testing o
+    ///                         ^ cursor (*HERE*)
+    ///     testing something out here too
+    ///
+    /// Pressing `w` moves the cursor to:
+    ///
+    ///     something here testing o
+    ///     testing something out here too
+    ///     ^ cursor (*HERE*)
+    /// Because next word is newline, on newline, we call our function
+    /// to move down and to the start of the line
+    internal func moveDownAndStartOfLine() {
+        guard let textView = nsTextViewBuffer.textView else { return }
+        textView.moveDown(textView)
+        textView.moveToBeginningOfLine(textView)
     }
 }

@@ -24,7 +24,7 @@ class VimEngine: ObservableObject {
     public let nsTextViewBuffer = NSTextViewBufferAdapter()
     internal lazy var motionEngine = MotionEngine(buffer: nsTextViewBuffer)
 
-    var visualAnchorLocation: Int?
+    @Published var visualAnchorLocation: Int?
     
     public func updatePosition() {
         let p = nsTextViewBuffer.cursorPosition()
@@ -34,34 +34,8 @@ class VimEngine: ObservableObject {
         }
     }
 
-    init() {
-    }
+    init() {}
     
-    /// Calculates the actual position of the "moving" cursor (The Head).
-    /// In NSTextView, `selectedRange.location` is always the start (left side).
-    /// We need to know if we are selecting forwards or backwards to find the real head.
-    var currentVisualHead: Int {
-        guard let textView = nsTextViewBuffer.textView else { return 0 }
-        
-        let range = textView.selectedRange
-        let currentLocation = range.location
-        
-        // If not in visual mode, the head is just the location
-        guard state == .visual, let anchor = visualAnchorLocation else {
-            return currentLocation
-        }
-        
-        // If the range starts AT the anchor, we are selecting FORWARDS.
-        // The Head is at the end of the range.
-        if currentLocation == anchor {
-            // -1 because Visual Mode is inclusive (cursor is on the last char)
-            return max(currentLocation, currentLocation + range.length - 1)
-        }
-        
-        // If the range starts BEFORE the anchor, we are selecting BACKWARDS.
-        // The Head is at the location.
-        return currentLocation
-    }
     
     public func handleVimEvent(_ event: NSEvent) -> Bool {
         /// if not set just keep typing
@@ -159,9 +133,7 @@ class VimEngine: ObservableObject {
         
         /// If In Visual Mode
         if state == .visual {
-            /// Get Cursor Position to move right by 1
             if let range = nsTextViewBuffer.getCursorPosition() {
-                print("Updating Cursor Selection for Visual with: \(range.location)")
                 updateCursorAndSelection(to: range.location)
             }
         }
@@ -175,38 +147,16 @@ class VimEngine: ObservableObject {
         return state == .insert
     }
     
-    /// Represents Vim-style `w` behavior across lines.
-    ///
-    /// Example:
-    ///
-    ///     something here testing o
-    ///                         ^ cursor (*HERE*)
-    ///     testing something out here too
-    ///
-    /// Pressing `w` moves the cursor to:
-    ///
-    ///     something here testing o
-    ///     testing something out here too
-    ///     ^ cursor (*HERE*)
-    /// Because next word is newline, on newline, we call our function
-    /// to move down and to the start of the line
-    private func moveDownAndStartOfLine() {
-        guard let textView = nsTextViewBuffer.textView else { return }
-        textView.moveDown(textView)
-        textView.moveToBeginningOfLine(textView)
-    }
-    
     private func refreshFSM() {
         guard let textView = nsTextViewBuffer.textView else { return }
         EditorCommandCenter.shared.textViewDelegate.refresh(textView)
     }
+    
     private func enterVisualMode() {
-        guard let textView = nsTextViewBuffer.textView else { return }
-        visualAnchorLocation = textView.selectedRange.location
+        visualAnchorLocation = nsTextViewBuffer.cursorOffset()
         state = .visual
     }
-    
-    func exitVisualMode() {
+    private func exitVisualMode() {
         guard let textView = nsTextViewBuffer.textView else { return }
         visualAnchorLocation = nil
         let cursor = textView.selectedRange.location

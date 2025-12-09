@@ -7,6 +7,8 @@
 import AppKit
 
 public protocol BufferView {
+    func currentVisualHead(anchor: Int?) -> Position?
+    func cursorOffset() -> Int
     func moveTo(position: Position)
     func getCursorPosition() -> NSRange?
     func cursorPosition() -> Position

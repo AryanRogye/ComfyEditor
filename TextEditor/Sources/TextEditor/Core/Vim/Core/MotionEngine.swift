@@ -11,8 +11,8 @@ final class MotionEngine {
     var buffer: BufferView
     
     /// Function to go to the last word thats leading
-    func lastWordLeading() -> Position {
-        var currentPos : Position = buffer.cursorPosition()
+    func lastWordLeading(_ currentPos: Position? = nil) -> Position {
+        var currentPos : Position = currentPos ?? buffer.cursorPosition()
         
         /// Move up by 1 if at 0 index
         if currentPos.column == 0 {
@@ -41,8 +41,8 @@ final class MotionEngine {
         return currentPos
     }
     
-    func nextWordTrailing() -> Position {
-        var currentPos : Position = buffer.cursorPosition()
+    func nextWordTrailing(_ currentPos: Position? = nil) -> Position {
+        var currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
         
         let classified = ClassifierChar.line(line)
@@ -59,8 +59,8 @@ final class MotionEngine {
         return Position(line: currentPos.line, column: (max(0, newCol)))
     }
     
-    func nextWordLeading() -> Position {
-        var currentPos : Position = buffer.cursorPosition()
+    func nextWordLeading(_ currentPos: Position? = nil) -> Position {
+        var currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
         
         let classified: [ClassifierChar] = ClassifierChar.line(line)

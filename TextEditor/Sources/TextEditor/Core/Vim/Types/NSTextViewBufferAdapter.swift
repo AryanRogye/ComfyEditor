@@ -61,6 +61,68 @@ public final class NSTextViewBufferAdapter: BufferView {
         return textView.selectedRange
     }
     
+    /// Calculates the actual position of the "moving" cursor (The Head).
+    /// In NSTextView, `selectedRange.location` is always the start (left side).
+    /// We need to know if we are selecting forwards or backwards to find the real head.
+    public func currentVisualHead(anchor: Int?) -> Position? {
+        guard let anchor else { return nil }
+        guard let textView = textView else { return nil }
+        
+        let range = textView.selectedRange
+        let currentLocation = range.location
+        
+        // If the range starts AT the anchor, we are selecting FORWARDS.
+        // The Head is at the end of the range.
+        if currentLocation == anchor {
+            // -1 because Visual Mode is inclusive (cursor is on the last char)
+            let pos = max(currentLocation, currentLocation + range.length - 1)
+            return cursorOffsetToPosition(pos)
+        }
+        
+        // If the range starts BEFORE the anchor, we are selecting BACKWARDS.
+        // The Head is at the location.
+        return cursorOffsetToPosition(currentLocation)
+    }
+
+    
+    private func cursorOffsetToPosition(_ offset: Int?) -> Position? {
+        guard let offset else { return nil }
+        guard let textView,
+              let textStorage = textView.textStorage else {
+            return Position(line: 0, column: 0)
+        }
+        
+        let text = textStorage.string as NSString
+        let clampedOffset = min(max(offset, 0), text.length)
+        
+        var line = 0
+        var lineStart = 0
+        
+        text.enumerateSubstrings(
+            in: NSRange(location: 0, length: text.length),
+            options: .byLines
+        ) { _, range, _, stop in
+            
+            let lineEnd = NSMaxRange(range)
+            
+            if clampedOffset >= range.location && clampedOffset <= lineEnd {
+                lineStart = range.location
+                stop.pointee = true
+                return
+            }
+            
+            line += 1
+        }
+        
+        let column = clampedOffset - lineStart
+        return Position(line: line, column: column)
+    }
+    
+    public func cursorOffset() -> Int {
+        guard let textView else { return 0 }
+        return textView.selectedRanges.first?.rangeValue.location ?? 0
+    }
+    
     public func cursorPosition() -> Position {
         /// if no textView return 0,0
         guard let textView else {
