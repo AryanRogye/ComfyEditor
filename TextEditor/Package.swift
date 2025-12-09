@@ -24,6 +24,12 @@ let package = Package(
                 .product(name: "LocalShortcuts", package: "LocalShortcuts")
             ]
         ),
+        .testTarget(
+            name: "TextEditorTests",
+            dependencies: [
+                "TextEditor"
+            ]
+        ),
     ],
     swiftLanguageModes: [
         .v6

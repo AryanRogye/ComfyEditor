@@ -83,4 +83,51 @@ final class MotionEngine {
         }
         return Position(line: currentPos.line, column: (max(0, newCol)))
     }
+    
+    public func up(_ currentPos: Position? = nil) -> Position {
+        var currentPos : Position = currentPos ?? buffer.cursorPosition()
+        let column = currentPos.column
+        if currentPos.line == 0 {
+            /// we cant move here so we just return currentPos
+            return currentPos
+        }
+        let lineNumber = currentPos.line - 1
+        if lineNumber < 0 || lineNumber > buffer.lineCount() {
+            return currentPos
+        }
+        currentPos.line -= 1
+        let line = buffer.line(at: lineNumber)
+        
+        
+        if column < line.count {
+            /// this means theres a value here we can go up by 1
+            return currentPos
+        }
+        
+        /// we cant find the position so we change the column to be last index of line cuz we are > than line.count
+        currentPos.column = line.count - 1
+        return currentPos
+    }
+    
+    public func down(_ currentPos: Position? = nil) -> Position {
+        var currentPos : Position = currentPos ?? buffer.cursorPosition()
+        let column = currentPos.column
+        
+        if currentPos.line == buffer.lineCount() - 1 {
+            return currentPos
+        }
+        let lineNumber = currentPos.line + 1
+        if lineNumber < 0 || lineNumber > buffer.lineCount() {
+            return currentPos
+        }
+        currentPos.line += 1
+        let line = buffer.line(at: lineNumber)
+        
+        if column < line.count {
+            return currentPos
+        }
+        
+        currentPos.column = line.count - 1
+        return currentPos
+    }
 }
