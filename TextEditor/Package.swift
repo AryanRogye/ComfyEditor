@@ -24,5 +24,8 @@ let package = Package(
                 .product(name: "LocalShortcuts", package: "LocalShortcuts")
             ]
         ),
-    ]
+    ],
+    swiftLanguageModes: [
+        .v6
+    ],
 )

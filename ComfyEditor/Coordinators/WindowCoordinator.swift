@@ -43,7 +43,9 @@ class WindowCoordinator {
     deinit {
         // Clean up all windows when the coordinator is deinitialized
         for window in windows.values {
-            window.close()
+            DispatchQueue.main.async {
+                window.close()
+            }
         }
         windows.removeAll()
     }
