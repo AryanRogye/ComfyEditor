@@ -22,12 +22,19 @@ extension VimEngine {
         let pos = motionEngine.nextWordTrailing(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
+    
     internal func moveLeft() {
-        buffer.moveLeft()
+        let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos: Position = motionEngine.leftOne(visualAnchorPos)
+        buffer.moveTo(position: pos)
     }
+    
     internal func moveRight() {
-        buffer.moveRight()
+        let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos: Position = motionEngine.rightOne(visualAnchorPos)
+        buffer.moveTo(position: pos)
     }
+    
     internal func moveUp() {
         let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
         let pos: Position = motionEngine.up(visualAnchorPos)
@@ -39,6 +46,7 @@ extension VimEngine {
         let pos: Position = motionEngine.down(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
+    
     internal func moveToEndOfLine() {
         buffer.moveToEndOfLine()
     }

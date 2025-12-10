@@ -14,8 +14,8 @@ extension ComfyLogger.Name {
 
 @MainActor
 final class MotionEngine {
-    
     typealias Log = ComfyLogger.Name
+    
     public init(buffer: BufferView) {
         self.buffer = buffer
         Log.MotionEngine.enable()
@@ -23,6 +23,7 @@ final class MotionEngine {
     var buffer: BufferView
     var stickyColumn: Int?
     
+    // MARK: - Last Word Leading
     /// Function to go to the last word thats leading
     func lastWordLeading(_ currentPos: Position? = nil) -> Position {
         var currentPos : Position = currentPos ?? buffer.cursorPosition()
@@ -54,6 +55,7 @@ final class MotionEngine {
         return currentPos
     }
     
+    // MARK: - Next Word Trailing
     func nextWordTrailing(_ currentPos: Position? = nil) -> Position {
         let currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
@@ -72,6 +74,7 @@ final class MotionEngine {
         return Position(line: currentPos.line, column: (max(0, newCol)))
     }
     
+    // MARK: - Next Word Leading
     func nextWordLeading(_ currentPos: Position? = nil) -> Position {
         let currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
@@ -97,6 +100,7 @@ final class MotionEngine {
         return Position(line: currentPos.line, column: (max(0, newCol)))
     }
     
+    // MARK: - Up
     public func up(_ currentPos: Position? = nil) -> Position {
         let current = currentPos ?? buffer.cursorPosition()
         
@@ -108,6 +112,8 @@ final class MotionEngine {
             to: current.line - 1
         )
     }
+    
+    // MARK: - Down
     public func down(_ currentPos: Position? = nil) -> Position {
         let current = currentPos ?? buffer.cursorPosition()
         
@@ -122,7 +128,27 @@ final class MotionEngine {
         Log.MotionEngine.end()
         return pos
     }
+    
+    // MARK: - Right
+    public func rightOne(_ currentPos: Position? = nil) -> Position {
+        let current = currentPos ?? buffer.cursorPosition()
+        
+        let line = buffer.line(at: current.line)
+        let maxCol = line.count - 1
+        guard current.column < maxCol else { return current }
+        return Position(line: current.line, column: current.column + 1)
+    }
+    // MARK: - Left
+    public func leftOne(_ currentPos: Position? = nil) -> Position {
+        let current = currentPos ?? buffer.cursorPosition()
+        
+        let line = buffer.line(at: current.line)
+        let maxCol = line.count - 1
+        guard current.column > 0 else { return current }
+        return Position(line: current.line, column: current.column - 1)
+    }
 
+    // MARK: - resolveVerticalMove
     /// Resolves vertical cursor movement (used by both `up` and `down`)
     ///
     /// Mental model:

@@ -20,8 +20,6 @@ public protocol BufferView {
     func lineCount() -> Int
     func line(at index: Int) -> String
     func char(at pos: Position) -> Character?
-    func moveLeft()
-    func moveRight()
     func moveToEndOfLine()
     func moveToBottomOfFile()
 
