@@ -80,6 +80,7 @@ final class ComfyTextView: NSTextView {
             height: CoreFoundation.CGFloat.greatestFiniteMagnitude
         )
         
+        font = NSFont(name: "SF Mono", size: 10)
         isEditable = true
         isSelectable = true
         isRichText = true

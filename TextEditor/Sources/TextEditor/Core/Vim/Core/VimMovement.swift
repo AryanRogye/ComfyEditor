@@ -5,6 +5,7 @@
 //  Created by Aryan Rogye on 12/7/25.
 //
 
+@MainActor
 extension VimEngine {
     internal func handleLastWordLeading() {
         let visualAnchorPos = buffer.currentVisualHead(anchor: visualAnchorLocation)

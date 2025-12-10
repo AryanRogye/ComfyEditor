@@ -81,7 +81,6 @@ class VimEngine: ObservableObject {
             }
         case Self.move_up_one:
             if state != .insert {
-                print("Moving UP")
                 moveUp()
             }
         case Self.move_down_one:

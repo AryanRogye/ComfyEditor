@@ -14,6 +14,14 @@ struct ComfyEditorScreen: View {
     @Bindable var settingsCoordinator : SettingsCoordinator
     
     @State var text: String = """
+        
+        /// TEST MOVE UP HERE
+        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
+        func textViewDidChangeSelection(_ notification: Notification)
+        //
+        func textViewDidChangeSelection(_ notification: Notification)
+        
+        
         //
         //  TextViewCursorDelegate.swift
         //  TextEditor

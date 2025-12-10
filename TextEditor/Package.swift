@@ -15,13 +15,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "LocalShortcuts", path: "../LocalShortcuts")
+        .package(name: "LocalShortcuts", path: "../LocalShortcuts"),
+        .package(name: "ComfyLogger", path: "../ComfyLogger")
     ],
     targets: [
         .target(
             name: "TextEditor",
             dependencies: [
-                .product(name: "LocalShortcuts", package: "LocalShortcuts")
+                .product(name: "LocalShortcuts", package: "LocalShortcuts"),
+                .product(name: "ComfyLogger", package: "ComfyLogger")
             ]
         ),
         .testTarget(

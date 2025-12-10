@@ -5,10 +5,23 @@
 //  Created by Aryan Rogye on 12/7/25.
 //
 
+import Foundation
+import ComfyLogger
+
+extension ComfyLogger.Name {
+    static let MotionEngine = ComfyLogger.Name("MotionEngine")
+}
+
 @MainActor
 final class MotionEngine {
-    public init(buffer: BufferView) { self.buffer = buffer }
+    
+    typealias Log = ComfyLogger.Name
+    public init(buffer: BufferView) {
+        self.buffer = buffer
+        Log.MotionEngine.enable()
+    }
     var buffer: BufferView
+    var stickyColumn: Int?
     
     /// Function to go to the last word thats leading
     func lastWordLeading(_ currentPos: Position? = nil) -> Position {
@@ -42,12 +55,12 @@ final class MotionEngine {
     }
     
     func nextWordTrailing(_ currentPos: Position? = nil) -> Position {
-        var currentPos : Position = currentPos ?? buffer.cursorPosition()
+        let currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
         
         let classified = ClassifierChar.line(line)
         
-        var dist = TextEngine.calcNextWordTrailingDistance(states: classified, idx: currentPos.column)
+        let dist = TextEngine.calcNextWordTrailingDistance(states: classified, idx: currentPos.column)
         var count = 1;
         if let dist, dist != 0 {
             count = dist
@@ -60,12 +73,12 @@ final class MotionEngine {
     }
     
     func nextWordLeading(_ currentPos: Position? = nil) -> Position {
-        var currentPos : Position = currentPos ?? buffer.cursorPosition()
+        let currentPos : Position = currentPos ?? buffer.cursorPosition()
         let line       : String   = buffer.line(at: currentPos.line)
         
         let classified: [ClassifierChar] = ClassifierChar.line(line)
         
-        var dist = TextEngine.calcNextWordLeadingDistance(states: classified, idx: currentPos.column)
+        let dist = TextEngine.calcNextWordLeadingDistance(states: classified, idx: currentPos.column)
         var count = 1;
         if let dist, dist != 0 {
             count = dist
@@ -86,26 +99,60 @@ final class MotionEngine {
     
     public func up(_ currentPos: Position? = nil) -> Position {
         var currentPos : Position = currentPos ?? buffer.cursorPosition()
-        let column = currentPos.column
+        
+        Log.MotionEngine.start()
+        Log.MotionEngine.insert("Before Pos: \(currentPos)")
+
+        /// we cant move here so we just return currentPos
         if currentPos.line == 0 {
-            /// we cant move here so we just return currentPos
-            return currentPos
-        }
-        let lineNumber = currentPos.line - 1
-        if lineNumber < 0 || lineNumber > buffer.lineCount() {
-            return currentPos
-        }
-        currentPos.line -= 1
-        let line = buffer.line(at: lineNumber)
-        
-        
-        if column < line.count {
-            /// this means theres a value here we can go up by 1
             return currentPos
         }
         
-        /// we cant find the position so we change the column to be last index of line cuz we are > than line.count
-        currentPos.column = line.count - 1
+        let targetLine = currentPos.line - 1
+        
+        if targetLine < 0 || targetLine > buffer.lineCount() {
+            return currentPos
+        }
+        
+        let column = currentPos.column
+        
+        /// Move back a line
+        currentPos.line = targetLine
+        /// Get line text
+        var line = buffer.line(at: targetLine)
+        
+        /// Max Column of the line
+        let maxCol = line.count - 1
+        
+        
+        if column > maxCol, stickyColumn == nil {
+            Log.MotionEngine.insert("Setting Sticky Column \(column)")
+            stickyColumn = column
+            currentPos.column = min(currentPos.column, maxCol)
+        } else {
+            if let stickyColumn {
+                /// this means theres a value here we can go up by 1
+                currentPos.column = min(stickyColumn, maxCol)
+                Log.MotionEngine.insert("STICKY: \(stickyColumn)")
+                Log.MotionEngine.insert("MAX-COL: \(maxCol)")
+                Log.MotionEngine.insert("Applying Sticky Column or maxCol: \(min(stickyColumn, maxCol))")
+                self.stickyColumn = nil
+            } else {
+                Log.MotionEngine.insert("Skipping Sticky Column")
+                currentPos.column = min(currentPos.column, maxCol)
+            }
+        }
+        
+        line = buffer.line(at: currentPos.line)
+        if let c = line.char(at: currentPos.column), c == "\n" && currentPos.column == line.count - 1 {
+            Log.MotionEngine.insert("Detected a newline in the column, moving left")
+            /// Move Left
+            currentPos.column -= 1
+        } else {
+            Log.MotionEngine.insert("Chose Not to move left")
+        }
+        Log.MotionEngine.insert("After Pos: \(currentPos)")
+        Log.MotionEngine.end()
         return currentPos
     }
     

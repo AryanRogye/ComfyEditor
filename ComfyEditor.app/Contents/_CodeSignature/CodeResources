@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Assets.car</key>
 		<data>
-		DbaUhsfIwDuRSFroaBLGfSMYmsA=
+		VzH2XI/NgVwLpSi+XWyRU9aGRjg=
 		</data>
 		<key>Resources/ComfyEditor.icns</key>
 		<data>
@@ -31,7 +31,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			6677zHQD/myJ1O790H3DLJysl+I=
+			BmSbX46ZUQLXgOxLD/Z25RngBw8=
 			</data>
 			<key>requirement</key>
 			<string>identifier "ComfyEditor.debug" and anchor apple generic and certificate leaf[subject.CN] = "Apple Development: aryan rogye (UJX5C7S3DL)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
@@ -49,7 +49,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wjKGzTvrJdz6xY6pOmsFnQdEseZ27Lku4Fadm6/1qkQ=
+			4gRdCsZOU/7i25UssqL7UppUjGxgHcSqjQCkoFvr2aU=
 			</data>
 		</dict>
 		<key>Resources/ComfyEditor.icns</key>
