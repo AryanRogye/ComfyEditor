@@ -286,19 +286,6 @@ public final class NSTextViewBufferAdapter: BufferView {
         }
     }
 
-    public func moveLeft() {
-        guard let textView else { return }
-        textView.moveLeft(count: 1)
-    }
-    public func moveRight() {
-        guard let textView else { return }
-        textView.moveRight(count: 1)
-    }
-
-    public func moveToEndOfLine() {
-        guard let textView = textView else { return }
-        textView.moveToRightEndOfLine(self)
-    }
     public func moveToBottomOfFile() {
         guard let textView = textView else { return }
         textView.moveToEndOfDocument(textView)
@@ -311,6 +298,5 @@ public final class NSTextViewBufferAdapter: BufferView {
         guard let textView = textView else { return }
         textView.moveDown(textView)
         textView.moveToBeginningOfLine(textView)
-
     }
 }

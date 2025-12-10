@@ -101,11 +101,19 @@ class VimEngine: ObservableObject {
                 handleLastWordLeading()
             }
 
-        case Self.move_end_line:
+        case Self.move_end_line_insert:
             if state != .insert {
                 didJustMoveToEndOfLine = true
                 moveToEndOfLine()
                 state = .insert
+            }
+        case Self.move_end_of_line:
+            if state != .insert {
+                moveToEndOfLine()
+            }
+        case Self.move_start_of_line:
+            if state != .insert {
+                moveToStartOfLine()
             }
         case Self.bottom_of_file:
             if state != .insert {

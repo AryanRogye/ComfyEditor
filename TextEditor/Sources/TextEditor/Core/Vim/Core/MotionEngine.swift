@@ -100,6 +100,22 @@ final class MotionEngine {
         return Position(line: currentPos.line, column: (max(0, newCol)))
     }
     
+    // MARK: - Move End of Line
+    public func moveToEndOfLine(_ currentPos: Position? = nil) -> Position {
+        let current = currentPos ?? buffer.cursorPosition()
+        let line    : String     = buffer.line(at: current.line)
+        
+        if line == "" { return current }
+        let maxCol = line.count - 1
+        return Position(line: current.line, column: maxCol)
+    }
+    
+    // MARK: - Move to Start of Line
+    public func moveToStartOfLine(_ currentPos: Position? = nil) -> Position {
+        let current = currentPos ?? buffer.cursorPosition()
+        return Position(line: current.line, column: 0)
+    }
+    
     // MARK: - Up
     public func up(_ currentPos: Position? = nil) -> Position {
         let current = currentPos ?? buffer.cursorPosition()
@@ -143,7 +159,6 @@ final class MotionEngine {
         let current = currentPos ?? buffer.cursorPosition()
         
         let line = buffer.line(at: current.line)
-        let maxCol = line.count - 1
         guard current.column > 0 else { return current }
         return Position(line: current.line, column: current.column - 1)
     }

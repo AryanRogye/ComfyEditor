@@ -33,6 +33,9 @@ extension LocalShortcuts {
         case eight = "8"
         case nine  = "9"
         
+        case dollar = "$"
+        case underscore = "_"
+        
         // Common specials
         case space
         case escape
@@ -114,7 +117,9 @@ extension LocalShortcuts.Key {
                 
             case "=": key = .equal
             case "-": key = .minus
+            case "_": key = .underscore
             case "+": key = .plus
+            case "$": key = .dollar
                 
             case " ": key = .space
             case "\r": key = .returnOrEnter

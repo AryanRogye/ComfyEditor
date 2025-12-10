@@ -22,41 +22,43 @@ extension VimEngine {
         let pos = motionEngine.nextWordTrailing(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
-    
     internal func moveLeft() {
         let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
         let pos: Position = motionEngine.leftOne(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
-    
     internal func moveRight() {
         let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
         let pos: Position = motionEngine.rightOne(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
-    
     internal func moveUp() {
         let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
         let pos: Position = motionEngine.up(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
-
     internal func moveDown() {
         let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
         let pos: Position = motionEngine.down(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
-    
     internal func moveToEndOfLine() {
-        buffer.moveToEndOfLine()
+        let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos: Position = motionEngine.moveToEndOfLine(visualAnchorPos)
+        buffer.moveTo(position: pos)
     }
+    internal func moveToStartOfLine() {
+        let visualAnchorPos: Position? = buffer.currentVisualHead(anchor: visualAnchorLocation)
+        let pos: Position = motionEngine.moveToStartOfLine(visualAnchorPos)
+        buffer.moveTo(position: pos)
+    }
+    
     internal func moveToBottomOfFile() {
         buffer.moveToBottomOfFile()
     }
     internal func moveToTopOfFile() {
         buffer.moveToTopOfFile()
     }
-
     internal func moveDownAndStartOfLine() {
         buffer.moveDownAndStartOfLine()
     }

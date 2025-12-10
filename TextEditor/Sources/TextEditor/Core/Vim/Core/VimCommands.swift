@@ -49,9 +49,17 @@ extension VimEngine {
         modifier: [],
         keys: [.b]
     )
-    static let move_end_line = LocalShortcuts.Shortcut(
+    static let move_end_line_insert = LocalShortcuts.Shortcut(
         modifier: [.shift],
         keys: [.A]
+    )
+    static let move_end_of_line = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.dollar]
+    )
+    static let move_start_of_line = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.underscore]
     )
     static let bottom_of_file = LocalShortcuts.Shortcut(
         modifier: [.shift],
