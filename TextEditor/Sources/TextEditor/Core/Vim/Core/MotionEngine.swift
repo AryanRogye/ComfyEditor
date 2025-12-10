@@ -106,7 +106,7 @@ final class MotionEngine {
         let line    : String     = buffer.line(at: current.line)
         
         if line == "" { return current }
-        let maxCol = line.count - 1
+        let maxCol = line.count
         return Position(line: current.line, column: maxCol)
     }
     

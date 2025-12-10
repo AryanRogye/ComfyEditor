@@ -13,7 +13,10 @@ extension TextEditorTests {
     func moveToEndOfLineUpdatesSelectionInVisualMode() {
         let line = "TESTING"
         let buffer = FakeBuffer(
-            lines: [line],
+            lines: [
+                line,
+                line
+            ],
             cursor: Position(line: 0, column: 1)
         )
         #expect(buffer.cursorPosition() == Position(line: 0, column: 1))
@@ -28,18 +31,24 @@ extension TextEditorTests {
         
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 0)
-        #expect(newCursor.column == line.count - 1)
+        #expect(newCursor.column == line.count)
         
         let selection = buffer.getCursorPosition()
         #expect(selection?.location == 1)
-        #expect(selection?.length == line.count - 1)
+        #expect(selection?.length == line.count)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
     
     @Test
     func moveToEndOfLine_basic() {
         let line = "TESTING"
         let buffer = FakeBuffer(
-            lines: [line],
+            lines: [
+                line,
+                line
+                   ],
             cursor: Position(line: 0, column: 0)
         )
         #expect(buffer.cursorPosition() == Position(line: 0, column: 0))
@@ -51,14 +60,20 @@ extension TextEditorTests {
         
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 0)
-        #expect(newCursor.column == line.count - 1)
+        #expect(newCursor.column == line.count)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
     
     @Test
     func moveToEndOfLine_fromMiddle() {
         let line = "TESTING"
         let buffer = FakeBuffer(
-            lines: [line],
+            lines: [
+                line,
+                line
+            ],
             cursor: Position(line: 0, column: 2) // 'S'
         )
         #expect(buffer.cursorPosition() == Position(line: 0, column: 2))
@@ -70,7 +85,10 @@ extension TextEditorTests {
         
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 0)
-        #expect(newCursor.column == line.count - 1)
+        #expect(newCursor.column == line.count)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
     
     @Test
@@ -78,7 +96,11 @@ extension TextEditorTests {
         let line1 = "FIRST"
         let line2 = "SECOND LINE"
         let buffer = FakeBuffer(
-            lines: [line1, line2],
+            lines: [
+                line1,
+                line2,
+                line1
+            ],
             cursor: Position(line: 1, column: 0) // start of second line
         )
         #expect(buffer.cursorPosition() == Position(line: 1, column: 0))
@@ -90,13 +112,19 @@ extension TextEditorTests {
         
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 1)
-        #expect(newCursor.column == line2.count - 1)
+        #expect(newCursor.column == line2.count)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
     
     @Test
     func moveToEndOfLine_onEmptyLine_staysAtZero() {
         let buffer = FakeBuffer(
-            lines: [""],
+            lines: [
+                "",
+                ""
+            ],
             cursor: Position(line: 0, column: 0)
         )
         #expect(buffer.cursorPosition() == Position(line: 0, column: 0))
@@ -109,13 +137,19 @@ extension TextEditorTests {
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 0)
         #expect(newCursor.column == 0)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
     
     @Test
     func moveToEndOfLine_whenAlreadyAtEnd_noChange() {
         let line = "TESTING"
         let buffer = FakeBuffer(
-            lines: [line],
+            lines: [
+                line,
+                line
+            ],
             cursor: Position(line: 0, column: line.count - 1)
         )
         #expect(buffer.cursorPosition() == Position(line: 0, column: line.count - 1))
@@ -127,6 +161,9 @@ extension TextEditorTests {
         
         let newCursor = buffer.cursorPosition()
         #expect(newCursor.line == 0)
-        #expect(newCursor.column == line.count - 1)
+        #expect(newCursor.column == line.count)
+        
+        let endChar = buffer.line(at: newCursor.line).char(at: newCursor.column)
+        #expect(endChar == "\n")
     }
 }
