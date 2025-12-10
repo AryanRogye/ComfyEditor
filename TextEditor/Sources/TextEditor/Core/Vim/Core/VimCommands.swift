@@ -83,4 +83,8 @@ extension VimEngine {
             keys: [.g]
         ),
     ]
+    static let delete = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.x]
+    )
 }

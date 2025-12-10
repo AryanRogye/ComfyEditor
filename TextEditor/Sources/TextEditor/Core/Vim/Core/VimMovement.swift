@@ -52,6 +52,9 @@ extension VimEngine {
         let pos: Position = motionEngine.moveToStartOfLine(visualAnchorPos)
         buffer.moveTo(position: pos)
     }
+    internal func deleteUnderCursor() {
+        buffer.deleteUnderCursor()
+    }
     
     internal func moveToBottomOfFile() {
         buffer.moveToBottomOfFile()

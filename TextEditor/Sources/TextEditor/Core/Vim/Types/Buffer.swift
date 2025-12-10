@@ -8,6 +8,8 @@ import AppKit
 
 @MainActor
 public protocol BufferView {
+    func getString() -> NSString?
+    func deleteUnderCursor()
     func setTextView(_ textView: NSTextView)
     func updateInsertionPoint()
     func exitVisualMode()

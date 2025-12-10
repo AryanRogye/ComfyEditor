@@ -54,7 +54,8 @@ class VimEngine: ObservableObject {
         var didJustMoveToEndOfLine: Bool = false
 
         switch shortcut {
-
+            
+            // MARK: - Mode's
             /// User Requested Normal Mode
         case Self.normal_mode:
             if state == .visual { exitVisualMode() }
@@ -67,13 +68,21 @@ class VimEngine: ObservableObject {
             state = .insert
             didJustInsert = true
 
+            /// User Requested Visual Mode
         case Self.visual_mode:
             enterVisualMode()
+            /// User Requested Visual Line Mode
         case Self.visual_line_mode:
             enterVisualLineMode()
-
-
-        /// MOVEMENT
+            
+            // MARK: - Deletion
+        case Self.delete:
+            /// Normal Delete is just delete char underneath
+            if state != .insert {
+                deleteUnderCursor()
+                state = .normal
+            }
+            // MARK: - MOVEMENT
         case Self.move_left_one:
             if state != .insert {
                 moveLeft()

@@ -2,7 +2,6 @@ import AppKit
 @testable import TextEditor
 
 final class FakeBuffer: BufferView {
-    
     // MARK: - Stored state
     
     var lines: [String]
@@ -269,6 +268,63 @@ final class FakeBuffer: BufferView {
         return Position(line: 0, column: 0)
     }
     
+    
+    func getString() -> NSString? {
+        // Join lines with '\n' to match how offset/position logic is written
+        let full = lines.joined(separator: "\n")
+        return full as NSString
+    }
+    
+    func deleteUnderCursor() {
+        guard let string = getString() else { return }
+        
+        let totalLength = string.length
+        var currentRange = selection
+        
+        // Clamp currentRange.location into [0, totalLength]
+        if currentRange.location < 0 {
+            currentRange.location = 0
+        } else if currentRange.location > totalLength {
+            currentRange.location = totalLength
+        }
+        
+        // 1. If we have a selection (Visual Mode), delete the selection.
+        if currentRange.length > 0 {
+            let maxEnd = min(currentRange.location + currentRange.length, totalLength)
+            let safeRange = NSRange(location: currentRange.location,
+                                    length: maxEnd - currentRange.location)
+            
+            let newString = string.replacingCharacters(in: safeRange, with: "") as NSString
+            applyString(newString, newCursorLocation: safeRange.location)
+            return
+        }
+        
+        // 2. If we are at the very end of the file, do nothing.
+        if currentRange.location >= totalLength {
+            return
+        }
+        
+        // 3. Compute the composed character range to delete
+        let rangeToDelete = string.rangeOfComposedCharacterSequence(at: currentRange.location)
+        
+        let newString = string.replacingCharacters(in: rangeToDelete, with: "") as NSString
+        applyString(newString, newCursorLocation: rangeToDelete.location)
+    }
+    
+    // MARK: - Private helper
+    
+    private func applyString(_ newString: NSString, newCursorLocation: Int) {
+        // Re-split into lines to keep FakeBuffer’s model in sync
+        let asSwift = newString as String
+        self.lines = asSwift.components(separatedBy: "\n")
+        
+        // Clamp cursor into new bounds
+        let clampedLocation = max(0, min(newCursorLocation, newString.length))
+        self.selection = NSRange(location: clampedLocation, length: 0)
+        // visualAnchorOffset is left as-is; with length = 0 it won't affect cursorPosition()
+    }
+
+
     private static func totalLength(of lines: [String]) -> Int {
         guard !lines.isEmpty else { return 0 }
         // chars + (newlines between lines)

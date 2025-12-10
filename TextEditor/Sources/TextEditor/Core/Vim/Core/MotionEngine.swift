@@ -156,7 +156,6 @@ final class MotionEngine {
     public func leftOne(_ currentPos: Position? = nil) -> Position {
         let current = currentPos ?? buffer.cursorPosition()
         
-        let line = buffer.line(at: current.line)
         guard current.column > 0 else { return current }
         return Position(line: current.line, column: current.column - 1)
     }

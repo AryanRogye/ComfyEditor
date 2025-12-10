@@ -88,7 +88,48 @@ public final class NSTextViewBufferAdapter: BufferView {
         // The Head is at the location.
         return cursorOffsetToPosition(currentLocation)
     }
+    
+    public func deleteRange(_ range: NSRange) {
+        guard let textView else { return }
+        textView.insertText("", replacementRange: range)
+    }
+    
+    public func getString() -> NSString? {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return nil }
+        return textStorage.string as NSString
+    }
 
+    public func deleteUnderCursor() {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return }
+        
+        let currentRange = textView.selectedRange
+        let string = textStorage.string as NSString
+        let totalLength = string.length
+        
+        // 1. If we have a selection (Visual Mode), delete the selection.
+        if currentRange.length > 0 {
+            textView.insertText("", replacementRange: currentRange)
+            return
+        }
+        
+        // 2. Bounds Check: If we are at the very end of the file, do nothing.
+        if currentRange.location >= totalLength {
+            return
+        }
+        let current = cursorPosition()
+        let line = line(at: current.line)
+        if line == "\n" { return }
+
+        // 3. Calculate the range to delete.
+        // We use 'rangeOfComposedCharacterSequence' to ensure we don't break
+        // Emojis or special characters that take up more than 1 UTF-16 index.
+        let rangeToDelete = string.rangeOfComposedCharacterSequence(at: currentRange.location)
+        
+        // 4. Perform the deletion via the Input Manager (preserves Undo history).
+        textView.insertText("", replacementRange: rangeToDelete)
+    }
 
     private func cursorOffsetToPosition(_ offset: Int?) -> Position? {
         guard let offset else { return nil }
