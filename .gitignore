@@ -6,3 +6,4 @@ DerivedData/
 *.xccheckout
 *.moved-aside
 *.xcscmblueprint
+*.app
