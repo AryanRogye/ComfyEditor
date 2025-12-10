@@ -9,6 +9,29 @@ import Testing
 
 extension TextEditorTests {
     @Test
+    func movesRightInVisualModeExpandsSelection() {
+        let buffer = FakeBuffer(
+            lines: [
+                "TEST"
+            ],
+            cursor: Position(line: 0, column: 0)
+        )
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visual
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        vimEngine.handleVimEvent(Util.makeKeyEvent("l"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("l"))
+        
+        let newCursorPos = buffer.cursorPosition()
+        #expect(newCursorPos == Position(line: 0, column: 2))
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 3)
+    }
+    
+    @Test
     func movesRight() {
         var cursor = Position(line: 0, column: 0)
         let buffer = FakeBuffer(

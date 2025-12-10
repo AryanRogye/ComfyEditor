@@ -11,6 +11,62 @@ import Testing
 extension TextEditorTests {
     
     @Test
+    func moveDownBetweenNewLinesVisualLine() {
+        let buffer = FakeBuffer(
+            lines: [
+                "TESTING",
+                "",
+                "",
+                "TESTING"
+            ],
+            cursor: Position(line: 0, column: 0),
+            visualAnchorOffset: 0
+        )
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visualLine
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        
+        let newCursorPos = buffer.cursorPosition()
+        #expect(newCursorPos.line == 3)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 17) // Spans all lines including implied newlines
+    }
+    
+    @Test
+    func moveDownBetweenNewLinesVisual() {
+        let buffer = FakeBuffer(
+            lines: [
+                "TESTING",
+                "",
+                "",
+                "TESTING"
+            ],
+            cursor: Position(line: 0, column: 0),
+            visualAnchorOffset: 0
+        )
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visual
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("j"))
+        
+        let newCursorPos = buffer.cursorPosition()
+        #expect(newCursorPos.line == 3)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 11) // Inclusive from anchor to head
+    }
+    
+    @Test
     func movesDownBetweenNewlines() {
         let buffer = FakeBuffer(
             lines: [

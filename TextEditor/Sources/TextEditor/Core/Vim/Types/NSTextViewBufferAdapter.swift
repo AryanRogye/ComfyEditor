@@ -247,6 +247,40 @@ public final class NSTextViewBufferAdapter: BufferView {
         textView.setSelectedRange(range)
     }
 
+    public func updateCursorAndSelectLine(anchor: Int?, to newCursor: Int) {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return }
+        
+        let totalLength = textStorage.length
+        let nsString = textStorage.string as NSString
+        
+        // Safety clamp
+        let safeCursor = min(max(newCursor, 0), totalLength)
+        
+        guard let anchor = anchor else {
+            // No visual anchor – just move cursor
+            textView.setSelectedRange(NSRange(location: safeCursor, length: 0))
+            return
+        }
+        
+        let safeAnchor = min(max(anchor, 0), totalLength)
+        
+        // Get full line ranges (including trailing newline) for anchor + head
+        let anchorLineRange = nsString.lineRange(for: NSRange(location: safeAnchor, length: 0))
+        let headLineRange   = nsString.lineRange(for: NSRange(location: safeCursor, length: 0))
+        
+        // Start at the first line's start
+        let start = min(anchorLineRange.location, headLineRange.location)
+        // End at the end of the last line (exclusive)
+        let end   = max(NSMaxRange(anchorLineRange), NSMaxRange(headLineRange))
+        
+        // Clamp end to totalLength just in case
+        let clampedEnd = min(end, totalLength)
+        let length = max(0, clampedEnd - start)
+        
+        textView.setSelectedRange(NSRange(location: start, length: length))
+    }
+    
     public func updateCursorAndSelection(anchor: Int?, to newCursor: Int) {
         guard let textView = textView,
               let textStorage = textView.textStorage else { return }

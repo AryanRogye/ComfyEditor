@@ -136,12 +136,10 @@ final class MotionEngine {
         /// Can't move past the last line
         guard current.line < buffer.lineCount() - 1 else { return current }
         
-        Log.MotionEngine.start()
         let pos = resolveVerticalMove(
             from: current.column,
             to: current.line + 1
         )
-        Log.MotionEngine.end()
         return pos
     }
     

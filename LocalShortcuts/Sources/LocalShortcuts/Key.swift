@@ -19,7 +19,9 @@ extension LocalShortcuts {
              f, F,
              g, G,
              h, i, j, k, l, m,
-             n, o, p, q, r, s, t, u, v, w, x, y, z
+             n, o, p, q, r, s, t, u,
+             v, V,
+             w, x, y, z
         
         // Numbers
         case zero = "0"
@@ -99,6 +101,7 @@ extension LocalShortcuts.Key {
             case "t": key = .t
             case "u": key = .u
             case "v": key = .v
+            case "V": key = .V
             case "w": key = .w
             case "x": key = .x
             case "y": key = .y

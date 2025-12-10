@@ -10,6 +10,30 @@ import Testing
 
 extension TextEditorTests {
     @Test
+    func moveToStartOfLineUpdatesSelectionInVisualMode() {
+        let buffer = FakeBuffer(
+            lines: ["TESTING"],
+            cursor: Position(line: 0, column: 3)
+        )
+        
+        let vim = VimEngine(buffer: buffer)
+        vim.state = .visual
+        vim.visualAnchorLocation = buffer.cursorOffset()
+        
+        vim.moveToStartOfLine()
+        // Manually mirror visual selection update since we call the movement directly
+        buffer.updateCursorAndSelection(anchor: vim.visualAnchorLocation, to: buffer.cursorOffset())
+        
+        let pos = buffer.cursorPosition()
+        #expect(pos.line == 0)
+        #expect(pos.column == 0)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 4)
+    }
+    
+    @Test
     func moveToStartOfLine_basic() {
         let buffer = FakeBuffer(
             lines: ["TESTING"],

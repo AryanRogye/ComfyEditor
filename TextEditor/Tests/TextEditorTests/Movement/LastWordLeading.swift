@@ -10,6 +10,23 @@ import Testing
 
 extension TextEditorTests {
     @Test
+    func lastWordLeadingInVisualModeExpandsSelectionBackward() {
+        let buffer = FakeBuffer(
+            lines: ["one two"],
+            cursor: Position(line: 0, column: 5) // 'w'
+        )
+        let vim = VimEngine(buffer: buffer); vim.state = .visual
+        vim.visualAnchorLocation = buffer.cursorOffset()
+        
+        vim.handleVimEvent(Util.makeKeyEvent("b"))
+        #expect(buffer.cursorPosition() == Position(line: 0, column: 4)) // 't'
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 4)
+        #expect(selection?.length == 2)
+    }
+    
+    @Test
     func lastWordLeadingMovesToStartOfCurrentWord() {
         let buffer = FakeBuffer(
             lines: ["one two"],

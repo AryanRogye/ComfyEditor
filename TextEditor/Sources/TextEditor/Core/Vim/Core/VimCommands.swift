@@ -21,6 +21,10 @@ extension VimEngine {
         modifier: [],
         keys: [.v]
     )
+    static let visual_line_mode = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.V]
+    )
     static let move_left_one = LocalShortcuts.Shortcut(
         modifier: [],
         keys: [.h]

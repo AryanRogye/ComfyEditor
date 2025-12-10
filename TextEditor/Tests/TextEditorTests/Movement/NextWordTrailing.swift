@@ -10,6 +10,23 @@ import Testing
 
 extension TextEditorTests {
     @Test
+    func nextWordTrailingInVisualModeExpandsSelection() {
+        let buffer = FakeBuffer(
+            lines: ["one two"],
+            cursor: Position(line: 0, column: 0) // 'o'
+        )
+        let vim = VimEngine(buffer: buffer); vim.state = .visual
+        vim.visualAnchorLocation = buffer.cursorOffset()
+        
+        vim.handleVimEvent(Util.makeKeyEvent("e"))
+        #expect(buffer.cursorPosition() == Position(line: 0, column: 2)) // 'e'
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 3)
+    }
+    
+    @Test
     func nextWordTrailingMovesToEndOfCurrentWord() {
         let buffer = FakeBuffer(
             lines: ["one two"],

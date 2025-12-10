@@ -26,12 +26,13 @@ struct VimStatus: View {
         case .normal: .gray
         case .insert: .purple
         case .visual: .cyan
+        case .visualLine: .cyan
         }
     }
     
     var body: some View {
         HStack {
-            Text(vimEngine.state.rawValue)
+            Text(vimEngine.state.displayName)
                 .font(.system(size: 12, weight: .regular, design: .rounded))
                 .opacity(opacity)
                 .padding(.horizontal, 4)

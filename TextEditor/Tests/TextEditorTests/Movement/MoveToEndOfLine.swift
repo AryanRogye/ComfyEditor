@@ -10,6 +10,32 @@ import Testing
 
 extension TextEditorTests {
     @Test
+    func moveToEndOfLineUpdatesSelectionInVisualMode() {
+        let line = "TESTING"
+        let buffer = FakeBuffer(
+            lines: [line],
+            cursor: Position(line: 0, column: 1)
+        )
+        #expect(buffer.cursorPosition() == Position(line: 0, column: 1))
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visual
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        
+        vimEngine.moveToEndOfLine()
+        // Apply the same selection update visual mode would perform after movement
+        buffer.updateCursorAndSelection(anchor: vimEngine.visualAnchorLocation, to: buffer.cursorOffset())
+        
+        let newCursor = buffer.cursorPosition()
+        #expect(newCursor.line == 0)
+        #expect(newCursor.column == line.count - 1)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 1)
+        #expect(selection?.length == line.count - 1)
+    }
+    
+    @Test
     func moveToEndOfLine_basic() {
         let line = "TESTING"
         let buffer = FakeBuffer(

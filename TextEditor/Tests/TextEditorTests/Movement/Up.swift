@@ -11,6 +11,60 @@ import Testing
 extension TextEditorTests {
     
     @Test
+    func movesUpBetweenNewLinesVisualLine() {
+        let buffer = FakeBuffer(
+            lines: [
+                "TESTING",
+                "",
+                "",
+                "TESTING"
+            ],
+            cursor: Position(line: 3, column: 0)
+        )
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visualLine
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        
+        let newCursorPos = buffer.cursorPosition()
+        #expect(newCursorPos.line == 0)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 17)
+    }
+    
+    @Test
+    func movesUpBetweenNewLinesVisual() {
+        let buffer = FakeBuffer(
+            lines: [
+                "TESTING",
+                "",
+                "",
+                "TESTING"
+            ],
+            cursor: Position(line: 3, column: 0)
+        )
+        
+        let vimEngine = VimEngine(buffer: buffer)
+        vimEngine.state = .visual
+        vimEngine.visualAnchorLocation = buffer.cursorOffset()
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        vimEngine.handleVimEvent(Util.makeKeyEvent("k"))
+        
+        let newCursorPos = buffer.cursorPosition()
+        #expect(newCursorPos.line == 0)
+        
+        let selection = buffer.getCursorPosition()
+        #expect(selection?.location == 0)
+        #expect(selection?.length == 11)
+    }
+    
+    @Test
     func movesUpBetweenNewlines() {
         let buffer = FakeBuffer(
             lines: [

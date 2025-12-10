@@ -30,9 +30,63 @@ final class FakeBuffer: BufferView {
     
     func exitVisualMode() {
         selection.length = 0
+        visualAnchorOffset = nil
     }
     
+    func updateCursorAndSelectLine(anchor: Int?, to newCursor: Int) {
+        visualAnchorOffset = anchor
+        let maxLen = Self.totalLength(of: lines)
+        
+        // Clamp cursor within buffer bounds
+        let safeCursor = min(max(newCursor, 0), maxLen)
+        
+        guard let anchor else {
+            // No visual anchor → just move cursor
+            selection = NSRange(location: safeCursor, length: 0)
+            return
+        }
+        
+        let safeAnchor = min(max(anchor, 0), maxLen)
+        
+        // Helper: given a flat offset, find the full line range [start, end)
+        func lineRange(for offset: Int) -> (start: Int, end: Int) {
+            var currentOffset = 0
+            
+            for (idx, line) in lines.enumerated() {
+                // Each line = its chars + 1 newline, except maybe last line
+                let lineLength = line.count + (idx < lines.count - 1 ? 1 : 0)
+                let lineStart = currentOffset
+                let lineEnd = currentOffset + lineLength
+
+                let isLastLine = idx == lines.count - 1
+                let isWithinLine = offset >= lineStart && offset < lineEnd
+                let isEOFOnLastLine = isLastLine && offset <= lineEnd
+
+                if isWithinLine || isEOFOnLastLine {
+                    // Treat offsets at a newline as belonging to the next line.
+                    return (start: lineStart, end: lineEnd)
+                }
+                
+                currentOffset = lineEnd
+            }
+            
+            // Fallback: whole buffer
+            return (start: 0, end: maxLen)
+        }
+        
+        let anchorLine = lineRange(for: safeAnchor)
+        let headLine   = lineRange(for: safeCursor)
+        
+        let start = min(anchorLine.start, headLine.start)
+        let end   = max(anchorLine.end,   headLine.end)
+        
+        let length = max(0, end - start)
+        selection = NSRange(location: start, length: length)
+    }
+
+    
     func updateCursorAndSelection(anchor: Int?, to newCursor: Int) {
+        visualAnchorOffset = anchor
         let maxLen = Self.totalLength(of: lines)
         // 1. Safety Clamp (same as Adapter)
         let safeCursor = min(max(newCursor, 0), maxLen)
@@ -73,7 +127,11 @@ final class FakeBuffer: BufferView {
     }
     
     func cursorPosition() -> Position {
-        Self.position(for: selection.location, in: lines)
+        if selection.length > 0, let anchor = visualAnchorOffset,
+           let head = currentVisualHead(anchor: anchor) {
+            return head
+        }
+        return Self.position(for: selection.location, in: lines)
     }
     
     func lineCount() -> Int {

@@ -58,16 +58,19 @@ class VimEngine: ObservableObject {
             /// User Requested Normal Mode
         case Self.normal_mode:
             if state == .visual { exitVisualMode() }
+            if state == .visualLine { exitVisualLineMode() }
             state = .normal
             /// User Requested Insert Mode
         case Self.insert_mode:
             if state == .visual { exitVisualMode() }
+            if state == .visualLine { exitVisualLineMode() }
             state = .insert
             didJustInsert = true
 
         case Self.visual_mode:
-            /// Handles Visual Mode Selection and flipping logic
             enterVisualMode()
+        case Self.visual_line_mode:
+            enterVisualLineMode()
 
 
         /// MOVEMENT
@@ -145,6 +148,11 @@ class VimEngine: ObservableObject {
                 buffer.updateCursorAndSelection(anchor: visualAnchorLocation, to: range.location)
             }
         }
+        if state == .visualLine {
+            if let range = buffer.getCursorPosition() {
+                buffer.updateCursorAndSelectLine(anchor: visualAnchorLocation, to: range.location)
+            }
+        }
 
         if didJustInsert || didJustMoveToEndOfLine {
             return false
@@ -157,7 +165,14 @@ class VimEngine: ObservableObject {
         visualAnchorLocation = buffer.cursorOffset()
         state = .visual
     }
+    private func enterVisualLineMode() {
+        visualAnchorLocation = buffer.cursorOffset()
+        state = .visualLine
+    }
     private func exitVisualMode() {
+        buffer.exitVisualMode()
+    }
+    private func exitVisualLineMode() {
         buffer.exitVisualMode()
     }
 }
