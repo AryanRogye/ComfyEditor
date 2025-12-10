@@ -84,7 +84,7 @@ final class MotionEngine {
             count = dist
         }
         var newCol = currentPos.column + count
-
+        
         /// IF IS NEWLINE go 1 more forward
         if let c = buffer.char(at: currentPos) {
             if ClassifierChar.init(from: c) == .newline {
@@ -98,83 +98,110 @@ final class MotionEngine {
     }
     
     public func up(_ currentPos: Position? = nil) -> Position {
-        var currentPos : Position = currentPos ?? buffer.cursorPosition()
+        let current = currentPos ?? buffer.cursorPosition()
+        
+        /// Can't move past the first line
+        guard current.line > 0 else { return current }
+        
+        return resolveVerticalMove(
+            from: current.column,
+            to: current.line - 1
+        )
+    }
+    public func down(_ currentPos: Position? = nil) -> Position {
+        let current = currentPos ?? buffer.cursorPosition()
+        
+        /// Can't move past the last line
+        guard current.line < buffer.lineCount() - 1 else { return current }
         
         Log.MotionEngine.start()
-        Log.MotionEngine.insert("Before Pos: \(currentPos)")
+        let pos = resolveVerticalMove(
+            from: current.column,
+            to: current.line + 1
+        )
+        Log.MotionEngine.end()
+        return pos
+    }
 
-        /// we cant move here so we just return currentPos
-        if currentPos.line == 0 {
-            return currentPos
-        }
+    /// Resolves vertical cursor movement (used by both `up` and `down`)
+    ///
+    /// Mental model:
+    /// 1. We already decided WHICH line we are moving to (targetLine)
+    /// 2. Now we need to resolve the horizontal column correctly
+    ///
+    /// Sticky column rules (Vim-like):
+    /// - If the previous column is LONGER than the new line:
+    ///   → remember the desired column (stickyColumn)
+    ///   → clamp to the max column of the new line
+    ///
+    /// - If a stickyColumn already exists:
+    ///   → try to restore that column (or clamp if still too short)
+    ///   → clear stickyColumn once applied
+    ///
+    /// - Otherwise:
+    ///   → just clamp the current column to the new line
+    ///
+    /// Final rule:
+    /// - Never allow the cursor to land ON the trailing `\n`
+    private func resolveVerticalMove(
+        from desiredColumn: Int,
+        to targetLine: Int
+    ) -> Position {
         
-        let targetLine = currentPos.line - 1
+        /// Start with the target line, column will be resolved below
+        var pos = Position(line: targetLine, column: desiredColumn)
         
-        if targetLine < 0 || targetLine > buffer.lineCount() {
-            return currentPos
-        }
-        
-        let column = currentPos.column
-        
-        /// Move back a line
-        currentPos.line = targetLine
-        /// Get line text
+        /// Get the text for the target line
         var line = buffer.line(at: targetLine)
         
-        /// Max Column of the line
+        if line.isEmpty || line == "\n" {
+            pos.column = 0
+            return pos
+        }
+        
+        /// Max valid column on this line
+        /// (we subtract 1 so we don't land past the content)
         let maxCol = line.count - 1
         
-        
-        if column > maxCol, stickyColumn == nil {
-            Log.MotionEngine.insert("Setting Sticky Column \(column)")
-            stickyColumn = column
-            currentPos.column = min(currentPos.column, maxCol)
+        /// If the column from the previous line is longer than the current line
+        /// AND we haven't set a sticky column yet:
+        ///
+        /// - Remember the desired column
+        /// - Clamp to the end of this shorter line
+        if desiredColumn > maxCol, stickyColumn == nil {
+            stickyColumn = desiredColumn
+            pos.column = maxCol
         } else {
+            
+            /// If we already have a sticky column:
+            /// - Try to restore it
+            /// - Clamp if this line is still too short
+            /// - Clear stickyColumn once applied
             if let stickyColumn {
-                /// this means theres a value here we can go up by 1
-                currentPos.column = min(stickyColumn, maxCol)
-                Log.MotionEngine.insert("STICKY: \(stickyColumn)")
-                Log.MotionEngine.insert("MAX-COL: \(maxCol)")
-                Log.MotionEngine.insert("Applying Sticky Column or maxCol: \(min(stickyColumn, maxCol))")
+                pos.column = min(stickyColumn, maxCol)
                 self.stickyColumn = nil
-            } else {
-                Log.MotionEngine.insert("Skipping Sticky Column")
-                currentPos.column = min(currentPos.column, maxCol)
+            }
+            
+            /// Otherwise:
+            /// - No sticky logic needed
+            /// - Just clamp current column to this line
+            else {
+                pos.column = min(desiredColumn, maxCol)
             }
         }
         
-        line = buffer.line(at: currentPos.line)
-        if let c = line.char(at: currentPos.column), c == "\n" && currentPos.column == line.count - 1 {
-            Log.MotionEngine.insert("Detected a newline in the column, moving left")
-            /// Move Left
-            currentPos.column -= 1
-        } else {
-            Log.MotionEngine.insert("Chose Not to move left")
-        }
-        Log.MotionEngine.insert("After Pos: \(currentPos)")
-        Log.MotionEngine.end()
-        return currentPos
-    }
-    
-    public func down(_ currentPos: Position? = nil) -> Position {
-        var currentPos : Position = currentPos ?? buffer.cursorPosition()
-        let column = currentPos.column
+        /// Reload line in case column changed
+        line = buffer.line(at: pos.line)
         
-        if currentPos.line == buffer.lineCount() - 1 {
-            return currentPos
-        }
-        let lineNumber = currentPos.line + 1
-        if lineNumber < 0 || lineNumber > buffer.lineCount() {
-            return currentPos
-        }
-        currentPos.line += 1
-        let line = buffer.line(at: lineNumber)
-        
-        if column < line.count {
-            return currentPos
+        /// Safety check:
+        /// If we somehow landed on a trailing newline character,
+        /// move left by one so the cursor stays on real content
+        if let c = line.char(at: pos.column),
+           c == "\n",
+           pos.column == line.count - 1 {
+            pos.column -= 1
         }
         
-        currentPos.column = line.count - 1
-        return currentPos
+        return pos
     }
 }

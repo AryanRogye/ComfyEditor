@@ -41,9 +41,13 @@ public enum ComfyLogger {
             print(startbar)
         }
         
-        public func insert(_ message: @autoclosure () -> Any) {
+        public func insert(_ message: @autoclosure () -> Any, useDebug: Bool = false) {
             guard isEnabled else { return }
-            print("• \(message())")
+            if useDebug {
+                debugPrint("• \(message())")
+            } else {
+                print("• \(message())")
+            }
         }
         
         public func end() {
