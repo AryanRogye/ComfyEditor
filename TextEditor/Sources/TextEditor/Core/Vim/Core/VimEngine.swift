@@ -60,7 +60,7 @@ class VimEngine: ObservableObject {
         case Self.normal_mode:
             if state == .visual { exitVisualMode() }
             if state == .visualLine { exitVisualLineMode() }
-            state = .normal
+            enterNormalMode()
             /// User Requested Insert Mode
         case Self.insert_mode:
             if state == .visual { exitVisualMode() }
@@ -170,6 +170,14 @@ class VimEngine: ObservableObject {
         return state == .insert
     }
 
+    private func enterNormalMode() {
+        state = .normal
+        let currentPos = buffer.cursorPosition()
+        let c = buffer.line(at: currentPos.line).char(at: currentPos.column)
+        if c == nil || c == "\n" {
+            moveLeft()
+        }
+    }
     private func enterVisualMode() {
         visualAnchorLocation = buffer.cursorOffset()
         state = .visual

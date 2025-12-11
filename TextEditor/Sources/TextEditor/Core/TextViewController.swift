@@ -71,6 +71,7 @@ public class TextViewController: NSViewController {
 
         /// Assign TextView delegate's
         textView.delegate = textDelegate
+        textView.setupCursorView()
 
         scrollView.documentView = textView
         root.addSubview(scrollView)

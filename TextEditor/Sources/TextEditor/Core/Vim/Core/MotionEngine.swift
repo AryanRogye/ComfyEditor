@@ -192,6 +192,7 @@ final class MotionEngine {
         /// Get the text for the target line
         var line = buffer.line(at: targetLine)
         
+        
         if line.isEmpty || line == "\n" {
             pos.column = 0
             return pos
@@ -210,7 +211,6 @@ final class MotionEngine {
             stickyColumn = desiredColumn
             pos.column = maxCol
         } else {
-            
             /// If we already have a sticky column:
             /// - Try to restore it
             /// - Clamp if this line is still too short

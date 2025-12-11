@@ -7,13 +7,10 @@
 
 import AppKit
 import LocalShortcuts
+import SwiftUI
+
 
 final class ComfyTextView: NSTextView {
-    
-    struct InsertionPoint {
-        let rect: NSRect
-        let color: NSColor
-    }
     
     override var insertionPointColor: NSColor? {
         get { .controlAccentColor }
@@ -21,8 +18,17 @@ final class ComfyTextView: NSTextView {
     }
     
     var vimEngine: VimEngine
+    lazy var vimCursorView: NSView = {
+        let v = NSView()
+        v.wantsLayer = true
+        v.layer?.backgroundColor = NSColor(Color.accentColor.opacity(0.5)).cgColor
+        v.isHidden = true // Hide until first update
+        return v
+    }()
     
-    var originalInsertionPoint: InsertionPoint?
+    public func setupCursorView() {
+        self.addSubview(vimCursorView)
+    }
     
     override func drawInsertionPoint(in rect: NSRect, color: NSColor, turnedOn flag: Bool) {
         // If the blink cycle is off, don't draw anything
@@ -30,12 +36,6 @@ final class ComfyTextView: NSTextView {
         
         /// if User is not using vim mode then draw regular
         if !vimEngine.isInVimMode {
-            super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
-            return
-        }
-        
-        /// if in VimMode and we're in insert, then just draw the regular cursor
-        if vimEngine.state == .insert {
             super.drawInsertionPoint(in: rect, color: color, turnedOn: flag)
             return
         }
