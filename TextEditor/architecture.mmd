@@ -1,0 +1,96 @@
+classDiagram
+    %% Core Components
+    class ComfyTextEditor {
+        <<SwiftUI View>>
+        +Binding text
+        +Binding isInVimMode
+        +Binding showScrollbar
+    }
+
+    class TextViewController {
+        <<NSViewController>>
+        +VimEngine vimEngine
+        +ComfyScrollView scrollView
+        +ComfyTextView textView
+        +VimBottomView vimBottomView
+    }
+
+    class VimEngine {
+        <<ObservableObject>>
+        +VimState state
+        +Bool isInVimMode
+        +MotionEngine motionEngine
+        +BufferView buffer
+        +handleVimEvent(NSEvent)
+    }
+
+    class MotionEngine {
+        <<Logic>>
+    }
+
+    %% Views
+    class ComfyScrollView {
+        <<NSScrollView>>
+    }
+
+    class ComfyTextView {
+        <<NSTextView>>
+        +VimEngine vimEngine
+    }
+
+    class VimBottomView {
+        <<NSView>>
+        +VimEngine vimEngine
+    }
+
+    %% Singletons/Delegates
+    class EditorCommandCenter {
+        <<Singleton>>
+        +TextViewController currentEditor
+        +TextViewDelegate textViewDelegate
+        +MagnificationDelegate magnificationDelegate
+    }
+
+    class TextViewDelegate {
+        <<NSTextViewDelegate>>
+        +VimEngine vimEngine
+    }
+
+    class MagnificationDelegate {
+        <<Delegate>>
+    }
+
+    %% Protocols
+    class BufferView {
+        <<Protocol>>
+    }
+    class NSTextViewBufferAdapter {
+        <<Adapter>>
+    }
+
+    %% Relationships
+    ComfyTextEditor ..> TextViewController : Wraps
+
+    TextViewController *-- VimEngine : Owns
+    TextViewController *-- ComfyScrollView : Owns
+    TextViewController *-- ComfyTextView : Owns
+    TextViewController *-- VimBottomView : Owns
+
+    ComfyScrollView --> MagnificationDelegate : Uses
+
+    ComfyTextView --> TextViewDelegate : Delegate
+    ComfyTextView --> VimEngine : References
+
+    VimBottomView --> VimEngine : References
+
+    VimEngine *-- MotionEngine : Owns
+    VimEngine --> BufferView : Uses
+
+    NSTextViewBufferAdapter ..|> BufferView : Implements
+    VimEngine --> NSTextViewBufferAdapter : Uses default
+
+    EditorCommandCenter --> TextViewController : Tracks current
+    EditorCommandCenter --> TextViewDelegate : Holds
+    EditorCommandCenter --> MagnificationDelegate : Holds
+
+    TextViewDelegate --> VimEngine : References

@@ -17,6 +17,9 @@ extension ComfyTextView {
         }
         
         vimCursorView.isHidden = false
+        let cursor = vimEngine.buffer.cursorPosition()
+        let c = vimEngine.buffer.line(at: cursor.line).char(at: cursor.column)
+        debugPrint("Char: \(c)")
         
         // Optional: Use a very fast animation (0.05s) to make it feel fluid like VS Code
         NSAnimationContext.runAnimationGroup({ context in
@@ -51,8 +54,7 @@ extension ComfyTextView {
                 let glyphIndex = layoutManager.glyphIndexForCharacter(at: logicalIndex)
                 var glyphRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: glyphIndex, length: 1), in: textContainer)
                 
-                // 2. CRITICAL: Convert from TextContainer coords to View coords
-                // (Without this, the block will be stuck in the wrong place if you have padding)
+                // (Without this, the block will be stuck in the wrong place)
                 glyphRect.origin.x += textContainerOrigin.x
                 glyphRect.origin.y += textContainerOrigin.y
                 
