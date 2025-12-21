@@ -2,6 +2,7 @@ import AppKit
 @testable import TextEditor
 
 final class FakeBuffer: BufferView {
+    
     // MARK: - Stored state
     
     var lines: [String]
@@ -11,6 +12,15 @@ final class FakeBuffer: BufferView {
     
     // MARK: - Init
     
+    func isOnNewLine(_ pos: Position) -> Bool {
+        if let c = char(at: pos) {
+            if ClassifierChar.init(from: c) == .newline {
+                return true
+            }
+        }
+        return false
+    }
+
     init(lines: [String], cursor: Position, visualAnchorOffset: Int? = nil) {
         self.lines = lines
         self.visualAnchorOffset = visualAnchorOffset
