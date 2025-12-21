@@ -62,9 +62,13 @@ final class ComfyTextView: NSTextView {
         
         let textContainer = NSTextContainer()
         
-        textContainer.widthTracksTextView = true
+        textContainer.widthTracksTextView = false
         textContainer.heightTracksTextView = false
-        
+        textContainer.containerSize = NSSize(
+            width: CoreFoundation.CGFloat.greatestFiniteMagnitude,
+            height: CoreFoundation.CGFloat.greatestFiniteMagnitude
+        )
+
         textStorage.addLayoutManager(layoutManager)
         layoutManager.addTextContainer(textContainer)
         
@@ -72,8 +76,14 @@ final class ComfyTextView: NSTextView {
         self.vimEngine.buffer.setTextView(self)
 
         isVerticallyResizable = true
-        isHorizontallyResizable = false
-        autoresizingMask = [.width]
+        isHorizontallyResizable = true
+        autoresizingMask = [.height]
+        textContainerInset = .zero
+
+        
+        // also helpful for text views
+        textContainerInset = .zero
+
         
         maxSize = NSSize(
             width: CoreFoundation.CGFloat.greatestFiniteMagnitude,

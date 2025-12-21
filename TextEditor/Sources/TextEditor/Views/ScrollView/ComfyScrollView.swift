@@ -14,8 +14,12 @@ final class ComfyScrollView: NSScrollView {
         super.init(frame: .zero)
         
         hasVerticalScroller = true
-        hasHorizontalScroller = false
+        hasHorizontalScroller = true
         autohidesScrollers = true
+        
+        hasVerticalRuler = false
+        hasHorizontalRuler = false
+        rulersVisible = false
         
         translatesAutoresizingMaskIntoConstraints = false
         allowsMagnification = true
@@ -24,11 +28,12 @@ final class ComfyScrollView: NSScrollView {
         maxMagnification = 6.0
     }
     
-    func setZoom(_ value: CGFloat) {
+    func setZoom(_ value: CGFloat, centeredAt: NSPoint? = nil) {
         let clamped = max(minMagnification, min(value, maxMagnification))
-        let center = NSPoint(x: bounds.midX, y: bounds.midY)
         
-        super.setMagnification(clamped, centeredAt: center)
+        let center = NSPoint(x: bounds.midX, y: bounds.midY)
+        super.setMagnification(clamped, centeredAt: centeredAt ?? center)
+
         magnificationDelegate?.scrollView(self, didChangeMagnification: clamped)
     }
     
@@ -37,15 +42,23 @@ final class ComfyScrollView: NSScrollView {
     }
     
     override func magnify(with event: NSEvent) {
-        super.magnify(with: event)
+        let pointInView = convert(event.locationInWindow, from: nil)
+        
+        let target = magnification + event.magnification
+        setZoom(target, centeredAt: pointInView)
         magnificationDelegate?.scrollView(self, didChangeMagnification: magnification)
     }
+    
     override func setMagnification(_ magnification: CGFloat, centeredAt point: NSPoint) {
-        super.setMagnification(magnification, centeredAt: point)
+        setZoom(magnification, centeredAt: point)
         magnificationDelegate?.scrollView(self, didChangeMagnification: magnification)
     }
+    
     override func smartMagnify(with event: NSEvent) {
-        super.smartMagnify(with: event)
+        let pointInView = convert(event.locationInWindow, from: nil)
+        
+        let target = magnification + event.magnification
+        setZoom(target, centeredAt: pointInView)
         magnificationDelegate?.scrollView(self, didChangeMagnification: magnification)
     }
 }

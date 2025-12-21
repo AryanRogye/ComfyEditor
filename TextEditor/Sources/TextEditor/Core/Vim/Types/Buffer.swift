@@ -20,6 +20,7 @@ public protocol BufferView {
     func moveTo(position: Position)
     func getCursorPosition() -> NSRange?
     func cursorPosition() -> Position
+    func isOnNewLine(_ pos: Position) -> Bool
     func lineCount() -> Int
     func line(at index: Int) -> String
     func char(at pos: Position) -> Character?

@@ -1,0 +1,653 @@
+* 40d1f95 AryanRogye (8 days ago) added clear architechure mermaid diagram so i can see how everything is looking| 
+|  .../ComfyTextView+Vim+InsertionPoint.swift        |   6 +-
+|  TextEditor/architechure.png                       | Bin 0 -> 118495 bytes
+|  TextEditor/architecture.mmd                       |  96 ++++++++++++++++++++
+|  3 files changed, 100 insertions(+), 2 deletions(-)
+
+* d69909d AryanRogye (10 days ago) updated to make sure cursor is a NSView| 
+|  .../TextEditor/Core/TextViewController.swift      |   1 +
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |   2 +-
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      |  10 +-
+|  .../ComfyTextView+Vim+InsertionPoint.swift        | 167 +++++++-------------
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  24 +--
+|  5 files changed, 82 insertions(+), 122 deletions(-)
+
+* 7cf1fd5 AryanRogye (10 days ago) while playing around with the insertion point, found a bug in the end of line and fixed it| 
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |   2 +-
+|  .../ComfyTextView+Vim+InsertionPoint.swift        | 133 +++++++++++++++-----
+|  .../Movement/MoveToEndOfLine.swift                |  61 +++++++--
+|  3 files changed, 152 insertions(+), 44 deletions(-)
+
+* 43a98ee AryanRogye (11 days ago) added x-delete ability| 
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |   1 -
+|  .../TextEditor/Core/Vim/Core/VimCommands.swift    |   4 +
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      |  17 ++-
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    |   3 +
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |   2 +
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  |  41 ++++++
+|  .../TextEditorTests/Helpers/FakeBuffer.swift      |  58 +++++++-
+|  .../Movement/DeleteUnderCursor.swift              | 149 ++++++++++++++++++++
+|  8 files changed, 269 insertions(+), 6 deletions(-)
+
+* 0d83927 AryanRogye (11 days ago) added visual line, also added new tests for visual in there| 
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   |  5 +-
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |  2 -
+|  .../TextEditor/Core/Vim/Core/VimCommands.swift    |  4 ++
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      | 17 +++++-
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |  1 +
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  | 34 ++++++++++++
+|  .../TextEditor/Core/Vim/Types/VimState.swift      | 22 ++++++--
+|  .../TextEditor/Views/VimView/VimStatus.swift      |  3 +-
+|  .../TextEditorTests/Helpers/FakeBuffer.swift      | 60 ++++++++++++++++++++-
+|  .../Tests/TextEditorTests/Movement/Down.swift     | 56 +++++++++++++++++++
+|  .../Movement/LastWordLeading.swift                | 17 ++++++
+|  .../Tests/TextEditorTests/Movement/LeftOne.swift  | 23 ++++++++
+|  .../Movement/MoveToEndOfLine.swift                | 26 +++++++++
+|  .../Movement/MoveToStartOfLine.swift              | 24 +++++++++
+|  .../Movement/NextWordLeading.swift                | 17 ++++++
+|  .../Movement/NextWordTrailing.swift               | 17 ++++++
+|  .../Tests/TextEditorTests/Movement/RightOne.swift | 23 ++++++++
+|  .../Tests/TextEditorTests/Movement/Up.swift       | 54 +++++++++++++++++++
+|  18 files changed, 395 insertions(+), 10 deletions(-)
+
+* 3073324 AryanRogye (11 days ago) added new tests for end of line + start of line , added new $ and also _ in it| 
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   |   5 +
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |  17 +++-
+|  .../TextEditor/Core/Vim/Core/VimCommands.swift    |  10 +-
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      |  10 +-
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    |  16 +--
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |   1 -
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  |  14 ---
+|  .../Movement/MoveToEndOfLine.swift                | 106 ++++++++++++++++++++
+|  .../Movement/MoveToStartOfLine.swift              |  56 +++++++++++
+|  9 files changed, 210 insertions(+), 25 deletions(-)
+
+* a6602ae AryanRogye (11 days ago) added license| 
+|  LICENSE | 113 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|  1 file changed, 113 insertions(+)
+
+* 40c7880 AryanRogye (11 days ago) added more tests, made the h and l better| 
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   | 28 ++++++-
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    | 12 ++-
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |  2 -
+|  .../TextEditor/Core/Vim/Types/Position.swift      |  9 ++-
+|  .../Movement/LastWordLeading.swift                | 62 +++++++++++++++
+|  .../Tests/TextEditorTests/Movement/LeftOne.swift  | 73 +++++++++++++++++
+|  .../Movement/NextWordLeading.swift                | 75 ++++++++++++++++++
+|  .../Movement/NextWordTrailing.swift               | 60 ++++++++++++++
+|  .../Tests/TextEditorTests/Movement/RightOne.swift | 87 +++++++++++++++++++++
+|  9 files changed, 402 insertions(+), 6 deletions(-)
+
+* ea7629e AryanRogye (11 days ago) fixing down, there was a weird ass bug, where if it was on a newline, it would not go down, fixed this by looking if the line was == n or not| 
+|  ComfyLogger/Sources/ComfyLogger/ComfyLogger.swift |   8 +-
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   | 151 ++++++++++-------
+|  .../{ => Helpers}/FakeBuffer.swift                |   0
+|  .../TextEditorTests/{ => Helpers}/Util.swift      |   0
+|  .../Tests/TextEditorTests/Movement/Down.swift     | 175 ++++++++++++++++++++
+|  .../Tests/TextEditorTests/Movement/Up.swift       | 169 +++++++++++++++++++
+|  .../Tests/TextEditorTests/TextEditorTests.swift   | 139 ----------------
+|  7 files changed, 439 insertions(+), 203 deletions(-)
+
+* d49f807 AryanRogye (11 days ago) fixig gitignore| 
+|  .gitignore       |  1 +
+|  buildServer.json | 19 -------------------
+|  2 files changed, 1 insertion(+), 19 deletions(-)
+
+* 2dfbd0a AryanRogye (11 days ago) fixig gitignore| 
+|  .gitignore                                        |   1 +
+|  ComfyEditor.app/Contents/Info.plist               |  50 ------
+|  ComfyEditor.app/Contents/MacOS/ComfyEditor        | Bin 58416 -> 0 bytes
+|  .../Contents/MacOS/ComfyEditor.debug.dylib        | Bin 1615712 -> 0 bytes
+|  ComfyEditor.app/Contents/MacOS/__preview.dylib    | Bin 34928 -> 0 bytes
+|  ComfyEditor.app/Contents/PkgInfo                  |   1 -
+|  ComfyEditor.app/Contents/Resources/Assets.car     | Bin 3025224 -> 0 bytes
+|  .../Contents/Resources/ComfyEditor.icns           | Bin 74081 -> 0 bytes
+|  .../Defaults_Defaults.bundle/Contents/Info.plist  |  40 -----
+|  .../Contents/Resources/PrivacyInfo.xcprivacy      |  19 --
+|  .../Contents/Resources/EditorDebug.xcconfig       |  12 --
+|  .../Contents/_CodeSignature/CodeResources         | 190 --------------------
+|  12 files changed, 1 insertion(+), 312 deletions(-)
+
+* 9cec81d AryanRogye (11 days ago) Fixing Sticky Column for Up, while doing so, found better solution for Logging, so made a package for that| 
+|  ComfyEditor.app/Contents/MacOS/ComfyEditor        | Bin 58416 -> 58416 bytes
+|  .../Contents/MacOS/ComfyEditor.debug.dylib        | Bin 1613488 -> 1615712 bytes
+|  ComfyEditor.app/Contents/MacOS/__preview.dylib    | Bin 34928 -> 34928 bytes
+|  ComfyEditor.app/Contents/Resources/Assets.car     | Bin 3025224 -> 3025224 bytes
+|  .../Contents/_CodeSignature/CodeResources         |   6 +-
+|  ComfyEditor.xcworkspace/contents.xcworkspacedata  |  16 ++
+|  .../xcshareddata/swiftpm/Package.resolved         |  24 +++
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |   8 +
+|  ComfyLogger/.gitignore                            |   8 +
+|  ComfyLogger/Package.swift                         |  25 +++
+|  ComfyLogger/Sources/ComfyLogger/ComfyLogger.swift |  55 ++++++
+|  .../xcschemes/TextEditorTests.xcscheme            |  54 +++++
+|  TextEditor/Package.swift                          |   6 +-
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |  79 ++++++--
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      |   1 -
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    |   1 +
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |   1 +
+|  TextEditor/Tests/TextEditorTests/FakeBuffer.swift | 208 +++++++++++---------
+|  .../Tests/TextEditorTests/TextEditorTests.swift   |  82 +++++++-
+|  19 files changed, 453 insertions(+), 121 deletions(-)
+
+* b73364f AryanRogye (11 days ago) changed LocalShortcuts to use a lower version| 
+|  LocalShortcuts/Package.swift | 2 +-
+|  1 file changed, 1 insertion(+), 1 deletion(-)
+
+* 9996e33 AryanRogye (11 days ago) fixing tests by changing the package version number| 
+|  TextEditor/Package.swift | 2 +-
+|  1 file changed, 1 insertion(+), 1 deletion(-)
+
+* a9d86f9 AryanRogye (11 days ago) added tests| 
+|  .github/workflows/text-editor-tests.yml | 29 +++++++++++++++++++++++++++++
+|  buildServer.json                        |  2 +-
+|  buildlsp.sh                             |  4 +++-
+|  3 files changed, 33 insertions(+), 2 deletions(-)
+
+* 418f27a AryanRogye (11 days ago) included new up and down vim movements, added tests for them so I can verify| 
+|  TextEditor/Package.swift                          |   6 +
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |  47 +++++
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      | 120 ++++--------
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    |  57 ++----
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |  28 +++
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  | 171 ++++++++++++----
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |   2 +-
+|  TextEditor/Tests/TextEditorTests/FakeBuffer.swift | 205 ++++++++++++++++++++
+|  .../Tests/TextEditorTests/TextEditorTests.swift   |  71 +++++++
+|  TextEditor/Tests/TextEditorTests/Util.swift       |  25 +++
+|  10 files changed, 567 insertions(+), 165 deletions(-)
+
+* 93bc377 AryanRogye (12 days ago) made visual better| 
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   | 12 ++--
+|  .../TextEditor/Core/Vim/Core/VimEngine.swift      | 60 ++------------------
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    | 50 ++++++++++++-----
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |  2 +
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  | 62 +++++++++++++++++++++
+|  5 files changed, 112 insertions(+), 74 deletions(-)
+
+* fb942a9 AryanRogye (12 days ago) making code safer by switching codebase to swift 6 + strict concurrency| 
+|  ComfyEditor.xcodeproj/project.pbxproj            | 9 ++++++---
+|  ComfyEditor/Coordinators/WindowCoordinator.swift | 4 +++-
+|  TextEditor/Package.swift                         | 5 ++++-
+|  3 files changed, 13 insertions(+), 5 deletions(-)
+
+* a88f8d3 AryanRogye (12 days ago) removed FSM, as a name, and made sure the logic is coupled into VimEngine| 
+|  .../TextEditor/Core/Vim/Core/MotionEngine.swift   |  86 ++++++++++
+|  .../TextEditor/Core/Vim/Core/TextEngine.swift     | 140 ++++++++++++++++
+|  .../Core/Vim/{ => Core}/VimCommands.swift         |   0
+|  .../Core/Vim/{ => Core}/VimEngine.swift           |  28 ++--
+|  .../TextEditor/Core/Vim/Core/VimMovement.swift    |  47 ++++++
+|  .../Core/Vim/FSM/Core/MotionEngine.swift          |  63 --------
+|  .../TextEditor/Core/Vim/FSM/FSMEngine.swift       |  32 ----
+|  .../FSMEngine+calcNextWordLeadingDistance.swift   |  51 ------
+|  .../FSMEngine+calcNextWordTrailingDistance.swift  |  56 -------
+|  .../Helpers/FSMengine+calcLastWordDistance.swift  |  46 ------
+|  .../TextEditor/Core/Vim/FSM/Types/Buffer.swift    |  18 ---
+|  .../Core/Vim/FSM/Types/ClassifierChar.swift       |  54 -------
+|  .../Vim/FSM/Types/NSTextViewBufferAdapter.swift   | 128 ---------------
+|  .../TextEditor/Core/Vim/FSM/Types/Position.swift  |  13 --
+|  .../TextEditor/Core/Vim/Types/Buffer.swift        |  16 ++
+|  .../Core/Vim/Types/ClassifierChar.swift           |  52 ++++++
+|  .../Core/Vim/Types/NSTextViewBufferAdapter.swift  | 169 ++++++++++++++++++++
+|  .../TextEditor/Core/Vim/Types/Position.swift      |  11 ++
+|  .../Core/Vim/{ => Types}/VimState.swift           |   0
+|  .../Sources/TextEditor/Core/Vim/VimMovement.swift |  44 -----
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |   2 +-
+|  21 files changed, 536 insertions(+), 520 deletions(-)
+
+* a30b609 AryanRogye (12 days ago) attempting to add visual mode, figured out some things are wrong, if i select before and press w, regular vim behavior would be from that visual head, but my implementation does where it started, so i have to fix it| 
+|  .../TextEditor/Core/Vim/FSM/Types/Buffer.swift    |   1 +
+|  .../Vim/FSM/Types/NSTextViewBufferAdapter.swift   |   5 +
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   | 131 +++++++++++++++++---
+|  3 files changed, 117 insertions(+), 20 deletions(-)
+
+* f2abfd8 Aryan (12 days ago) Update README with TextEditor usage instructions| 
+|  README.md | 4 +++-
+|  1 file changed, 3 insertions(+), 1 deletion(-)
+
+* eff7be8 AryanRogye (12 days ago) added new  command, for next word trailing| 
+|  .../Core/Vim/FSM/Core/MotionEngine.swift          | 13 +++++
+|  .../TextEditor/Core/Vim/FSM/FSMEngine.swift       |  4 ++
+|  .../FSMEngine+calcNextWordTrailingDistance.swift  | 56 +++++++++++++++++++++
+|  .../Sources/TextEditor/Core/Vim/VimCommands.swift |  4 ++
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   |  5 +-
+|  .../Sources/TextEditor/Core/Vim/VimMovement.swift |  3 ++
+|  6 files changed, 84 insertions(+), 1 deletion(-)
+
+* 0670400 AryanRogye (13 days ago) restructured and added a bunch more logic| 
+|  ComfyEditor.app/Contents/Info.plist               |  50 +++++
+|  ComfyEditor.app/Contents/MacOS/ComfyEditor        | Bin 0 -> 58416 bytes
+|  .../Contents/MacOS/ComfyEditor.debug.dylib        | Bin 0 -> 1613488 bytes
+|  ComfyEditor.app/Contents/MacOS/__preview.dylib    | Bin 0 -> 34928 bytes
+|  ComfyEditor.app/Contents/PkgInfo                  |   1 +
+|  ComfyEditor.app/Contents/Resources/Assets.car     | Bin 0 -> 3025224 bytes
+|  .../Contents/Resources/ComfyEditor.icns           | Bin 0 -> 74081 bytes
+|  .../Defaults_Defaults.bundle/Contents/Info.plist  |  40 ++++
+|  .../Contents/Resources/PrivacyInfo.xcprivacy      |  19 ++
+|  .../Contents/Resources/EditorDebug.xcconfig       |  12 ++
+|  .../Contents/_CodeSignature/CodeResources         | 190 +++++++++++++++++
+|  .../xcschemes/xcschememanagement.plist            |   2 +-
+|  .../Core/Vim/FSM/Core/MotionEngine.swift          |  26 ++-
+|  .../TextEditor/Core/Vim/FSM/FSMEngine.swift       |  10 +-
+|  .../Vim/FSM/FSMengine+calcLastWordDistance.swift  |  47 -----
+|  .../FSMEngine+calcNextWordLeadingDistance.swift}  |   0
+|  .../Helpers/FSMengine+calcLastWordDistance.swift  |  46 ++++
+|  .../TextEditor/Core/Vim/FSM/Types/Buffer.swift    |   1 +
+|  .../Vim/FSM/Types/NSTextViewBufferAdapter.swift   |  29 +++
+|  .../Sources/TextEditor/Core/Vim/VimCommands.swift |  70 +++++++
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   | 135 +++++++++++-
+|  .../Sources/TextEditor/Core/Vim/VimMovement.swift |  41 ++++
+|  .../Core/Vim/{Types => }/VimState.swift           |   0
+|  ...iew+Helpers.swift => NSTextView+Helpers.swift} |   0
+|  .../ComfyTextView+Vim+InsertionPoint.swift        |   2 +-
+|  .../Views/TextView/ComfyTextView+Vim.swift        | 221 --------------------
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |   3 +-
+|  buildlsp.sh                                       |   3 +
+|  run.sh                                            |  27 +++
+|  29 files changed, 689 insertions(+), 286 deletions(-)
+
+* e690811 AryanRogye (13 days ago) creating a move forward| 
+|  .../Sources/TextEditor/Core/FSM/FSMEngine.swift   | 142 --------------------
+|  .../TextEditor/Core/TextViewController.swift      |   5 +-
+|  .../Core/Vim/FSM/Core/MotionEngine.swift          |  28 ++++
+|  .../Vim/FSM/FSMEngine+calcNextWordDistance.swift  |  51 +++++++
+|  .../TextEditor/Core/Vim/FSM/FSMEngine.swift       |  34 +++++
+|  .../Vim/FSM/FSMengine+calcLastWordDistance.swift  |  47 +++++++
+|  .../TextEditor/Core/Vim/FSM/Types/Buffer.swift    |  16 +++
+|  .../FSM/Types/ClassifierChar.swift}               |  12 +-
+|  .../Vim/FSM/Types/NSTextViewBufferAdapter.swift   |  94 +++++++++++++
+|  .../TextEditor/Core/Vim/FSM/Types/Position.swift  |  13 ++
+|  .../Core/Vim/{ => Types}/VimState.swift           |   0
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   |  18 ++-
+|  .../EditorDelegates/TextViewDelegate.swift        |  72 +---------
+|  .../Extensions/ComfyTextView+Helpers.swift        |   8 +-
+|  .../ComfyTextView+Vim+InsertionPoint.swift        |   2 +-
+|  .../Views/TextView/ComfyTextView+Vim.swift        |  45 ++++---
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |   7 +-
+|  .../TextEditor/Views/VimView/VimBottomView.swift  |   1 +
+|  .../TextEditor/Views/VimView/VimStatus.swift      |  29 ++--
+|  19 files changed, 372 insertions(+), 252 deletions(-)
+
+*   f06b8f9 AryanRogye (13 days ago) Merge branch 'main' of github.com:AryanRogye/ComfyEditor
+|\  
+| * 1620bd5 Aryan (13 days ago) Update README with screenshot and syntax highlighting note| | 
+| |  README.md | 4 ++++
+| |  1 file changed, 4 insertions(+)
+
+* | edb903d AryanRogye (13 days ago) created a configuration so that i can open up editor faster
+|/  |   
+|    ComfyEditor.xcodeproj/project.pbxproj            | 107 +++++++++++++++++++
+|    .../xcschemes/ComfyEditor_JUST_EDITOR.xcscheme   |  78 ++++++++++++++
+|    .../xcschemes/xcschememanagement.plist           |   5 +
+|    ComfyEditor/App/ComfyEditorApp.swift             |   4 +
+|    EditorDebug.xcconfig                             |  12 +++
+|    5 files changed, 206 insertions(+)
+
+* 4807a3b AryanRogye (13 days ago) added readme| 
+|  README.md | 69 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+|  1 file changed, 69 insertions(+)
+
+* 9fddccc AryanRogye (13 days ago) Included a Finite State Machine, for handling, the current line, pretty fun| 
+|  .vscode/settings.json                             |   4 +
+|  .../Views/ComfyEditor/ComfyEditorHome.swift       |   2 +-
+|  .../TextEditor/Core/EditorCommandCenter.swift     |   1 -
+|  .../TextEditor/Core/FSM/FSMCharacter.swift        |  46 +++++
+|  .../Sources/TextEditor/Core/FSM/FSMEngine.swift   | 142 +++++++++++++++
+|  .../TextEditor/Core/TextViewController.swift      | 102 ++++++-----
+|  .../EditorDelegates/CursorDelegate.swift          | 188 --------------------
+|  .../EditorDelegates/TextViewDelegate.swift        | 105 +++++++++--
+|  .../Extensions/ComfyTextView+Helpers.swift        |  20 +++
+|  .../ComfyTextView+Vim+InsertionPoint.swift        |   4 +-
+|  .../Views/TextView/ComfyTextView+Vim.swift        |  96 ++++++----
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  39 +---
+|  .../Views/TextView/TextViewCursorDelegate.swift   |  16 --
+|  buildServer.json                                  |  19 ++
+|  14 files changed, 454 insertions(+), 330 deletions(-)
+
+* cd86177 AryanRogye (13 days ago) its hard to nail down the next word, but I'm gettin gsomewhere| 
+|  .../xcdebugger/Breakpoints_v2.xcbkptlist          |   6 +
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |  41 ++++++-
+|  .../EditorDelegates/CursorDelegate.swift          | 129 ++++++++++++++++++++
+|  .../Sources/TextEditor/Extensions/String.swift    |  27 ++++
+|  .../Views/TextView/ComfyTextView+Vim.swift        |  14 ++-
+|  .../Views/TextView/TextViewCursorDelegate.swift   |   2 +
+|  6 files changed, 215 insertions(+), 4 deletions(-)
+
+* 4805d59 AryanRogye (2 weeks ago) moving things around so it makes more sense| 
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     | 25 ++++----
+|  .../CursorDelegate.swift                          |  0
+|  .../MagnificationDelegate.swift                   |  1 +
+|  .../TextViewDelegate.swift                        |  0
+|  .../ScrollViewMagnificationDelegate.swift         |  2 +-
+|  .../ComfyTextView+Vim+InsertionPoint.swift        | 63 +++++++++++++++++++++
+|  .../TextEditor/Views/TextView/ComfyTextView.swift | 51 +----------------
+|  7 files changed, 80 insertions(+), 62 deletions(-)
+
+* 7b6672c AryanRogye (2 weeks ago) handling more vim motions, fixing some bugs with the scrolling of the textView| 
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   | 17 ++++++-
+|  .../Views/TextView/ComfyTextView+Vim.swift        | 53 +++++++++++++++++----
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  9 ++++
+|  .../TextEditor/Views/VimView/VimStatus.swift      |  2 +
+|  4 files changed, 71 insertions(+), 10 deletions(-)
+
+*   8f5e1c9 Aryan (2 weeks ago) Merge pull request #1 from AryanRogye/TextViewDelegateSplit
+|\  
+| * 3089577 AryanRogye (2 weeks ago) Fixing bugs| | 
+| |  .../TextEditor/Delegates/CursorDelegate.swift    | 44 +++++++++++++-------
+| |  .../TextEditor/Delegates/TextViewDelegate.swift  | 10 ++---
+| |  .../Views/TextView/ComfyTextView.swift           |  2 -
+| |  .../Views/TextView/TextViewCursorDelegate.swift  |  1 +
+| |  4 files changed, 36 insertions(+), 21 deletions(-)
+
+| * b13d29b AryanRogye (2 weeks ago) Restore TextViewDelegate responsibilities and isolate cursor state| | 
+| |  .../TextEditor/Core/EditorCommandCenter.swift    |  3 +-
+| |  .../TextEditor/Core/TextViewController.swift     | 20 +++---
+| |  .../TextEditor/Delegates/CursorDelegate.swift    | 49 +--------------
+| |  .../TextEditor/Delegates/TextViewDelegate.swift  | 64 ++++++++++++++++++++
+| |  .../Views/TextView/TextViewCursorDelegate.swift  |  2 +-
+| |  5 files changed, 79 insertions(+), 59 deletions(-)
+
+| * c45019b AryanRogye (2 weeks ago) experimenting with different designs
+|/  |   
+|    .../TextEditor/Core/EditorCommandCenter.swift    |  4 +-
+|    .../TextEditor/Core/TextViewController.swift     | 14 +--
+|    .../TextEditor/Delegates/CursorDelegate.swift    | 90 ++++++++++++++++++++
+|    .../TextEditor/Delegates/TextViewDelegate.swift  | 65 --------------
+|    .../ScrollViewMagnificationDelegate.swift        |  1 +
+|    .../Views/TextView/ComfyTextView.swift           | 46 ++++++++--
+|    .../Views/TextView/TextViewCursorDelegate.swift  | 13 +++
+|    7 files changed, 151 insertions(+), 82 deletions(-)
+
+* 512a719 AryanRogye (2 weeks ago) added more vim motions| 
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     | 16 ++++++++-
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   |  3 +-
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  1 +
+|  .../Views/TextView/ComfyTextView+Vim.swift        | 38 ++++++++++++++++++++-
+|  4 files changed, 55 insertions(+), 3 deletions(-)
+
+* e06a981 AryanRogye (2 weeks ago) added vim support| 
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  4 ++
+|  .../Views/TextView/ComfyTextView+Vim.swift        | 60 +++++++++++++++++++--
+|  .../TextEditor/Views/TextView/ComfyTextView.swift | 25 +++++++--
+|  .../TextEditor/Views/VimView/VimBottomView.swift  |  2 +-
+|  .../TextEditor/Views/VimView/VimStatus.swift      |  4 +-
+|  5 files changed, 85 insertions(+), 10 deletions(-)
+
+* 02fb0ad AryanRogye (2 weeks ago) added a vim state switcher with using, control c, i, and v for normal, insert and visual| 
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   |  2 +-
+|  TextEditor/Package.swift                          | 11 ++-
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  4 +-
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   | 20 +----
+|  .../Sources/TextEditor/Core/Vim/VimState.swift    |  3 +-
+|  .../Views/TextView/ComfyTextView+Vim.swift        | 32 +++++++-
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  8 ++
+|  .../TextEditor/Views/VimView/VimBottomView.swift  | 30 ++------
+|  .../TextEditor/Views/VimView/VimStatus.swift      | 85 +++++++++++++++++++++
+|  9 files changed, 145 insertions(+), 50 deletions(-)
+
+* 0e7c878 AryanRogye (2 weeks ago) update cache| 
+|  .gitignore                                           |   8 ++++++++
+|  .../UserInterfaceState.xcuserstate                   | Bin 119622 -> 0 bytes
+|  2 files changed, 8 insertions(+)
+
+* 27031e5 AryanRogye (2 weeks ago) using combine for subscription| 
+|  .../UserInterfaceState.xcuserstate                | Bin 120947 -> 119622 bytes
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  20 +++---------
+|  .../TextEditor/Core/TextViewController.swift      |   7 ++--
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   |  29 ++++++++++++++++-
+|  .../Sources/TextEditor/Core/Vim/VimState.swift    |  12 +++++++
+|  .../Views/TextView/ComfyTextView+Vim.swift        |   2 +-
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  10 +++---
+|  .../TextEditor/Views/VimView/VimBottomView.swift  |  34 +++++++++++++++-----
+|  8 files changed, 83 insertions(+), 31 deletions(-)
+
+* 0970b6b AryanRogye (2 weeks ago) created a bottom bar for vim commands| 
+|  .../UserInterfaceState.xcuserstate                | Bin 129485 -> 120947 bytes
+|  .../xcshareddata/xcschemes/ComfyEditor.xcscheme   |  78 ++++++++++++++++++++
+|  .../xcschemes/xcschememanagement.plist            |   8 ++
+|  ComfyEditor/App/ComfyEditorApp.swift              |  23 +-----
+|  ComfyEditor/App/ComfyEditorMenuBar.swift          |  30 ++++++++
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  12 +++
+|  .../TextEditor/Core/TextViewController.swift      |  40 +++++++++-
+|  .../Sources/TextEditor/Core/Vim/VimEngine.swift   |  10 +++
+|  .../Views/TextView/ComfyTextView+Vim.swift        |  15 ++++
+|  .../TextEditor/Views/VimView/VimBottomView.swift  |  40 ++++++++++
+|  10 files changed, 230 insertions(+), 26 deletions(-)
+
+* 67711ee AryanRogye (2 weeks ago) moved TextEditor out of the main app and into a package so its easily callable| 
+|  ComfyEditor.xcodeproj/project.pbxproj             |  12 +++++
+|  .../UserInterfaceState.xcuserstate                | Bin 100137 -> 129485 bytes
+|  ComfyEditor/App/ComfyEditorApp.swift              |   1 +
+|  ComfyEditor/Coordinators/KeybindCoordinator.swift |   1 +
+|  ComfyEditor/Coordinators/SettingsManager.swift    |   6 +++
+|  ComfyEditor/TextEditor/Core/Editor.swift          |  25 ----------
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |   7 ++-
+|  TextEditor/.gitignore                             |   8 +++
+|  TextEditor/Package.swift                          |  25 ++++++++++
+|  .../Sources/TextEditor/Core/ComfyTextEditor.swift |  52 ++++++++++++++++++++
+|  .../TextEditor/Core/EditorCommandCenter.swift     |  16 +++---
+|  .../TextEditor/Core/TextViewController.swift      |   6 +--
+|  .../Delegates/MagnificationDelegate.swift         |   0
+|  .../TextEditor/Delegates/TextViewDelegate.swift   |   0
+|  .../Views/ScrollView/ComfyScrollView.swift        |   4 ++
+|  .../ScrollViewMagnificationDelegate.swift         |   0
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  11 ++---
+|  17 files changed, 131 insertions(+), 43 deletions(-)
+
+* 3d8d473 AryanRogye (2 weeks ago) had Gemini come up with a insertionPoint design, i can now go into it and edit it, i've also attached insertion point to the toggle where its toggleable| 
+|  .../UserInterfaceState.xcuserstate                | Bin 114491 -> 100137 bytes
+|  .../xcschemes/xcschememanagement.plist            |   2 +-
+|  ComfyEditor/TextEditor/Core/Editor.swift          |   4 +-
+|  .../TextEditor/Views/TextView/ComfyTextView.swift |  74 +++++++++++++++++++-
+|  4 files changed, 77 insertions(+), 3 deletions(-)
+
+* 9f945df AryanRogye (2 weeks ago) added a mini vim mode selection only| 
+|  ComfyEditor.xcodeproj/project.pbxproj             |  32 +++---
+|  .../xcshareddata/swiftpm/Package.resolved         |  24 +++++
+|  .../UserInterfaceState.xcuserstate                | Bin 102128 -> 114491 bytes
+|  ComfyEditor/App/ComfyEditorApp.swift              |   6 +-
+|  ComfyEditor/Coordinators/SettingsManager.swift    |  18 +++-
+|  ComfyEditor/TextEditor/Core/Editor.swift          |   1 +
+|  .../Views/ComfyEditor/ComfyEditorBar.swift        | 103 --------------------
+|  .../Views/ComfyEditor/ComfyEditorHome.swift       |   6 +-
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |  12 ++-
+|  ComfyEditor/Views/Keybinds/KeybindView.swift      |   1 -
+|  10 files changed, 79 insertions(+), 124 deletions(-)
+
+* af627b3 AryanRogye (2 weeks ago) removed Keyboardshortcuts package, and implemented my own for local keyboard shortcuts which work in the same exact way but local, needs some work but its functioning| 
+|  ComfyEditor.xcodeproj/project.pbxproj             |  12 +
+|  .../UserInterfaceState.xcuserstate                | Bin 76522 -> 102128 bytes
+|  .../xcschemes/xcschememanagement.plist            |   2 +-
+|  ComfyEditor/Coordinators/KeybindCoordinator.swift |  49 +-
+|  ComfyEditor/Views/Keybinds/KeybindView.swift      |   7 +-
+|  KeyboardShortcuts/.editorconfig                   |  12 -
+|  KeyboardShortcuts/.gitattributes                  |   1 -
+|  KeyboardShortcuts/.github/workflows/swiftlint.yml |  14 -
+|  KeyboardShortcuts/.gitignore                      |   4 -
+|  KeyboardShortcuts/.spi.yml                        |   4 -
+|  KeyboardShortcuts/.swiftlint.yml                  | 228 ------
+|  .../package.xcworkspace/contents.xcworkspacedata  |   7 -
+|  .../xcschemes/KeyboardShortcuts.xcscheme          |  91 ---
+|  .../project.pbxproj                               | 391 ----------
+|  .../Example/KeyboardShortcutsExample/App.swift    |  13 -
+|  .../KeyboardShortcutsExample/AppState.swift       |  43 --
+|  .../AccentColor.colorset/Contents.json            |  11 -
+|  .../AppIcon.appiconset/Contents.json              |  58 --
+|  .../Assets.xcassets/Contents.json                 |   6 -
+|  .../KeyboardShortcutsExample.entitlements         |   8 -
+|  .../KeyboardShortcutsExample/MainScreen.swift     | 138 ----
+|  .../Preview Assets.xcassets/Contents.json         |   6 -
+|  .../KeyboardShortcutsExample/Utilities.swift      | 106 ---
+|  KeyboardShortcuts/Package.swift                   |  35 -
+|  .../CarbonKeyboardShortcuts.swift                 | 351 ---------
+|  .../Sources/KeyboardShortcuts/Key.swift           | 196 -----
+|  .../KeyboardShortcuts/KeyboardShortcuts.swift     | 638 ----------------
+|  .../Localization/ar.lproj/Localizable.strings     |   9 -
+|  .../Localization/cs.lproj/Localizable.strings     |   9 -
+|  .../Localization/de.lproj/Localizable.strings     |   9 -
+|  .../Localization/en.lproj/Localizable.strings     |   9 -
+|  .../Localization/es.lproj/Localizable.strings     |   9 -
+|  .../Localization/fr.lproj/Localizable.strings     |   9 -
+|  .../Localization/hu.lproj/Localizable.strings     |   9 -
+|  .../Localization/it.lproj/Localizable.strings     |   9 -
+|  .../Localization/ja.lproj/Localizable.strings     |   9 -
+|  .../Localization/ko.lproj/Localizable.strings     |   9 -
+|  .../Localization/nl.lproj/Localizable.strings     |   9 -
+|  .../Localization/pt-BR.lproj/Localizable.strings  |   9 -
+|  .../Localization/ru.lproj/Localizable.strings     |   9 -
+|  .../Localization/sk.lproj/Localizable.strings     |   9 -
+|  .../zh-Hans.lproj/Localizable.strings             |   9 -
+|  .../Localization/zh-TW.lproj/Localizable.strings  |   9 -
+|  .../Sources/KeyboardShortcuts/NSMenuItem++.swift  | 107 ---
+|  .../Sources/KeyboardShortcuts/Name.swift          |  60 --
+|  .../Sources/KeyboardShortcuts/Recorder.swift      | 186 -----
+|  .../Sources/KeyboardShortcuts/RecorderCocoa.swift | 354 ---------
+|  .../Sources/KeyboardShortcuts/Shortcut.swift      | 781 --------------------
+|  .../Sources/KeyboardShortcuts/Utilities.swift     | 579 ---------------
+|  .../Sources/KeyboardShortcuts/ViewModifiers.swift | 121 ---
+|  .../KeyboardShortcutsTests.swift                  | 319 --------
+|  .../RecorderLayoutTests.swift                     |  26 -
+|  .../Tests/KeyboardShortcutsTests/Utilities.swift  |  14 -
+|  KeyboardShortcuts/license                         |   9 -
+|  KeyboardShortcuts/logo-dark.png                   | Bin 27229 -> 0 bytes
+|  KeyboardShortcuts/logo-light.png                  | Bin 26544 -> 0 bytes
+|  KeyboardShortcuts/readme.md                       | 253 -------
+|  KeyboardShortcuts/screenshot.png                  | Bin 84204 -> 0 bytes
+|  LocalShortcuts/.gitignore                         |   8 +
+|  LocalShortcuts/Package.swift                      |  23 +
+|  LocalShortcuts/Sources/LocalShortcuts/Key.swift   | 132 ++++
+|  .../Sources/LocalShortcuts/LocalShortcuts.swift   |  88 +++
+|  .../LocalShortcuts/LocalShortcutsRecorder.swift   | 118 +++
+|  .../Sources/LocalShortcuts/Modifier.swift         |  41 +
+|  64 files changed, 451 insertions(+), 5343 deletions(-)
+
+* f012beb AryanRogye (2 weeks ago) fixing bugs| 
+|  .../UserInterfaceState.xcuserstate                | Bin 78717 -> 76522 bytes
+|  ComfyEditor/App/ComfyEditorApp.swift              |   3 +-
+|  .../TextEditor/Core/TextViewController.swift      |   5 ++
+|  .../Views/ComfyEditor/ComfyEditorHome.swift       |  66 ++++++++++++++++++++
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |  13 +---
+|  5 files changed, 74 insertions(+), 13 deletions(-)
+
+* 89b1d31 AryanRogye (2 weeks ago) moved files around| 
+|  .../UserInterfaceState.xcuserstate                | Bin 66558 -> 78717 bytes
+|  ComfyEditor/TextEditor/{ => Core}/Editor.swift    |   0
+|  .../{ => Core}/EditorCommandCenter.swift          |   0
+|  .../{ => Core}/TextViewController.swift           |   0
+|  .../{ => Views}/ScrollView/ComfyScrollView.swift  |   0
+|  .../ScrollViewMagnificationDelegate.swift         |   1 +
+|  .../{ => Views}/TextView/ComfyTextView.swift      |   0
+|  7 files changed, 1 insertion(+)
+
+* 8d9a690 AryanRogye (3 weeks ago) configuring| 
+|  ComfyEditor.icon/Assets/Frame 480869.svg          |  48 ++++++
+|  ComfyEditor.icon/Assets/Group 1.svg               | 123 +++++++++++++++
+|  ComfyEditor.icon/Assets/Rectangle 39349.svg       |  37 +++++
+|  ComfyEditor.icon/Assets/Vector 1.svg              |  11 ++
+|  ComfyEditor.icon/icon.json                        | 165 ++++++++++++++++++++
+|  ComfyEditor.xcodeproj/project.pbxproj             |   8 +-
+|  .../UserInterfaceState.xcuserstate                | Bin 64209 -> 66558 bytes
+|  ComfyEditor/Coordinators/SettingsManager.swift    |  41 +++++
+|  8 files changed, 431 insertions(+), 2 deletions(-)
+
+* 5e987c5 AryanRogye (3 weeks ago) made nice edits'| 
+|  .../UserInterfaceState.xcuserstate                | Bin 48185 -> 64209 bytes
+|  ComfyEditor/App/ComfyEditorApp.swift              |   4 +-
+|  .../Delegates/MagnificationDelegate.swift         |  18 ++++++++
+|  .../{ => Delegates}/TextViewDelegate.swift        |   6 ++-
+|  ComfyEditor/TextEditor/EditorCommandCenter.swift  |   8 ++++
+|  .../TextEditor/ScrollView/ComfyScrollView.swift   |  47 ++++++++++++++++++++
+|  .../ScrollViewMagnificationDelegate.swift         |  11 +++++
+|  .../TextEditor/TextView/ComfyTextView.swift       |  33 ++++++++++++++
+|  ComfyEditor/TextEditor/TextViewController.swift   |  41 ++++++++---------
+|  .../Views/ComfyEditor/ComfyEditorBar.swift        |  29 ++++++++++--
+|  .../Views/ComfyEditor/ComfyEditorScreen.swift     |  41 ++++++++++++++++-
+|  11 files changed, 209 insertions(+), 29 deletions(-)
+
+* 331bf2d AryanRogye (3 weeks ago) Making Selection much better by taking into account different sizes that may be under the selection at a time| 
+|  .../UserInterfaceState.xcuserstate                | Bin 49786 -> 48185 bytes
+|  ComfyEditor/TextEditor/TextViewController.swift   |  28 +++++++++++---------
+|  ComfyEditor/TextEditor/TextViewDelegate.swift     |  25 ++++++++++++-----
+|  3 files changed, 35 insertions(+), 18 deletions(-)
+
+* c962046 AryanRogye (3 weeks ago) Convert KeyboardShortcuts from submodule to regular directory| 
+|  KeyboardShortcuts                                 |   1 -
+|  KeyboardShortcuts/.editorconfig                   |  12 +
+|  KeyboardShortcuts/.gitattributes                  |   1 +
+|  KeyboardShortcuts/.github/workflows/swiftlint.yml |  14 +
+|  KeyboardShortcuts/.gitignore                      |   4 +
+|  KeyboardShortcuts/.spi.yml                        |   4 +
+|  KeyboardShortcuts/.swiftlint.yml                  | 228 ++++++
+|  .../package.xcworkspace/contents.xcworkspacedata  |   7 +
+|  .../xcschemes/KeyboardShortcuts.xcscheme          |  91 +++
+|  .../project.pbxproj                               | 391 ++++++++++
+|  .../Example/KeyboardShortcutsExample/App.swift    |  13 +
+|  .../KeyboardShortcutsExample/AppState.swift       |  43 ++
+|  .../AccentColor.colorset/Contents.json            |  11 +
+|  .../AppIcon.appiconset/Contents.json              |  58 ++
+|  .../Assets.xcassets/Contents.json                 |   6 +
+|  .../KeyboardShortcutsExample.entitlements         |   8 +
+|  .../KeyboardShortcutsExample/MainScreen.swift     | 138 ++++
+|  .../Preview Assets.xcassets/Contents.json         |   6 +
+|  .../KeyboardShortcutsExample/Utilities.swift      | 106 +++
+|  KeyboardShortcuts/Package.swift                   |  35 +
+|  .../CarbonKeyboardShortcuts.swift                 | 351 +++++++++
+|  .../Sources/KeyboardShortcuts/Key.swift           | 196 +++++
+|  .../KeyboardShortcuts/KeyboardShortcuts.swift     | 638 ++++++++++++++++
+|  .../Localization/ar.lproj/Localizable.strings     |   9 +
+|  .../Localization/cs.lproj/Localizable.strings     |   9 +
+|  .../Localization/de.lproj/Localizable.strings     |   9 +
+|  .../Localization/en.lproj/Localizable.strings     |   9 +
+|  .../Localization/es.lproj/Localizable.strings     |   9 +
+|  .../Localization/fr.lproj/Localizable.strings     |   9 +
+|  .../Localization/hu.lproj/Localizable.strings     |   9 +
+|  .../Localization/it.lproj/Localizable.strings     |   9 +
+|  .../Localization/ja.lproj/Localizable.strings     |   9 +
+|  .../Localization/ko.lproj/Localizable.strings     |   9 +
+|  .../Localization/nl.lproj/Localizable.strings     |   9 +
+|  .../Localization/pt-BR.lproj/Localizable.strings  |   9 +
+|  .../Localization/ru.lproj/Localizable.strings     |   9 +
+|  .../Localization/sk.lproj/Localizable.strings     |   9 +
+|  .../zh-Hans.lproj/Localizable.strings             |   9 +
+|  .../Localization/zh-TW.lproj/Localizable.strings  |   9 +
+|  .../Sources/KeyboardShortcuts/NSMenuItem++.swift  | 107 +++
+|  .../Sources/KeyboardShortcuts/Name.swift          |  60 ++
+|  .../Sources/KeyboardShortcuts/Recorder.swift      | 186 +++++
+|  .../Sources/KeyboardShortcuts/RecorderCocoa.swift | 354 +++++++++
+|  .../Sources/KeyboardShortcuts/Shortcut.swift      | 781 ++++++++++++++++++++
+|  .../Sources/KeyboardShortcuts/Utilities.swift     | 579 +++++++++++++++
+|  .../Sources/KeyboardShortcuts/ViewModifiers.swift | 121 +++
+|  .../KeyboardShortcutsTests.swift                  | 319 ++++++++
+|  .../RecorderLayoutTests.swift                     |  26 +
+|  .../Tests/KeyboardShortcutsTests/Utilities.swift  |  14 +
+|  KeyboardShortcuts/license                         |   9 +
+|  KeyboardShortcuts/logo-dark.png                   | Bin 0 -> 27229 bytes
+|  KeyboardShortcuts/logo-light.png                  | Bin 0 -> 26544 bytes
+|  KeyboardShortcuts/readme.md                       | 253 +++++++
+|  KeyboardShortcuts/screenshot.png                  | Bin 0 -> 84204 bytes
+|  54 files changed, 5314 insertions(+), 1 deletion(-)
+
+* 3bd2306 AryanRogye (3 weeks ago) first commit  
+   ComfyEditor.xcodeproj/project.pbxproj             | 359 ++++++++++++++++++++
+   .../project.xcworkspace/contents.xcworkspacedata  |   7 +
+   .../UserInterfaceState.xcuserstate                | Bin 0 -> 49786 bytes
+   .../xcschemes/xcschememanagement.plist            |  14 +
+   ComfyEditor/App/AppCoordinator.swift              |  21 ++
+   ComfyEditor/App/AppDelegate.swift                 |  28 ++
+   ComfyEditor/App/ComfyEditorApp.swift              |  45 +++
+   .../AccentColor.colorset/Contents.json            |  11 +
+   .../AppIcon.appiconset/Contents.json              |  58 ++++
+   ComfyEditor/Assets.xcassets/Contents.json         |   6 +
+   ComfyEditor/Coordinators/KeybindCoordinator.swift |  80 +++++
+   ComfyEditor/Coordinators/SettingsManager.swift    |  41 +++
+   ComfyEditor/Coordinators/WindowCoordinator.swift  | 199 +++++++++++
+   ComfyEditor/TextEditor/Editor.swift               |  22 ++
+   ComfyEditor/TextEditor/EditorCommandCenter.swift  |  45 +++
+   ComfyEditor/TextEditor/TextViewController.swift   | 162 +++++++++
+   ComfyEditor/TextEditor/TextViewDelegate.swift     |  48 +++
+   .../Views/ComfyEditor/ComfyEditorBar.swift        |  80 +++++
+   .../Views/ComfyEditor/ComfyEditorScreen.swift     |  31 ++
+   ComfyEditor/Views/Keybinds/KeybindView.swift      |  32 ++
+   ComfyEditor/Views/Settings/SettingsView.swift     |  17 +
+   KeyboardShortcuts                                 |   1 +
+   22 files changed, 1307 insertions(+)

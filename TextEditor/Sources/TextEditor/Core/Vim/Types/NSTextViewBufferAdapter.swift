@@ -168,6 +168,15 @@ public final class NSTextViewBufferAdapter: BufferView {
         guard let textView else { return 0 }
         return textView.selectedRanges.first?.rangeValue.location ?? 0
     }
+    
+    public func isOnNewLine(_ pos: Position) -> Bool {
+        if let c = char(at: pos) {
+            if ClassifierChar.init(from: c) == .newline {
+                return true
+            }
+        }
+        return false
+    }
 
     public func cursorPosition() -> Position {
         /// if no textView return 0,0

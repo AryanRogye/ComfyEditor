@@ -88,16 +88,22 @@ final class MotionEngine {
         }
         var newCol = currentPos.column + count
         
-        /// IF IS NEWLINE go 1 more forward
-        if let c = buffer.char(at: currentPos) {
-            if ClassifierChar.init(from: c) == .newline {
-                newCol += 1
-            }
+        if buffer.isOnNewLine(currentPos) {
+            newCol += 1
         }
+        
+        var pos: Position
         if newCol >= line.count {
-            return Position(line: currentPos.line + 1, column: 0)
+            pos = Position(line: currentPos.line + 1, column: 0)
+        } else {
+            pos = Position(line: currentPos.line, column: (max(0, newCol)))
         }
-        return Position(line: currentPos.line, column: (max(0, newCol)))
+        
+        if buffer.isOnNewLine(pos) {
+            pos = Position(line: currentPos.line + 1, column: 0)
+        }
+        
+        return pos
     }
     
     // MARK: - Move End of Line
