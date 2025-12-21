@@ -7,6 +7,7 @@
 
 import AppKit
 import Combine
+import SwiftUI
 
 public class TextViewController: NSViewController {
 
@@ -22,8 +23,10 @@ public class TextViewController: NSViewController {
     /// Our Implementation of a NSTextView
     lazy var textView = ComfyTextView(vimEngine: vimEngine)
 
+    /// Foreground Style
+    let foregroundStyle: Color
     /// Bottom Bar for Vim Command Input, etc
-    lazy var vimBottomView = VimBottomView(vimEngine: vimEngine)
+    lazy var vimBottomView = VimBottomView(vimEngine: vimEngine, foregroundStyle: foregroundStyle)
 
     // MARK: - Delegates
     /// Text Delegate
@@ -37,7 +40,8 @@ public class TextViewController: NSViewController {
     }
 
     // MARK: - Init
-    init() {
+    init(foregroundStyle: Color) {
+        self.foregroundStyle = foregroundStyle
         super.init(nibName: nil, bundle: nil)
         textDelegate.vimEngine = vimEngine
     }
@@ -63,7 +67,8 @@ public class TextViewController: NSViewController {
     // MARK: - Load View
     public override func loadView() {
         let root = NSView()
-        root.wantsLayer = false
+        // Enable layer for consistent layer-backed view hierarchy
+        root.wantsLayer = true
         self.view = root
 
         /// Assign ScrollView Delegate
@@ -73,7 +78,8 @@ public class TextViewController: NSViewController {
         textView.delegate = textDelegate
         textView.setupCursorView()
 
-        scrollView.contentView = NSClipView()
+        // Use RedrawClipView for optimized redrawing during zoom
+        scrollView.contentView = RedrawClipView()
         scrollView.documentView = textView
         root.addSubview(scrollView)
         root.addSubview(vimBottomView)
@@ -92,9 +98,15 @@ public class TextViewController: NSViewController {
             vimBottomView.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
-    
+
     public func setCornerRadius(_ value: CGFloat) {
         view.layer?.cornerRadius = value
+    }
+
+    /// Sets the background color for the entire editor area
+    public func setEditorBackground(_ color: NSColor) {
+        view.layer?.backgroundColor = color.cgColor
+        scrollView.setScrollBackground(color)
     }
 }
 

@@ -6,10 +6,19 @@
 //
 
 import SwiftUI
+import Combine
+
+final class VimStatusViewModel: ObservableObject {
+    @Published var foregroundStyle: Color
+    init(foregroundStyle: Color) {
+        self.foregroundStyle = foregroundStyle
+    }
+}
 
 struct VimStatus: View {
     
     @ObservedObject var vimEngine: VimEngine
+    @ObservedObject var vimStatusVM : VimStatusViewModel
     
     /// This is dependent on if vim is enabled or not
     var opacity: CGFloat {
@@ -44,6 +53,7 @@ struct VimStatus: View {
             Spacer()
             Text("Line: \(vimEngine.position.map { String($0.line) } ?? "_")  Col: \(vimEngine.position.map { String($0.column) } ?? "_")")
                 .font(.system(size: 12, weight: .regular, design: .rounded))
+                .foregroundStyle(vimStatusVM.foregroundStyle)
                 .opacity(opacity)
                 .padding(.horizontal, 4)
                 .padding(.vertical, 2)
@@ -53,9 +63,6 @@ struct VimStatus: View {
     }
 }
 
-
-
-
 #Preview {
     @Previewable @StateObject var vimEngine1 = VimEngine()
     @Previewable @StateObject var vimEngine2 = VimEngine()
@@ -64,7 +71,7 @@ struct VimStatus: View {
     
     let test: (VimEngine) -> some View = { engine in
         HStack {
-            VimStatus(vimEngine: engine)
+            VimStatus(vimEngine: engine, vimStatusVM: VimStatusViewModel(foregroundStyle: .white))
             Spacer()
         }
         .border(Color.black)

@@ -15,9 +15,21 @@ final class VimBottomView: NSView {
     
     private let topBorder = CALayer()
     private var borderThickness: CGFloat = 1
+    
+    var foregroundStyle: Color
+    lazy var vimStatusVM = VimStatusViewModel(foregroundStyle: foregroundStyle)
+    
+    lazy var vimStatusView = VimStatus(
+        vimEngine: vimEngine,
+        vimStatusVM: vimStatusVM
+    )
 
-    init(vimEngine: VimEngine) {
+    init(
+        vimEngine: VimEngine,
+        foregroundStyle: Color
+    ) {
         self.vimEngine = vimEngine
+        self.foregroundStyle = foregroundStyle
         super.init(frame: .zero)
         
         translatesAutoresizingMaskIntoConstraints = false
@@ -35,6 +47,12 @@ final class VimBottomView: NSView {
         )
     }
     
+    public func setForegroundStyle(color: Color) {
+        DispatchQueue.main.async {
+            self.vimStatusVM.foregroundStyle = color
+        }
+    }
+    
     public func setBorderColor(color: NSColor) {
         wantsLayer = true
         topBorder.backgroundColor = color.cgColor
@@ -48,9 +66,7 @@ final class VimBottomView: NSView {
     required init?(coder: NSCoder) { fatalError() }
     
     private func setup() {
-        let hosting = NSHostingView(rootView: VimStatus(
-            vimEngine: vimEngine
-        ))
+        let hosting = NSHostingView(rootView: vimStatusView)
         hosting.translatesAutoresizingMaskIntoConstraints = false
         addSubview(hosting)
         
