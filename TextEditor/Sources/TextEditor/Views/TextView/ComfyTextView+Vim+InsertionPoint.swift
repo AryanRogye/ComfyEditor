@@ -19,7 +19,6 @@ extension ComfyTextView {
         vimCursorView.isHidden = false
         let cursor = vimEngine.buffer.cursorPosition()
         let c = vimEngine.buffer.line(at: cursor.line).char(at: cursor.column)
-        debugPrint("Char: \(c)")
         
         // Optional: Use a very fast animation (0.05s) to make it feel fluid like VS Code
         NSAnimationContext.runAnimationGroup({ context in

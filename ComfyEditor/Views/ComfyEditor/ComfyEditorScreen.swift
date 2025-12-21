@@ -8,42 +8,62 @@
 import SwiftUI
 import TextEditor
 
-struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
+struct ComfyEditorScreen: View {
     
-    var backgroundColor : Color
-    var topBar : TopBar
-    var content: Content
+    @Bindable var editorCommandCenter = EditorCommandCenter.shared
+    @Bindable var settingsCoordinator : SettingsCoordinator
+    @Bindable var themeCoordinator    : ThemeCoordinator
     
-    init(
-        backgroundColor      : Color,
-        @ViewBuilder content : @escaping () -> Content,
-        @ViewBuilder topBar  : @escaping () -> TopBar,
-    ) {
-        self.topBar  = topBar()
-        self.content = content()
-        self.backgroundColor = backgroundColor
-    }
+    @State var text: String = """
+        
+        /// TEST MOVE UP HERE
+        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
+        func textViewDidChangeSelection(_ notification: Notification)
+        //
+        func textViewDidChangeSelection(_ notification: Notification)
+        
+        
+        //
+        //  TextViewCursorDelegate.swift
+        //  TextEditor
+        //
+        //  Created by Aryan Rogye on 12/6/25.
+        //
+        
+        import AppKit
+        
+        @MainActor
+        protocol TextViewCursorDelegate: AnyObject {
+        var isOnNewline: Bool { get }
+        func textViewDidChangeSelection(_ notification: Notification)
+        }
+        """
     
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(backgroundColor)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                topBar
-                content
-            }
-            .background(backgroundColor) // optional if you want it inside too
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(.gray.opacity(0.3), lineWidth: 1)
+        ComfyEditorFrameView(
+            backgroundColor : themeCoordinator.currentTheme.theme.primaryBackground,
+            borderColor     : themeCoordinator.currentTheme.theme.borderColor
+        ) {
+            /// Editor View
+            ComfyTextEditor(
+                text                    : $text,
+                showScrollbar           : $settingsCoordinator.showScrollbar,
+                isInVimMode             : $settingsCoordinator.isVimEnabled,
+                editorBackground        : themeCoordinator.currentTheme.theme.secondaryBackground,
+                editorForegroundStyle   : themeCoordinator.currentTheme.theme.primaryForegroundStyle,
+                borderColor             : themeCoordinator.currentTheme.theme.borderColor,
+                borderRadius            : 8,
             )
-            .padding(10)
+            .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
+            
+        } topBar: {
+            ComfyEditorTopBar(
+                settingsCoordinator: settingsCoordinator,
+                themeCoordinator   : themeCoordinator
+            )
         }
-        .ignoresSafeArea(edges: .top)
-        .windowTitlebarArea(shouldShowContent: .constant(false), shouldHideTrafficLights: .constant(false), content: { })
+        .frame(minWidth: 600, minHeight: 400)
+        .navigationBarBackButtonHidden()
     }
 }
 
@@ -90,59 +110,5 @@ struct VimToggleViewModifier: ViewModifier {
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: shouldShowVimEnabledOverlay)
-    }
-}
-
-struct ComfyEditorScreen: View {
-    
-    @Bindable var editorCommandCenter = EditorCommandCenter.shared
-    @Bindable var settingsCoordinator : SettingsCoordinator
-    @Bindable var themeCoordinator    : ThemeCoordinator
-    
-    @State var text: String = """
-        
-        /// TEST MOVE UP HERE
-        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
-        func textViewDidChangeSelection(_ notification: Notification)
-        //
-        func textViewDidChangeSelection(_ notification: Notification)
-        
-        
-        //
-        //  TextViewCursorDelegate.swift
-        //  TextEditor
-        //
-        //  Created by Aryan Rogye on 12/6/25.
-        //
-        
-        import AppKit
-        
-        @MainActor
-        protocol TextViewCursorDelegate: AnyObject {
-        var isOnNewline: Bool { get }
-        func textViewDidChangeSelection(_ notification: Notification)
-        }
-        """
-    
-    var body: some View {
-        ComfyEditorFrameView(
-            backgroundColor: themeCoordinator.currentTheme.theme.primaryBackground
-        ) {
-            /// Editor View
-            ComfyTextEditor(
-                text: $text,
-                showScrollbar: $settingsCoordinator.showScrollbar,
-                isInVimMode: $settingsCoordinator.isVimEnabled,
-                editorBackground: themeCoordinator.currentTheme.theme.secondaryBackground,
-                editorForegroundStyle: themeCoordinator.currentTheme.theme.primaryForegroundStyle,
-                borderRadius: 8
-            )
-            .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
-            
-        } topBar: {
-            ComfyEditorTopBar(settingsCoordinator: settingsCoordinator)
-        }
-        .frame(minWidth: 600, minHeight: 400)
-        .navigationBarBackButtonHidden()
     }
 }

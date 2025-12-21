@@ -8,7 +8,9 @@
 import SwiftUI
 
 protocol Theme {
-    var primaryBackground: Color { get }
-    var secondaryBackground: Color { get }
-    var primaryForegroundStyle: Color { get }
+    var primaryBackground       : Color { get }
+    var secondaryBackground     : Color { get }
+    var primaryForegroundStyle  : Color { get }
+    var borderColor             : Color { get }
+    var secondaryBorderColor    : Color { get }
 }
