@@ -7,10 +7,15 @@
 
 import SwiftUI
 
+enum Route: Hashable {
+    case editor(cameFromOtherView: Bool)
+}
+
 struct ComfyEditorHome: View {
 
     @Environment(SettingsCoordinator.self) var settingsCoordinator
     @Environment(ThemeCoordinator.self) var themeCoordinator
+    @State private var path: [Route] = []
 
     // Adaptive grid for responsive layout
     let columns = [
@@ -43,23 +48,36 @@ struct ComfyEditorHome: View {
         @Bindable var settingsCoordinator = settingsCoordinator
         @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
-        NavigationLink(destination: ComfyEditorScreen(settingsCoordinator: settingsCoordinator, themeCoordinator: themeCoordinator)) {
-            VStack(spacing: 12) {
-                Image(systemName: "plus")
-                    .font(.system(size: 30, weight: .light))
-                    .foregroundStyle(.secondary)
-
-                Text("New Project")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+        NavigationStack(path: $path) {
+            NavigationLink(value: Route.editor(cameFromOtherView: true)) {
+                VStack(spacing: 12) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 30, weight: .light))
+                        .foregroundStyle(.secondary)
+                    
+                    Text("New Project")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 160)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
+                        .foregroundStyle(.tertiary)
+                        .background(Color(nsColor: .controlBackgroundColor).opacity(0.5).cornerRadius(12))
+                }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 160)
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                    .foregroundStyle(.tertiary)
-                    .background(Color(nsColor: .controlBackgroundColor).opacity(0.5).cornerRadius(12))
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .editor(let cameFromOtherView):
+                    ComfyEditorScreen(
+                        cameFromOtherView: cameFromOtherView,
+                        pop: { path.removeLast() },
+                        settingsCoordinator: settingsCoordinator,
+                        themeCoordinator: themeCoordinator
+                    )
+                }
             }
         }
         .buttonStyle(.plain)

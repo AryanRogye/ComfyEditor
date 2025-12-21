@@ -29,8 +29,7 @@ struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(backgroundColor)
+            backgroundColor
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -47,7 +46,7 @@ struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
             )
             .padding(10)
         }
-        .ignoresSafeArea(edges: .top)
-        .windowTitlebarArea(shouldShowContent: .constant(false), shouldHideTrafficLights: .constant(false), content: { })
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
     }
 }

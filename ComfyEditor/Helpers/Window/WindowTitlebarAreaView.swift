@@ -13,12 +13,14 @@ extension View {
     public func windowTitlebarArea<Content: View>(
         shouldShowContent      : Binding<Bool>,
         shouldHideTrafficLights: Binding<Bool>,
+        shouldRefreshTrafficLights: Binding<Bool>,
         @ViewBuilder content   : @escaping () -> Content,
     ) -> some View {
         self
             .background(WindowTitlebarArea(
                 shouldShowContent: shouldShowContent,
                 shouldHideTrafficLights: shouldHideTrafficLights,
+                shouldRefreshTrafficLights: shouldRefreshTrafficLights,
                 content: content
             ))
     }
@@ -31,15 +33,19 @@ private struct WindowTitlebarArea<Content: View>: NSViewRepresentable {
     
     @Binding var shouldShowContent : Bool
     @Binding var shouldHideTrafficLights : Bool
+    @Binding var shouldRefreshTrafficLights: Bool
+    
     var content: Content
     
     init(
         shouldShowContent: Binding<Bool>,
         shouldHideTrafficLights: Binding<Bool>,
+        shouldRefreshTrafficLights: Binding<Bool>,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self._shouldShowContent = shouldShowContent
         self._shouldHideTrafficLights = shouldHideTrafficLights
+        self._shouldRefreshTrafficLights = shouldRefreshTrafficLights
         self.content = content()
     }
     
@@ -54,9 +60,13 @@ private struct WindowTitlebarArea<Content: View>: NSViewRepresentable {
         nsView.setContentHidden(!shouldShowContent)
         nsView.updateContent(AnyView(content))
         nsView.toggleTrafficLights(shouldHideTrafficLights)
+        if shouldRefreshTrafficLights {
+            nsView.moveTrafficLightsToOrigin()
+        }
     }
 }
 
+@MainActor
 /// Main Window Class Behind SwiftUI View
 private class WindowTitlebarAreaView: NSView {
     
@@ -88,6 +98,7 @@ private class WindowTitlebarAreaView: NSView {
     init(rootView: AnyView) {
         self.rootView = rootView
         super.init(frame: .zero)
+        layer?.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) {
@@ -117,7 +128,9 @@ private class WindowTitlebarAreaView: NSView {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            self?.attachIfNeededAndRefresh()
+            DispatchQueue.main.async {
+                self?.attachIfNeededAndRefresh()
+            }
         }
         
         /// Entered Fullscreen
@@ -126,7 +139,9 @@ private class WindowTitlebarAreaView: NSView {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            self?.attachIfNeededAndRefresh()
+            DispatchQueue.main.async {
+                self?.attachIfNeededAndRefresh()
+            }
         }
         
         /// Exited Fullscreen
@@ -135,15 +150,26 @@ private class WindowTitlebarAreaView: NSView {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            self?.attachIfNeededAndRefresh()
+            DispatchQueue.main.async {
+                self?.attachIfNeededAndRefresh()
+            }
         }
     }
     
     /// Attach SwiftUI Button, And Move Traffic Lights
-    private func attachIfNeededAndRefresh(completion: @escaping () -> Void = { }) {
+    public func attachIfNeededAndRefresh(completion: @escaping () -> Void = { }) {
         guard let window else { return }
         guard let zoom = window.standardWindowButton(.zoomButton),
               let container = zoom.superview else { return }
+        
+        let mode = currentMode(for: window)
+        if mode != lastMode {
+            lastMode = mode
+            
+            // reset -> capture new baseline -> apply offset
+            moveTrafficLightsToOrigin(animated: false)
+            captureTrafficLightOrigins(in: window)
+        }
         
         /// 🔴 🟡 🟢 |<- 8px ->| [your icon]
         let left_spacing : CGFloat = 8
@@ -190,6 +216,33 @@ private class WindowTitlebarAreaView: NSView {
         
         if let window {
             moveTrafficLights(in: window)
+        }
+    }
+    
+    public func moveTrafficLightsToOrigin(animated: Bool = true) {
+        guard let window else { return }
+        
+        func reset(_ type: NSWindow.ButtonType) {
+            guard let btn = window.standardWindowButton(type),
+                  let base = originalOrigins[type] else { return }
+            
+            if btn.frame.origin == base { return } // prevents jitter
+            if animated { btn.animator().setFrameOrigin(base) }
+            else { btn.setFrameOrigin(base) }
+        }
+        
+        animate({
+            reset(.closeButton)
+            reset(.miniaturizeButton)
+            reset(.zoomButton)
+        })
+    }
+    
+    private func captureTrafficLightOrigins(in window: NSWindow) {
+        for type in [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton] {
+            if let btn = window.standardWindowButton(type) {
+                originalOrigins[type] = btn.frame.origin
+            }
         }
     }
 

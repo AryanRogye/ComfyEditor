@@ -10,9 +10,13 @@ import TextEditor
 
 struct ComfyEditorScreen: View {
     
+    var cameFromOtherView : Bool = false
+    var pop: () -> Void = { }
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
     @Bindable var themeCoordinator    : ThemeCoordinator
+    
+    @State private var shouldRefreshTrafficLights = false
     
     @State var text: String = """
         
@@ -59,11 +63,22 @@ struct ComfyEditorScreen: View {
         } topBar: {
             ComfyEditorTopBar(
                 settingsCoordinator: settingsCoordinator,
-                themeCoordinator   : themeCoordinator
+                themeCoordinator   : themeCoordinator,
+                cameFromOtherView  : cameFromOtherView,
+                pop                : pop,
             )
         }
         .frame(minWidth: 600, minHeight: 400)
         .navigationBarBackButtonHidden()
+        .windowTitlebarArea(
+            shouldShowContent: .constant(false),
+            shouldHideTrafficLights: .constant(false),
+            shouldRefreshTrafficLights: $shouldRefreshTrafficLights,
+            content: { }
+        )
+        .onAppear {
+            shouldRefreshTrafficLights = true
+        }
     }
 }
 
