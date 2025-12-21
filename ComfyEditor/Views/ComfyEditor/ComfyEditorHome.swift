@@ -23,28 +23,36 @@ struct ComfyEditorHome: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+        @Bindable var themeCoordinator = themeCoordinator
+        let theme = themeCoordinator.currentTheme.theme
 
-                Text("Projects")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+        ZStack(alignment: .topLeading) {
+            theme.primaryBackground
+                .ignoresSafeArea()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+
+                    Text("Projects")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundStyle(theme.primaryForegroundStyle)
+                        .padding(.horizontal, 32)
+                        .padding(.top, 40)
+
+                    LazyVGrid(columns: columns, spacing: 20) {
+                        addButton(theme: theme)
+                        /// More Projects will go right here
+                    }
                     .padding(.horizontal, 32)
-                    .padding(.top, 40)
-
-                LazyVGrid(columns: columns, spacing: 20) {
-                    addButton
-                    /// More Projects will go right here
+                    .padding(.bottom, 40)
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 40)
             }
         }
-        .background(Color(nsColor: .windowBackgroundColor))
     }
 
     @ViewBuilder
-    private var addButton: some View {
+    private func addButton(theme: Theme) -> some View {
         @Bindable var settingsCoordinator = settingsCoordinator
         @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
@@ -53,21 +61,25 @@ struct ComfyEditorHome: View {
                 VStack(spacing: 12) {
                     Image(systemName: "plus")
                         .font(.system(size: 30, weight: .light))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.primaryForegroundStyle.opacity(0.75))
                     
                     Text("New Project")
                         .font(.headline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(theme.primaryForegroundStyle)
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 160)
                 .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5]))
-                        .foregroundStyle(.tertiary)
-                        .background(Color(nsColor: .controlBackgroundColor).opacity(0.5).cornerRadius(12))
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(theme.secondaryBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [6]))
+                                .foregroundStyle(theme.borderColor)
+                        )
                 }
             }
+            .tint(theme.primaryForegroundStyle)
             .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .editor(let cameFromOtherView):

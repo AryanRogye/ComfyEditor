@@ -122,7 +122,7 @@ private class WindowTitlebarAreaView: NSView {
         guard let window = unsafe window, frameObs == nil else { return }
         
         /// Did Resize
-        frameObs = NotificationCenter.default.addObserver(
+        NotificationCenter.default.addObserver(
             forName: NSWindow.didResizeNotification,
             object: window,
             queue: .main
@@ -153,6 +153,28 @@ private class WindowTitlebarAreaView: NSView {
                 self?.attachIfNeededAndRefresh()
             }
         }
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidResignKey),
+            name: NSWindow.didResignKeyNotification,
+            object: window
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowDidBecomeKey),
+            name: NSWindow.didBecomeKeyNotification,
+            object: window
+        )
+    }
+    
+    @objc private func windowDidResignKey() {
+        attachIfNeededAndRefresh()
+    }
+    
+    @objc private func windowDidBecomeKey() {
+        attachIfNeededAndRefresh()
     }
     
     /// Attach SwiftUI Button, And Move Traffic Lights

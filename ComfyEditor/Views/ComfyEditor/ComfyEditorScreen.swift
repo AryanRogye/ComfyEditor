@@ -12,6 +12,7 @@ struct ComfyEditorScreen: View {
     
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
+    
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
     @Bindable var themeCoordinator    : ThemeCoordinator
@@ -43,6 +44,8 @@ struct ComfyEditorScreen: View {
         }
         """
     
+    @Environment(\.scenePhase) private var scenePhase
+    
     var body: some View {
         ComfyEditorFrameView(
             backgroundColor : themeCoordinator.currentTheme.theme.primaryBackground,
@@ -65,7 +68,7 @@ struct ComfyEditorScreen: View {
                 settingsCoordinator: settingsCoordinator,
                 themeCoordinator   : themeCoordinator,
                 cameFromOtherView  : cameFromOtherView,
-                pop                : pop,
+                pop                : superPop,
             )
         }
         .frame(minWidth: 600, minHeight: 400)
@@ -76,9 +79,21 @@ struct ComfyEditorScreen: View {
             shouldRefreshTrafficLights: $shouldRefreshTrafficLights,
             content: { }
         )
-        .onAppear {
-            shouldRefreshTrafficLights = true
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                shouldRefreshTrafficLights = true
+            case .inactive, .background:
+                shouldRefreshTrafficLights = false
+            @unknown default:
+                break
+            }
         }
+    }
+    
+    func superPop() {
+        pop()
+        shouldRefreshTrafficLights = true
     }
 }
 
@@ -127,3 +142,4 @@ struct VimToggleViewModifier: ViewModifier {
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: shouldShowVimEnabledOverlay)
     }
 }
+
