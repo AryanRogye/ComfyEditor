@@ -8,6 +8,100 @@
 import SwiftUI
 import TextEditor
 
+struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
+    
+    var topBar : TopBar
+    var content: Content
+    
+    init(
+        @ViewBuilder content: @escaping () -> Content,
+        @ViewBuilder topBar: @escaping () -> TopBar,
+    ) {
+        self.topBar  = topBar()
+        self.content = content()
+    }
+    
+//    var backgroundColor: some ShapeStyle {
+//        LinearGradient(
+//            colors: [.red.opacity(0.5), .red.opacity(0.7), .pink.opacity(0.9)],
+//            startPoint: .top,
+//            endPoint: .bottom
+//        )
+//    }
+    
+    var backgroundColor: Color {
+        Color(hex: "#16171c")
+    }
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(backgroundColor)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                topBar
+                content
+            }
+            .background(backgroundColor) // optional if you want it inside too
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(.gray.opacity(0.3), lineWidth: 1)
+            )
+            .padding(10)
+        }
+        .ignoresSafeArea(edges: .top)
+        .windowTitlebarArea(shouldShowContent: .constant(false), shouldHideTrafficLights: .constant(false), content: { })
+    }
+}
+
+struct VimToggleViewModifier: ViewModifier {
+    
+    @Bindable var settingsCoordinator: SettingsCoordinator
+    @State private var shouldShowVimEnabledOverlay: Bool = false
+    
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: settingsCoordinator.isVimEnabled) { _, newValue in
+                withAnimation {
+                    self.shouldShowVimEnabledOverlay = true
+                }
+                
+                // auto-hide
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    withAnimation {
+                        self.shouldShowVimEnabledOverlay = false
+                    }
+                }
+            }
+            .overlay {
+                if shouldShowVimEnabledOverlay {
+                    VStack {
+                        Image(systemName: "chevron.left.slash.chevron.right")
+                            .font(.system(size: 36, weight: .semibold, design: .monospaced))
+                        
+                        Text("Vim Mode \(settingsCoordinator.isVimEnabled ? "On" : "Off")")
+                            .font(.system(.headline, design: .monospaced))
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+                            )
+                    )
+                    .shadow(radius: 12)
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: shouldShowVimEnabledOverlay)
+    }
+}
+
 struct ComfyEditorScreen: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
@@ -38,97 +132,27 @@ struct ComfyEditorScreen: View {
         }
         """
     
-    @State private var shouldShowVimEnabledOverlay = false
+    @State var editorBackground = Color(hex: "#1b1b25")
+    @State var editorForeground = Color.white
+        
     var body: some View {
-        VStack(spacing: 0) {
+        ComfyEditorFrameView {
+            
+            /// Editor View
             ComfyTextEditor(
                 text: $text,
                 showScrollbar: $settingsCoordinator.showScrollbar,
-                isInVimMode: $settingsCoordinator.isVimEnabled
+                isInVimMode: $settingsCoordinator.isVimEnabled,
+                editorBackground: $editorBackground,
+                editorForegroundStyle: $editorForeground,
+                borderRadius: 8
             )
-            .frame(minWidth: 600, minHeight: 400)
-        }
-        .onChange(of: settingsCoordinator.isVimEnabled) { _, newValue in
-            withAnimation {
-                self.shouldShowVimEnabledOverlay = true
-            }
+            .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
             
-            // auto-hide
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                withAnimation {
-                    self.shouldShowVimEnabledOverlay = false
-                }
-            }
+        } topBar: {
+            ComfyEditorTopBar(settingsCoordinator: settingsCoordinator)
         }
-        .overlay {
-            if shouldShowVimEnabledOverlay {
-                VStack {
-                    Image(systemName: "chevron.left.slash.chevron.right")
-                        .font(.system(size: 36, weight: .semibold, design: .monospaced))
-                    
-                    Text("Vim Mode \(settingsCoordinator.isVimEnabled ? "On" : "Off")")
-                        .font(.system(.headline, design: .monospaced))
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
-                        )
-                )
-                .shadow(radius: 12)
-                .transition(.scale.combined(with: .opacity))
-            }
-        }
-        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: shouldShowVimEnabledOverlay)
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button(action: {}) {
-                    Image(systemName: "sidebar.left")
-                }
-            }
-            ToolbarItem {
-                Button(action: {
-                    editorCommandCenter.toggleBold()
-                }) {
-                    Text("B")
-                        .bold()
-                        .padding(6)
-                        .background(editorCommandCenter.isBoldEnabled ? Color.accentColor : Color.clear)
-                        .foregroundColor(editorCommandCenter.isBoldEnabled ? .white : .primary)
-                        .cornerRadius(4)
-                }
-            }
-            
-            ToolbarItemGroup {
-                Button(action: { }) { Image(systemName: "minus") }
-                Text("\(editorCommandCenter.currentFont, default: "_")")
-                    .font(.body)
-                    .padding(6)
-                Button(action: { }) { Image(systemName: "plus") }
-            }
-            ToolbarSpacer(.fixed)
-            ToolbarItemGroup {
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                    Text("\(editorCommandCenter.magnification, specifier: "%.1f")")
-                }
-                .padding(6)
-            }
-            ToolbarItemGroup {
-                Text("V")
-                    .bold()
-                    .padding(6)
-                    .background(settingsCoordinator.isVimEnabled ? Color.accentColor : Color.clear)
-                    .foregroundColor(settingsCoordinator.isVimEnabled ? .white : .primary)
-                    .cornerRadius(4)
-                    .padding(.trailing, 8)
-            }
-            
-        }
-        .toolbarRole(.editor)
+        .frame(minWidth: 600, minHeight: 400)
+        .navigationBarBackButtonHidden()
     }
 }

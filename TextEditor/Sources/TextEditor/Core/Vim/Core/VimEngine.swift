@@ -51,6 +51,7 @@ class VimEngine: ObservableObject {
         /// First Check if is control c
 
         var didJustInsert: Bool = false
+        var didPressInsertButIsInsertMode: Bool = false
         var didJustMoveToEndOfLine: Bool = false
 
         switch shortcut {
@@ -65,14 +66,20 @@ class VimEngine: ObservableObject {
         case Self.insert_mode:
             if state == .visual { exitVisualMode() }
             if state == .visualLine { exitVisualLineMode() }
+            if state == .insert {
+                didPressInsertButIsInsertMode = true
+                break
+            }
             state = .insert
             didJustInsert = true
 
             /// User Requested Visual Mode
         case Self.visual_mode:
+            if state == .insert { break }
             enterVisualMode()
             /// User Requested Visual Line Mode
         case Self.visual_line_mode:
+            if state == .insert { break }
             enterVisualLineMode()
             
             // MARK: - Deletion
@@ -161,6 +168,10 @@ class VimEngine: ObservableObject {
             if let range = buffer.getCursorPosition() {
                 buffer.updateCursorAndSelectLine(anchor: visualAnchorLocation, to: range.location)
             }
+        }
+        
+        if didPressInsertButIsInsertMode {
+            return true
         }
 
         if didJustInsert || didJustMoveToEndOfLine {

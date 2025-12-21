@@ -91,6 +91,10 @@ public class TextViewController: NSViewController {
             vimBottomView.heightAnchor.constraint(equalToConstant: 24),
         ])
     }
+    
+    public func setCornerRadius(_ value: CGFloat) {
+        view.layer?.cornerRadius = value
+    }
 }
 
 // MARK: - Bold
