@@ -28,7 +28,7 @@ struct ThemeSettings: View {
             Text("Selected: \(themeCoordinator.currentTheme.name)")
             ForEach(themeCoordinator.themes, id: \.id) { theme in
                 Button(action: {
-                    themeCoordinator.currentTheme = theme
+                    themeCoordinator.switchTheme(to: theme)
                 }) {
                     Text(theme.name)
                         .padding(6)
