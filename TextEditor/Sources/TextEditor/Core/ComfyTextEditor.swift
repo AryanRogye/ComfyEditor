@@ -16,9 +16,11 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     /// Boolean if is showing scrollbar or not
     @Binding var showScrollbar: Bool
     /// Color of the editor background
-    @Binding var editorBackground: Color
+    var editorBackground: Color
     /// Color of the text
-    @Binding var editorForegroundStyle: Color
+    var editorForegroundStyle: Color
+    /// Color of the border
+    var borderColor: Color
     /// Border Radius of the entire editor
     var borderRadius: CGFloat
     
@@ -26,16 +28,18 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         text: Binding<String>,
         showScrollbar: Binding<Bool>,
         isInVimMode: Binding<Bool>,
-        editorBackground: Binding<Color>,
-        editorForegroundStyle: Binding<Color>,
-        borderRadius: CGFloat
+        editorBackground: Color,
+        editorForegroundStyle: Color,
+        borderColor : Color,
+        borderRadius: CGFloat,
     ) {
         self._text = text
         self._showScrollbar = showScrollbar
         self._isInVimMode = isInVimMode
-        self._editorBackground = editorBackground
-        self._editorForegroundStyle = editorForegroundStyle
+        self.editorBackground = editorBackground
+        self.editorForegroundStyle = editorForegroundStyle
         self.borderRadius = borderRadius
+        self.borderColor  = borderColor
     }
     
     public init(
@@ -46,24 +50,27 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         self._text = text
         self._showScrollbar = showScrollbar
         self._isInVimMode = .constant(false)
-        self._editorBackground = .constant(.white)
-        self._editorForegroundStyle = .constant(.black)
+        self.editorBackground = .white
+        self.editorForegroundStyle = .black
         self.borderRadius = borderRadius
+        self.borderColor = .gray.opacity(0.3)
     }
     
     public init(
         text: Binding<String>,
         showScrollbar: Binding<Bool>,
-        editorBackground: Binding<Color>,
-        editorForegroundStyle: Binding<Color>,
+        editorBackground: Color,
+        editorForegroundStyle: Color,
+        borderColor : Color,
         borderRadius: CGFloat
     ) {
         self._text = text
         self._showScrollbar = showScrollbar
-        self._editorBackground = editorBackground
-        self._editorForegroundStyle = editorForegroundStyle
+        self.editorBackground = editorBackground
+        self.editorForegroundStyle = editorForegroundStyle
         self._isInVimMode = .constant(false)
         self.borderRadius = borderRadius
+        self.borderColor  = borderColor
     }
     
     public func makeNSViewController(context: Context) -> TextViewController {
@@ -72,6 +79,7 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         viewController.textView.backgroundColor = NSColor(editorBackground)
         viewController.vimBottomView.setBackground(color: NSColor(editorBackground))
         viewController.textView.textColor = NSColor(editorForegroundStyle)
+        viewController.vimBottomView.setBorderColor(color: NSColor(borderColor))
         return viewController
     }
     
@@ -99,6 +107,10 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         
         if nsViewController.textView.textColor != NSColor(editorForegroundStyle) {
             nsViewController.textView.textColor = NSColor(editorForegroundStyle)
+        }
+        
+        if nsViewController.vimBottomView.layer?.borderColor != NSColor(borderColor).cgColor {
+            nsViewController.vimBottomView.setBorderColor(color: NSColor(borderColor))
         }
     }
 }

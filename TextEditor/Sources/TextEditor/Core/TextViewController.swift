@@ -63,7 +63,7 @@ public class TextViewController: NSViewController {
     // MARK: - Load View
     public override func loadView() {
         let root = NSView()
-        root.wantsLayer = true
+        root.wantsLayer = false
         self.view = root
 
         /// Assign ScrollView Delegate
@@ -73,6 +73,7 @@ public class TextViewController: NSViewController {
         textView.delegate = textDelegate
         textView.setupCursorView()
 
+        scrollView.contentView = NSClipView()
         scrollView.documentView = textView
         root.addSubview(scrollView)
         root.addSubview(vimBottomView)

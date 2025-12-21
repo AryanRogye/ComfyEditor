@@ -18,6 +18,7 @@ final class ComfyTextView: NSTextView {
     }
     
     var vimEngine: VimEngine
+    
     lazy var vimCursorView: NSView = {
         let v = NSView()
         v.wantsLayer = true
@@ -97,6 +98,8 @@ final class ComfyTextView: NSTextView {
         allowsDocumentBackgroundColorChange = true
         usesFontPanel = true
         usesRuler = true
+        drawsBackground = true
+        backgroundColor = .clear
     }
 
     required init?(coder: NSCoder) {

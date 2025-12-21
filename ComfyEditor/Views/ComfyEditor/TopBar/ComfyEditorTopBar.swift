@@ -12,7 +12,10 @@ struct ComfyEditorTopBar: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator: SettingsCoordinator
-    
+    @Bindable var themeCoordinator   : ThemeCoordinator
+    var cameFromOtherView : Bool = false
+    var pop: () -> Void = { }
+
     private let magnificationText = {
         let f = NumberFormatter()
         f.maximumFractionDigits = 1
@@ -22,6 +25,10 @@ struct ComfyEditorTopBar: View {
     
     let height : CGFloat = 35
     
+    private var divider: some View {
+        TopBarDivider(themeCoordinator.currentTheme.theme.secondaryBorderColor, height - 1)
+    }
+    
     var body: some View {
         HStack(spacing: 0) {
             
@@ -29,31 +36,33 @@ struct ComfyEditorTopBar: View {
             Spacer()
                 .frame(width: 77)
             
-            TopBarDivider(height - 1)
+            backButton
+            
+            divider
             
             bold
             
-            TopBarDivider(height - 1)
+            divider
 
             minus
             
-            TopBarDivider(height - 1)
+            divider
 
             currentFont
 
-            TopBarDivider(height - 1)
+            divider
 
             plus
 
-            TopBarDivider(height - 1)
+            divider
 
             zoom
             
-            TopBarDivider(height - 1)
+            divider
 
             vim
             
-            TopBarDivider(height - 1)
+            divider
 
             Spacer()
             
@@ -67,7 +76,7 @@ struct ComfyEditorTopBar: View {
         )
         .overlay {
             topBarShape
-                .stroke(.white.opacity(0.25), lineWidth: 1)
+                .stroke(themeCoordinator.currentTheme.theme.borderColor, lineWidth: 1)
         }
     }
     
@@ -79,6 +88,19 @@ struct ComfyEditorTopBar: View {
         topTrailingRadius: 8,
         style: .continuous
     )
+    
+    // MARK: - Back Button
+    @ViewBuilder
+    private var backButton: some View {
+        if cameFromOtherView {
+            TopBarButton(
+                content: .systemImage("arrow.left"),
+                selection: .constant(false),
+                isButton: true,
+                action: pop
+            )
+        }
+    }
 
     // MARK: - Bold
     private var bold: some View {

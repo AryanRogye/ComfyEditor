@@ -8,51 +8,92 @@
 import SwiftUI
 import TextEditor
 
-struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
+struct ComfyEditorScreen: View {
     
-    var topBar : TopBar
-    var content: Content
+    var cameFromOtherView : Bool = false
+    var pop: () -> Void = { }
     
-    init(
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder topBar: @escaping () -> TopBar,
-    ) {
-        self.topBar  = topBar()
-        self.content = content()
-    }
+    @Bindable var editorCommandCenter = EditorCommandCenter.shared
+    @Bindable var settingsCoordinator : SettingsCoordinator
+    @Bindable var themeCoordinator    : ThemeCoordinator
     
-//    var backgroundColor: some ShapeStyle {
-//        LinearGradient(
-//            colors: [.red.opacity(0.5), .red.opacity(0.7), .pink.opacity(0.9)],
-//            startPoint: .top,
-//            endPoint: .bottom
-//        )
-//    }
+    @State private var shouldRefreshTrafficLights = false
     
-    var backgroundColor: Color {
-        Color(hex: "#16171c")
-    }
+    @State var text: String = """
+        
+        /// TEST MOVE UP HERE
+        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
+        func textViewDidChangeSelection(_ notification: Notification)
+        //
+        func textViewDidChangeSelection(_ notification: Notification)
+        
+        
+        //
+        //  TextViewCursorDelegate.swift
+        //  TextEditor
+        //
+        //  Created by Aryan Rogye on 12/6/25.
+        //
+        
+        import AppKit
+        
+        @MainActor
+        protocol TextViewCursorDelegate: AnyObject {
+        var isOnNewline: Bool { get }
+        func textViewDidChangeSelection(_ notification: Notification)
+        }
+        """
+    
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
-        ZStack {
-            Rectangle()
-                .fill(backgroundColor)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                topBar
-                content
-            }
-            .background(backgroundColor) // optional if you want it inside too
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(.gray.opacity(0.3), lineWidth: 1)
+        ComfyEditorFrameView(
+            backgroundColor : themeCoordinator.currentTheme.theme.primaryBackground,
+            borderColor     : themeCoordinator.currentTheme.theme.borderColor
+        ) {
+            /// Editor View
+            ComfyTextEditor(
+                text                    : $text,
+                showScrollbar           : $settingsCoordinator.showScrollbar,
+                isInVimMode             : $settingsCoordinator.isVimEnabled,
+                editorBackground        : themeCoordinator.currentTheme.theme.secondaryBackground,
+                editorForegroundStyle   : themeCoordinator.currentTheme.theme.primaryForegroundStyle,
+                borderColor             : themeCoordinator.currentTheme.theme.borderColor,
+                borderRadius            : 8,
             )
-            .padding(10)
+            .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
+            
+        } topBar: {
+            ComfyEditorTopBar(
+                settingsCoordinator: settingsCoordinator,
+                themeCoordinator   : themeCoordinator,
+                cameFromOtherView  : cameFromOtherView,
+                pop                : superPop,
+            )
         }
-        .ignoresSafeArea(edges: .top)
-        .windowTitlebarArea(shouldShowContent: .constant(false), shouldHideTrafficLights: .constant(false), content: { })
+        .frame(minWidth: 600, minHeight: 400)
+        .navigationBarBackButtonHidden()
+        .windowTitlebarArea(
+            shouldShowContent: .constant(false),
+            shouldHideTrafficLights: .constant(false),
+            shouldRefreshTrafficLights: $shouldRefreshTrafficLights,
+            content: { }
+        )
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                shouldRefreshTrafficLights = true
+            case .inactive, .background:
+                shouldRefreshTrafficLights = false
+            @unknown default:
+                break
+            }
+        }
+    }
+    
+    func superPop() {
+        pop()
+        shouldRefreshTrafficLights = true
     }
 }
 
@@ -102,57 +143,3 @@ struct VimToggleViewModifier: ViewModifier {
     }
 }
 
-struct ComfyEditorScreen: View {
-    
-    @Bindable var editorCommandCenter = EditorCommandCenter.shared
-    @Bindable var settingsCoordinator : SettingsCoordinator
-    
-    @State var text: String = """
-        
-        /// TEST MOVE UP HERE
-        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
-        func textViewDidChangeSelection(_ notification: Notification)
-        //
-        func textViewDidChangeSelection(_ notification: Notification)
-        
-        
-        //
-        //  TextViewCursorDelegate.swift
-        //  TextEditor
-        //
-        //  Created by Aryan Rogye on 12/6/25.
-        //
-        
-        import AppKit
-        
-        @MainActor
-        protocol TextViewCursorDelegate: AnyObject {
-        var isOnNewline: Bool { get }
-        func textViewDidChangeSelection(_ notification: Notification)
-        }
-        """
-    
-    @State var editorBackground = Color(hex: "#1b1b25")
-    @State var editorForeground = Color.white
-        
-    var body: some View {
-        ComfyEditorFrameView {
-            
-            /// Editor View
-            ComfyTextEditor(
-                text: $text,
-                showScrollbar: $settingsCoordinator.showScrollbar,
-                isInVimMode: $settingsCoordinator.isVimEnabled,
-                editorBackground: $editorBackground,
-                editorForegroundStyle: $editorForeground,
-                borderRadius: 8
-            )
-            .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
-            
-        } topBar: {
-            ComfyEditorTopBar(settingsCoordinator: settingsCoordinator)
-        }
-        .frame(minWidth: 600, minHeight: 400)
-        .navigationBarBackButtonHidden()
-    }
-}

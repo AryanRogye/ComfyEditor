@@ -9,15 +9,17 @@ import SwiftUI
 
 struct TopBarDivider: View {
     
+    var color : Color
     var height: CGFloat
     
-    init(_ height: CGFloat) {
+    init(_ color: Color, _ height: CGFloat) {
+        self.color  = color
         self.height = height
     }
     
     var body: some View {
         VStack{}
             .frame(maxWidth: 1, maxHeight: height)
-            .border(.white.opacity(0.25))
+            .border(color)
     }
 }

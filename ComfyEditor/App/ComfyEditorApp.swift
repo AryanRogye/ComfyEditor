@@ -16,10 +16,14 @@ struct ComfyEditorApp: App {
         WindowGroup {
             NavigationStack {
                 #if JUST_EDITOR
-                ComfyEditorScreen(settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator)
+                ComfyEditorScreen(
+                    settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator,
+                    themeCoordinator: appDelegate.appCoordinator.themeCoordinator
+                )
                 #else
                 ComfyEditorHome()
                     .environment(appDelegate.appCoordinator.settingsCoordinator)
+                    .environment(appDelegate.appCoordinator.themeCoordinator)
                 #endif
             }
         }
