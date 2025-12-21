@@ -22,6 +22,7 @@ struct TopBarButton: View {
     var action: () -> Void = {}
     let labelWidth: CGFloat
     let textWidth : CGFloat
+    let foregroundStyle: Color
     
     init(
         content: Contents? = nil,
@@ -29,6 +30,7 @@ struct TopBarButton: View {
         isButton: Bool = false,
         labelWidth: CGFloat = 50,
         textWidth : CGFloat = 40,
+        foregroundStyle: Color,
         action: @escaping () -> Void = {}
     ) {
         self.content = content
@@ -36,6 +38,7 @@ struct TopBarButton: View {
         self.isButton = isButton
         self.action = action
         self.labelWidth = labelWidth
+        self.foregroundStyle = foregroundStyle
         self.textWidth = textWidth
     }
     
@@ -69,18 +72,18 @@ struct TopBarButton: View {
         Label(text, systemImage: systemName)
             .font(.system(.body, design: .monospaced))
             .frame(width: labelWidth, alignment: .leading)
-            .modifier(Background(selection: $selection))
+            .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }
     
     private func imageView(_ systemName: String) -> some View {
         Image(systemName: systemName)
-            .modifier(Background(selection: $selection))
+            .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }
     
     private func textView(_ text: String) -> some View {
         Text(text)
             .frame(width: textWidth)
-            .modifier(Background(selection: $selection))
+            .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }
     
     
@@ -88,10 +91,15 @@ struct TopBarButton: View {
         
         @Binding var selection: Bool
         @State private var isHovered = false
+        let foregroundStyle: Color
 
         func body(content: Content) -> some View {
             content
-                .foregroundStyle(selection ? .white.opacity(0.3) : .white.opacity(0.2))
+                .foregroundStyle(
+                    selection
+                    ? foregroundStyle.opacity(0.7)
+                    : foregroundStyle.opacity(0.5)
+                )
                 .padding()
                 .background {
                     Rectangle()

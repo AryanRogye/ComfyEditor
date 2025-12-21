@@ -27,8 +27,10 @@ final class ThemeCoordinator {
     var currentTheme: ColorTheme = .tokyoNight
     
     var themes: [ColorTheme] = [
+        .light,
         .tokyoNight,
-        .draculaTheme
+        .draculaTheme,
+        .gruvBoxHard
     ]
     
     func switchTheme(to theme: ColorTheme) {

@@ -43,6 +43,7 @@ struct VimStatus: View {
         HStack {
             Text(vimEngine.state.displayName)
                 .font(.system(size: 12, weight: .regular, design: .rounded))
+                .foregroundStyle(vimStatusVM.foregroundStyle)
                 .opacity(opacity)
                 .padding(.horizontal, 4)
                 .padding(.vertical, 2)
