@@ -7,6 +7,19 @@
 
 import AppKit
 
+final class RedrawClipView: NSClipView {
+    override func scroll(to newOrigin: NSPoint) {
+        super.scroll(to: newOrigin)
+        documentView?.setNeedsDisplay(documentVisibleRect) // force redraw
+    }
+    
+    override func constrainBoundsRect(_ proposedBounds: NSRect) -> NSRect {
+        let r = super.constrainBoundsRect(proposedBounds)
+        documentView?.setNeedsDisplay(r)
+        return r
+    }
+}
+
 final class ComfyScrollView: NSScrollView {
     weak var magnificationDelegate: ScrollViewMagnificationDelegate?
     
@@ -26,6 +39,7 @@ final class ComfyScrollView: NSScrollView {
         magnification = 4.0
         minMagnification = 0.5
         maxMagnification = 6.0
+        backgroundColor = .clear
     }
     
     func setZoom(_ value: CGFloat, centeredAt: NSPoint? = nil) {

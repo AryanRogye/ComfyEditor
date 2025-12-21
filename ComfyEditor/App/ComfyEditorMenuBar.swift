@@ -14,9 +14,11 @@ struct ComfyEditorMenuBar: Commands {
     
     var body: some Commands {
         CommandGroup(after: .appSettings) {
+            
             Button(action: settingsCoordinator.showWindow) {
                 Label("Settings", systemImage: "gear")
-            }
+            }.keyboardShortcut(",", modifiers: .command)
+            
             Button(action: keybindCoordinator.showWindow) {
                 Label("Keybindings", systemImage: "keyboard")
             }

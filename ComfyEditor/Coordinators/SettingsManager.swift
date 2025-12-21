@@ -22,6 +22,7 @@ final class SettingsCoordinator {
     let windowCoordinator : WindowCoordinator
     let applicationSupport: URL
     let configPath: URL
+    var themeCoordinator: ThemeCoordinator?
     
     var isVimEnabled: Bool = Defaults[.isVimEnabled]  {
         didSet {
@@ -80,11 +81,12 @@ extension SettingsCoordinator {
 extension SettingsCoordinator {
     /// Function to open the window
     func showWindow() {
+        guard let themeCoordinator else { return }
         guard !isShowing else { return }
         windowCoordinator.showWindow(
             id: UUID().uuidString,
             title: "Settings",
-            content: SettingsView(),
+            content: SettingsView(themeCoordinator: themeCoordinator),
             onOpen: { [weak self] in
                 guard let self = self else { return }
                 self.isShowing = true

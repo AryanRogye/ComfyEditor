@@ -10,6 +10,7 @@ import SwiftUI
 struct ComfyEditorHome: View {
 
     @Environment(SettingsCoordinator.self) var settingsCoordinator
+    @Environment(ThemeCoordinator.self) var themeCoordinator
 
     // Adaptive grid for responsive layout
     let columns = [
@@ -40,8 +41,9 @@ struct ComfyEditorHome: View {
     @ViewBuilder
     private var addButton: some View {
         @Bindable var settingsCoordinator = settingsCoordinator
+        @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
-        NavigationLink(destination: ComfyEditorScreen(settingsCoordinator: settingsCoordinator)) {
+        NavigationLink(destination: ComfyEditorScreen(settingsCoordinator: settingsCoordinator, themeCoordinator: themeCoordinator)) {
             VStack(spacing: 12) {
                 Image(systemName: "plus")
                     .font(.system(size: 30, weight: .light))

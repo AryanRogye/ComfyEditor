@@ -10,27 +10,18 @@ import TextEditor
 
 struct ComfyEditorFrameView<TopBar: View, Content: View>: View {
     
+    var backgroundColor : Color
     var topBar : TopBar
     var content: Content
     
     init(
-        @ViewBuilder content: @escaping () -> Content,
-        @ViewBuilder topBar: @escaping () -> TopBar,
+        backgroundColor      : Color,
+        @ViewBuilder content : @escaping () -> Content,
+        @ViewBuilder topBar  : @escaping () -> TopBar,
     ) {
         self.topBar  = topBar()
         self.content = content()
-    }
-    
-//    var backgroundColor: some ShapeStyle {
-//        LinearGradient(
-//            colors: [.red.opacity(0.5), .red.opacity(0.7), .pink.opacity(0.9)],
-//            startPoint: .top,
-//            endPoint: .bottom
-//        )
-//    }
-    
-    var backgroundColor: Color {
-        Color(hex: "#16171c")
+        self.backgroundColor = backgroundColor
     }
     
     var body: some View {
@@ -106,6 +97,7 @@ struct ComfyEditorScreen: View {
     
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
+    @Bindable var themeCoordinator    : ThemeCoordinator
     
     @State var text: String = """
         
@@ -132,19 +124,17 @@ struct ComfyEditorScreen: View {
         }
         """
     
-    @State var editorBackground = Color(hex: "#1b1b25")
-    @State var editorForeground = Color.white
-        
     var body: some View {
-        ComfyEditorFrameView {
-            
+        ComfyEditorFrameView(
+            backgroundColor: themeCoordinator.currentTheme.theme.primaryBackground
+        ) {
             /// Editor View
             ComfyTextEditor(
                 text: $text,
                 showScrollbar: $settingsCoordinator.showScrollbar,
                 isInVimMode: $settingsCoordinator.isVimEnabled,
-                editorBackground: $editorBackground,
-                editorForegroundStyle: $editorForeground,
+                editorBackground: themeCoordinator.currentTheme.theme.secondaryBackground,
+                editorForegroundStyle: themeCoordinator.currentTheme.theme.primaryForegroundStyle,
                 borderRadius: 8
             )
             .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
