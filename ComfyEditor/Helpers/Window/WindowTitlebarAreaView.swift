@@ -98,7 +98,6 @@ private class WindowTitlebarAreaView: NSView {
     init(rootView: AnyView) {
         self.rootView = rootView
         super.init(frame: .zero)
-        layer?.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) {
@@ -120,7 +119,7 @@ private class WindowTitlebarAreaView: NSView {
     
     /// Observe the Window
     private func observeWindow() {
-        guard let window, frameObs == nil else { return }
+        guard let window = unsafe window, frameObs == nil else { return }
         
         /// Did Resize
         frameObs = NotificationCenter.default.addObserver(
@@ -157,10 +156,10 @@ private class WindowTitlebarAreaView: NSView {
     }
     
     /// Attach SwiftUI Button, And Move Traffic Lights
-    public func attachIfNeededAndRefresh(completion: @escaping () -> Void = { }) {
-        guard let window else { return }
+    public func attachIfNeededAndRefresh(completion: @Sendable @escaping () -> Void = { }) {
+        guard let window = unsafe window else { return }
         guard let zoom = window.standardWindowButton(.zoomButton),
-              let container = zoom.superview else { return }
+              let container = unsafe zoom.superview else { return }
         
         let mode = currentMode(for: window)
         if mode != lastMode {
@@ -210,17 +209,18 @@ private class WindowTitlebarAreaView: NSView {
         guard lastHidden != val else { return }
         lastHidden = val
         
-        window?.standardWindowButton(.closeButton)?.alphaValue = val ? 0 : 1
-        window?.standardWindowButton(.miniaturizeButton)?.alphaValue = val ? 0 : 1
-        window?.standardWindowButton(.zoomButton)?.alphaValue = val ? 0 : 1
-        
-        if let window {
+        if let window = unsafe window {
+            
+            window.standardWindowButton(.closeButton)?.alphaValue = val ? 0 : 1
+            window.standardWindowButton(.miniaturizeButton)?.alphaValue = val ? 0 : 1
+            window.standardWindowButton(.zoomButton)?.alphaValue = val ? 0 : 1
+            
             moveTrafficLights(in: window)
         }
     }
     
     public func moveTrafficLightsToOrigin(animated: Bool = true) {
-        guard let window else { return }
+        guard let window = unsafe window else { return }
         
         func reset(_ type: NSWindow.ButtonType) {
             guard let btn = window.standardWindowButton(type),
@@ -247,7 +247,7 @@ private class WindowTitlebarAreaView: NSView {
     }
 
     /// Adjust Traffic Light Positions, based on constant values and NSWindow
-    private func moveTrafficLights(in window: NSWindow, animated: Bool = true, completion: (() -> Void)? = nil) {
+    private func moveTrafficLights(in window: NSWindow, animated: Bool = true, completion: (@Sendable () -> Void)? = nil) {
         func move(_ type: NSWindow.ButtonType) {
             guard let btn = window.standardWindowButton(type) else { return }
             
@@ -284,7 +284,7 @@ private class WindowTitlebarAreaView: NSView {
         duration: TimeInterval = 0.18,
         timing: CAMediaTimingFunctionName = .easeInEaseOut,
         _ changes: @escaping () -> Void,
-        completion: (() -> Void)? = nil
+        completion: (@Sendable () -> Void)? = nil
     ) {
         NSAnimationContext.runAnimationGroup { ctx in
             ctx.duration = duration
