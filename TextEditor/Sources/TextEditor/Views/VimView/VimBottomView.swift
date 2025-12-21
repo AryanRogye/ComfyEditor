@@ -13,20 +13,32 @@ final class VimBottomView: NSView {
     
     var vimEngine : VimEngine
     
-    var cancellables: Set<AnyCancellable> = []
-    
+    private let topBorder = CALayer()
+    private var borderThickness: CGFloat = 1
+
     init(vimEngine: VimEngine) {
         self.vimEngine = vimEngine
         super.init(frame: .zero)
         
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
-        layer?.borderWidth = 1
         setup()
     }
     
+    override func layout() {
+        super.layout()
+        topBorder.frame = CGRect(
+            x: 0,
+            y: bounds.height - borderThickness,
+            width: bounds.width,
+            height: borderThickness
+        )
+    }
+    
     public func setBorderColor(color: NSColor) {
-        layer?.borderColor = color.cgColor
+        wantsLayer = true
+        topBorder.backgroundColor = color.cgColor
+        needsLayout = true
     }
     
     public func setBackground(color: NSColor) {
@@ -47,5 +59,6 @@ final class VimBottomView: NSView {
             hosting.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             hosting.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+        layer?.addSublayer(topBorder)
     }
 }
