@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     public func applicationDidFinishLaunching(_ notification: Notification) {
+        NSWindow.allowsAutomaticWindowTabbing = false
     }
     
     public func applicationWillTerminate(_ notification: Notification) {
