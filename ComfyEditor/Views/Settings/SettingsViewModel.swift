@@ -9,5 +9,5 @@ import Foundation
 
 @Observable @MainActor
 final class SettingsViewModel {
-    var selectedTab : SettingsTab = .appearance
+    var selectedTab : SettingsTab = .general
 }

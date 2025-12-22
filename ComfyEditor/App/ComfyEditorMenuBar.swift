@@ -23,6 +23,12 @@ struct ComfyEditorMenuBar: Commands {
                 Label("Keybindings", systemImage: "keyboard")
             }
         }
+        
+        CommandMenu("Library") {
+            Button(action: settingsCoordinator.openInFinder) {
+                Label("Show In Finder", systemImage: "folder.fill")
+            }
+        }
         CommandMenu("Editor") {
             Toggle("Vim Mode", isOn: $settingsCoordinator.isVimEnabled)
             Toggle("Show Scrollbar", isOn: $settingsCoordinator.showScrollbar)
