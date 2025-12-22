@@ -1,0 +1,23 @@
+name: SettingsKitDemo
+options:
+  bundleIdPrefix: com.settingskit
+  deploymentTarget:
+    iOS: "18.0"
+
+packages:
+  SettingsKit:
+    path: ../
+
+targets:
+  SettingsKitDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - path: Sources
+    dependencies:
+      - package: SettingsKit
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.settingskit.demo
+      INFOPLIST_FILE: Info.plist
+      DEVELOPMENT_TEAM: ""
