@@ -8,39 +8,37 @@
 import SwiftUI
 
 struct SettingsView: View {
-    
-    @Bindable var themeCoordinator : ThemeCoordinator
+
+    @State var settingsVM = SettingsViewModel()
+    @Bindable var themeCoordinator: ThemeCoordinator
 
     var body: some View {
-        VStack {
-            ThemeSettings(themeCoordinator: themeCoordinator)
+        NavigationSplitView {
+
+            sidebar
+
+        } detail: {
+
+            settingsVM.selectedTab.view
+                .environment(themeCoordinator)
+
         }
-        .frame(width: 400, height: 400)
+        .navigationSplitViewStyle(.balanced)
+    }
+
+    private var sidebar: some View {
+        List(selection: $settingsVM.selectedTab) {
+            ForEach(SettingsTab.allCases, id: \.self) { tab in
+                Label(tab.rawValue, systemImage: tab.icon)
+                    .tag(tab)
+            }
+        }
+        .listStyle(.sidebar)
+        .navigationSplitViewColumnWidth(200)
     }
 }
 
-struct ThemeSettings: View {
-    
-    @Bindable var themeCoordinator : ThemeCoordinator
-    
-    var body: some View {
-        VStack {
-            Text("Selected: \(themeCoordinator.currentTheme.name)")
-            ForEach(themeCoordinator.themes, id: \.id) { theme in
-                Button(action: {
-                    themeCoordinator.switchTheme(to: theme)
-                }) {
-                    Text(theme.name)
-                        .padding(6)
-                        .frame(maxWidth: .infinity)
-                        .background {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.gray)
-                        }
-                        .foregroundStyle(.white)
-                        .padding(.horizontal)
-                }
-            }
-        }
-    }
+
+#Preview {
+    SettingsView(settingsVM: SettingsViewModel(), themeCoordinator: ThemeCoordinator())
 }

@@ -1,5 +1,5 @@
 //
-//  SettingsManager.swift
+//  SettingsCoordinator.swift
 //  ComfyEditor
 //
 //  Created by Aryan Rogye on 12/2/25.
