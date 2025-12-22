@@ -43,6 +43,11 @@ final class SettingsCoordinator {
 }
 
 extension SettingsCoordinator {
+    
+    /// This will open the ApplicationSupport Folder
+    func openInFinder() {
+        NSWorkspace.shared.activateFileViewerSelecting([configPath])
+    }
     /// creates or gets the config.json file in the applicationSupport folder
     static func getOrCreateConfigJson() -> URL {
         let fm = FileManager.default
