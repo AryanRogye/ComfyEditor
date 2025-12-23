@@ -1,8 +1,8 @@
 # ComfyEditor
 
-Building a text editor has always been something i've always wanted to do, since i've learned programming
-before swift, always attempted to do this in C, C++, etc, but after learning the apple ecosystem, i've
-been vibing with building out a editor with `NSTextView`
+Building a text editor has always been something I've always wanted to do, since I've learned programming
+before swift, I always attempted to do this in C, C++, etc, but after learning the Apple ecosystem, I've
+been vibing with building out an editor with `NSTextView`
 
 This project is an exploration of editor internals, input handling, and Vim-style navigation on macOS.
 
@@ -22,9 +22,9 @@ This project is an exploration of editor internals, input handling, and Vim-styl
 A local package for in-app key handling.
 - Package for "key" handling
 - Inspired by [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
-  - But this was global, i needed to scan `NSEvent` and map to a `Key`
-- Also Supports Same Style Syntax
-- ```swift
+  - But this was global, I needed to scan `NSEvent` and map to a `Key`
+- Also Supports the Same Style Syntax
+```swift
     extension LocalShortcuts.Name {
         /// Toggle Bold
         static let toggleBold = LocalShortcuts.Name(
@@ -54,13 +54,13 @@ A local package for in-app key handling.
     }
     /// Same Style Recorder
     LocalShortcuts.LocalShortcutsRecorder(for: .increaseFont)
-  ```
+```
 
 ### TextEditor
 You can clone this repo and copy the `TextEditor` package directly into your app.
 
 #### Usage
-- ```swift
+```swift
     ComfyTextEditor(
         text: $text,
         showScrollbar: $settingsCoordinator.showScrollbar,
@@ -71,5 +71,5 @@ You can clone this repo and copy the `TextEditor` package directly into your app
         text: $text,
         showScrollbar: $settingsCoordinator.showScrollbar
     )
-   ```
+```
 
