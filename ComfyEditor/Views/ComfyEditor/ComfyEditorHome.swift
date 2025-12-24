@@ -10,7 +10,6 @@ import SwiftUI
 enum Route: Hashable {
     case editor(
         cameFromOtherView: Bool,
-        projectURL       : URL,
     )
 }
 
@@ -30,7 +29,7 @@ struct ComfyEditorHome: View {
         contentView
             .navigationDestination(for: Route.self) { route in
                 switch route {
-                case .editor(let cameFromOtherView, let projectURL):
+                case .editor(let cameFromOtherView):
                     ComfyEditorScreen(
                         cameFromOtherView: cameFromOtherView,
                         pop: { path.removeLast() },
@@ -91,7 +90,6 @@ struct ComfyEditorHome: View {
                         await MainActor.run {
                             path.append(.editor(
                                 cameFromOtherView: true,
-                                projectURL: url
                             ))
                         }
                     }

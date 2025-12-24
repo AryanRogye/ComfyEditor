@@ -20,31 +20,6 @@ struct ComfyEditorScreen: View {
 
     @State private var shouldRefreshTrafficLights = false
     
-    @State var text: String = """
-        
-        /// TEST MOVE UP HERE
-        /// SET Cursor on t and move up 2 times, make sure on t on 2nd
-        func textViewDidChangeSelection(_ notification: Notification)
-        //
-        func textViewDidChangeSelection(_ notification: Notification)
-        
-        
-        //
-        //  TextViewCursorDelegate.swift
-        //  TextEditor
-        //
-        //  Created by Aryan Rogye on 12/6/25.
-        //
-        
-        import AppKit
-        
-        @MainActor
-        protocol TextViewCursorDelegate: AnyObject {
-        var isOnNewline: Bool { get }
-        func textViewDidChangeSelection(_ notification: Notification)
-        }
-        """
-    
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
@@ -54,7 +29,7 @@ struct ComfyEditorScreen: View {
         ) {
             /// Editor View
             ComfyTextEditor(
-                text                    : $text,
+                text                    : $comfyEditorVM.text,
                 showScrollbar           : $settingsCoordinator.showScrollbar,
                 isInVimMode             : $settingsCoordinator.isVimEnabled,
                 editorBackground        : themeCoordinator.currentTheme.theme.secondaryBackground,
