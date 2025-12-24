@@ -11,6 +11,9 @@ import SwiftUI
 struct ComfyEditorApp: App {
     
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #if JUST_EDITOR
+    @State var comfyEditorVM = ComfyEditorViewModel()
+    #endif
     
     var body: some Scene {
         WindowGroup {
@@ -19,7 +22,7 @@ struct ComfyEditorApp: App {
                 ComfyEditorScreen(
                     settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator,
                     themeCoordinator: appDelegate.appCoordinator.themeCoordinator,
-                    comfyEditorVM: ComfyEditorViewModel()
+                    comfyEditorVM: comfyEditorVM
                 )
                 #else
                 ComfyEditorHome()
