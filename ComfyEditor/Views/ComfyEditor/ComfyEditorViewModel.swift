@@ -56,6 +56,11 @@ final class ComfyEditorViewModel {
     
     func saveFile() {
         guard let projectURL else { return }
-        print("Saving File With Text: \(text) to \(projectURL)")
+        guard let settingsCoordinator else { return }
+        
+        settingsCoordinator.saveContentAsWrites(
+            text,
+            to: projectURL
+        )
     }
 }

@@ -25,7 +25,6 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     
     public func textDidChange(_ notification: Notification) {
         guard let tv = notification.object as? NSTextView else { return }
-        print("Called")
         // write AppKit -> SwiftUI
         if text.wrappedValue != tv.string {
             text.wrappedValue = tv.string
