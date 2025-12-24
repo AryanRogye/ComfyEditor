@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>ComfyEditorTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>5</integer>
+		</dict>
 		<key>ComfyEditor_JUST_EDITOR.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -17,6 +22,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>9B11897E2EFB5C910074ABAE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>9BB0B6962EDBD6FF0040A42F</key>
 		<dict>
 			<key>primary</key>

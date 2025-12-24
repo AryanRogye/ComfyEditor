@@ -23,7 +23,10 @@ final class SettingsCoordinator {
     let applicationSupport: URL
     let configPath: URL
     var themeCoordinator: ThemeCoordinator?
-    
+    let fileManagement : FileManagementProviding
+    let dateFormatter : DateFormatter
+    let timeFormatter : DateFormatter
+
     var isVimEnabled: Bool = Defaults[.isVimEnabled]  {
         didSet {
             Defaults[.isVimEnabled] = isVimEnabled
@@ -39,17 +42,46 @@ final class SettingsCoordinator {
         self.windowCoordinator = windowCoordinator
         applicationSupport = Self.comfyEditorConfigDirectory()
         configPath = Self.getOrCreateConfigJson()
+        
+        dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd" // customize as needed
+        
+        timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.timeZone = .current
+        timeFormatter.dateFormat = "HH:mm:ss" // 24h; use "h:mm a" for 12h
+        
+        fileManagement = FileManagementService(fileManager: FileManager.default)
     }
+    
 }
 
 extension SettingsCoordinator {
     
+    /// Creates a Default Project Directory
+    public func createDefaultProjectDirectory() async {
+        let date = dateFormatter.string(from: .now)
+        let time = timeFormatter.string(from: .now)
+        
+        let name = "Untitled-\(date)-\(time)"
+        do {
+            try await fileManagement.createDirectory(
+                directory: configPath,
+                named: name
+            )
+        } catch {
+            
+        }
+    }
+    
     /// This will open the ApplicationSupport Folder
-    func openInFinder() {
+    public func openInFinder() {
         NSWorkspace.shared.activateFileViewerSelecting([configPath])
     }
     /// creates or gets the config.json file in the applicationSupport folder
-    static func getOrCreateConfigJson() -> URL {
+    private static func getOrCreateConfigJson() -> URL {
         let fm = FileManager.default
         
         let dir = comfyEditorConfigDirectory()
@@ -65,7 +97,7 @@ extension SettingsCoordinator {
         return file
     }
     
-    static func comfyEditorConfigDirectory() -> URL {
+    private static func comfyEditorConfigDirectory() -> URL {
         let fm = FileManager.default
         
         // ~/Library/Application Support

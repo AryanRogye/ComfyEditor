@@ -14,13 +14,29 @@
 		9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7592EE2B89500B64D36 /* TextEditor */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9B1189832EFB5C910074ABAE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9BB0B68F2EDBD6FF0040A42F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9BB0B6962EDBD6FF0040A42F;
+			remoteInfo = ComfyEditor;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		9B0953032EE64B3E005D9BFB /* EditorDebug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = EditorDebug.xcconfig; sourceTree = "<group>"; };
+		9B11897F2EFB5C910074ABAE /* ComfyEditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ComfyEditorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = ComfyEditor.icon; sourceTree = "<group>"; };
 		9BB0B6972EDBD7000040A42F /* ComfyEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ComfyEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9B1189802EFB5C910074ABAE /* ComfyEditorTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ComfyEditorTests;
+			sourceTree = "<group>";
+		};
 		9BB0B6992EDBD7000040A42F /* ComfyEditor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ComfyEditor;
@@ -29,6 +45,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		9B11897C2EFB5C910074ABAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9BB0B6942EDBD6FF0040A42F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -48,6 +71,7 @@
 				9B0953032EE64B3E005D9BFB /* EditorDebug.xcconfig */,
 				9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */,
 				9BB0B6992EDBD7000040A42F /* ComfyEditor */,
+				9B1189802EFB5C910074ABAE /* ComfyEditorTests */,
 				9BB0B6982EDBD7000040A42F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				9BB0B6972EDBD7000040A42F /* ComfyEditor.app */,
+				9B11897F2EFB5C910074ABAE /* ComfyEditorTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,6 +88,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		9B11897E2EFB5C910074ABAE /* ComfyEditorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9B1189852EFB5C910074ABAE /* Build configuration list for PBXNativeTarget "ComfyEditorTests" */;
+			buildPhases = (
+				9B11897B2EFB5C910074ABAE /* Sources */,
+				9B11897C2EFB5C910074ABAE /* Frameworks */,
+				9B11897D2EFB5C910074ABAE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9B1189842EFB5C910074ABAE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9B1189802EFB5C910074ABAE /* ComfyEditorTests */,
+			);
+			name = ComfyEditorTests;
+			packageProductDependencies = (
+			);
+			productName = ComfyEditorTests;
+			productReference = 9B11897F2EFB5C910074ABAE /* ComfyEditorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		9BB0B6962EDBD6FF0040A42F /* ComfyEditor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9BB0B6A22EDBD7010040A42F /* Build configuration list for PBXNativeTarget "ComfyEditor" */;
@@ -98,6 +146,10 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					9B11897E2EFB5C910074ABAE = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 9BB0B6962EDBD6FF0040A42F;
+					};
 					9BB0B6962EDBD6FF0040A42F = {
 						CreatedOnToolsVersion = 26.0;
 					};
@@ -123,11 +175,19 @@
 			projectRoot = "";
 			targets = (
 				9BB0B6962EDBD6FF0040A42F /* ComfyEditor */,
+				9B11897E2EFB5C910074ABAE /* ComfyEditorTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		9B11897D2EFB5C910074ABAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9BB0B6952EDBD6FF0040A42F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -140,6 +200,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9B11897B2EFB5C910074ABAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9BB0B6932EDBD6FF0040A42F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +215,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9B1189842EFB5C910074ABAE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9BB0B6962EDBD6FF0040A42F /* ComfyEditor */;
+			targetProxy = 9B1189832EFB5C910074ABAE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9B0953052EE64BE3005D9BFB /* EditorOnly */ = {
@@ -249,6 +324,66 @@
 				SWIFT_VERSION = 6.0;
 			};
 			name = EditorOnly;
+		};
+		9B1189862EFB5C910074ABAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B9P888266K;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aryanrogye.ComfyEditorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ComfyEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ComfyEditor";
+			};
+			name = Debug;
+		};
+		9B1189872EFB5C910074ABAE /* EditorOnly */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B9P888266K;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aryanrogye.ComfyEditorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ComfyEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ComfyEditor";
+			};
+			name = EditorOnly;
+		};
+		9B1189882EFB5C910074ABAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B9P888266K;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aryanrogye.ComfyEditorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ComfyEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ComfyEditor";
+			};
+			name = Release;
 		};
 		9BB0B6A02EDBD7010040A42F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -441,6 +576,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		9B1189852EFB5C910074ABAE /* Build configuration list for PBXNativeTarget "ComfyEditorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9B1189862EFB5C910074ABAE /* Debug */,
+				9B1189872EFB5C910074ABAE /* EditorOnly */,
+				9B1189882EFB5C910074ABAE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9BB0B6922EDBD6FF0040A42F /* Build configuration list for PBXProject "ComfyEditor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

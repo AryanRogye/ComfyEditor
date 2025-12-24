@@ -1,4 +1,4 @@
-name: TextEditor Tests
+name: ComfyEditor Tests
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: TextEditor Unit Tests
+    name: ComfyEditor Unit Tests
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v3
@@ -26,4 +26,8 @@ jobs:
 
       - name: Build & test (macOS 15.0)
         run: |
-          swift test --package-path TextEditor/
+          xcodebuild test \
+          -scheme ComfyEditorTests \
+          -workspace ComfyEditor.xcworkspace \
+          -destination 'platform=macOS' \
+          -enableCodeCoverage YES | xcpretty
