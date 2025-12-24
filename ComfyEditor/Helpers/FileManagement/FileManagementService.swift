@@ -9,13 +9,9 @@ import Foundation
 
 public actor FileManagementService: FileManagementProviding {
     
-    /// Safe to call from this actors thread because we use FileManager.default and
-    /// FileManager.default according to apple "can be called from multiple threads safely"
-    /// `https://developer.apple.com/documentation/foundation/filemanager?language=objc#Threading-considerations:~:text=Threading%20considerations,initiate%20your%20operations.`
-    /// Making sure when we call it, we call it using await
-    public nonisolated let fileManager : any FileManaging & Sendable
+    public let fileManager : any FileManaging
     
-    public init(fileManager: FileManaging & Sendable) {
+    public init(fileManager: FileManaging) {
         self.fileManager = fileManager
     }
     
