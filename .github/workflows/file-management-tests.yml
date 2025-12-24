@@ -1,0 +1,29 @@
+name: FileManagement Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    {}
+
+jobs:
+  test:
+    name: FileManagement Unit Tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v3
+        
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Confirm Xcode Version
+        run: xcodebuild -version
+
+      - name: Clean DerivedData (just in case)
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData
+
+      - name: Build & test (macOS 15.0)
+        run: |
+          swift test --package-path FileManagement/
