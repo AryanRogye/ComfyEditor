@@ -41,6 +41,9 @@ struct ComfyEditorHome: View {
                     }
                 }
         }
+        .task {
+            comfyEditorVM.settingsCoordinator = settingsCoordinator
+        }
     }
     
     @ViewBuilder
@@ -79,20 +82,17 @@ struct ComfyEditorHome: View {
         @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
         Button {
-            Task {
+            Task { @MainActor in
                 /// Create Default Project Directory
                 if let url = await settingsCoordinator.createDefaultProjectDirectory() {
                     
-                    /// Set Project URL in the VM
-                    comfyEditorVM.projectURL = url
-                    
-                    /// set Editor to this
-                    await MainActor.run {
-                        path.append(.editor(
-                            cameFromOtherView: true,
-                        ))
+                        /// Set Project URL in the VM
+                        comfyEditorVM.projectURL = url
+                        
+                    path.append(.editor(
+                        cameFromOtherView: true,
+                    ))
                     }
-                }
             }
         } label: {
             addButtonView(theme: theme)

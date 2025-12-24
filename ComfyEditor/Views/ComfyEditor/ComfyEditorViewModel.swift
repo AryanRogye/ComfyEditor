@@ -9,6 +9,8 @@ import SwiftUI
 
 @Observable @MainActor
 final class ComfyEditorViewModel {
+    
+    var settingsCoordinator: SettingsCoordinator? = nil
     var projectURL : URL?
     
 #if JUST_EDITOR
@@ -37,10 +39,23 @@ final class ComfyEditorViewModel {
         }
         """
 #else
-    var text : String = ""
+    var text : String = "" {
+        didSet {
+            saveFile()
+        }
+    }
 #endif
 
     init() {
         self.projectURL = nil
+    }
+    
+    func assignSettingsCoordinator(_ settingsCoordinator: SettingsCoordinator) {
+        self.settingsCoordinator = settingsCoordinator
+    }
+    
+    func saveFile() {
+        guard let projectURL else { return }
+        print("Saving File With Text: \(text) to \(projectURL)")
     }
 }

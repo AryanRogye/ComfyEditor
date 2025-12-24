@@ -27,48 +27,17 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     public init(
         text: Binding<String>,
         showScrollbar: Binding<Bool>,
-        isInVimMode: Binding<Bool>,
-        editorBackground: Color,
-        editorForegroundStyle: Color,
-        borderColor: Color,
         borderRadius: CGFloat,
+        isInVimMode: Binding<Bool> = .constant(false),
+        editorBackground: Color = .white,
+        editorForegroundStyle: Color = .black,
+        borderColor: Color = Color.gray.opacity(0.3),
     ) {
         self._text = text
         self._showScrollbar = showScrollbar
         self._isInVimMode = isInVimMode
         self.editorBackground = editorBackground
         self.editorForegroundStyle = editorForegroundStyle
-        self.borderRadius = borderRadius
-        self.borderColor = borderColor
-    }
-
-    public init(
-        text: Binding<String>,
-        showScrollbar: Binding<Bool>,
-        borderRadius: CGFloat,
-    ) {
-        self._text = text
-        self._showScrollbar = showScrollbar
-        self._isInVimMode = .constant(false)
-        self.editorBackground = .white
-        self.editorForegroundStyle = .black
-        self.borderRadius = borderRadius
-        self.borderColor = .gray.opacity(0.3)
-    }
-
-    public init(
-        text: Binding<String>,
-        showScrollbar: Binding<Bool>,
-        editorBackground: Color,
-        editorForegroundStyle: Color,
-        borderColor: Color,
-        borderRadius: CGFloat
-    ) {
-        self._text = text
-        self._showScrollbar = showScrollbar
-        self.editorBackground = editorBackground
-        self.editorForegroundStyle = editorForegroundStyle
-        self._isInVimMode = .constant(false)
         self.borderRadius = borderRadius
         self.borderColor = borderColor
     }
@@ -81,6 +50,7 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         viewController.vimBottomView.setBackground(color: NSColor(editorBackground))
         viewController.textView.textColor = NSColor(editorForegroundStyle)
         viewController.vimBottomView.setBorderColor(color: NSColor(borderColor))
+        EditorCommandCenter.shared.textViewDelegate.observeTextChange($text)
         return viewController
     }
 

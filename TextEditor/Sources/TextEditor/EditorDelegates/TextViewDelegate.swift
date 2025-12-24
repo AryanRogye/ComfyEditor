@@ -1,11 +1,13 @@
-import AppKit
 //
 //  TextViewDelegate.swift
 //  ComfyEditor
 //
 //  Created by Aryan Rogye on 12/2/25.
 //
+
+import AppKit
 import Combine
+import SwiftUI
 
 @MainActor
 final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
@@ -14,6 +16,21 @@ final class TextViewDelegate: NSObject, NSTextViewDelegate, ObservableObject {
     @Published var font: NSFont?
 
     weak var vimEngine: VimEngine?
+    
+    var text: Binding<String> = .constant("")
+    
+    public func observeTextChange(_ val: Binding<String>) {
+        self.text = val
+    }
+    
+    public func textDidChange(_ notification: Notification) {
+        guard let tv = notification.object as? NSTextView else { return }
+        print("Called")
+        // write AppKit -> SwiftUI
+        if text.wrappedValue != tv.string {
+            text.wrappedValue = tv.string
+        }
+    }
     
     public func refresh(_ textView: NSTextView) {
         calculateRange(textView)
