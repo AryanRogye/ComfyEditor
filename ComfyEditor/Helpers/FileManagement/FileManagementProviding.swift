@@ -11,5 +11,5 @@ public protocol FileManagementProviding {
     func createDirectory(
         directory: URL,
         named name: String
-    ) async throws
+    ) async throws -> URL
 }

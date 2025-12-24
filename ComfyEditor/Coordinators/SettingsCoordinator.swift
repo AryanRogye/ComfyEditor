@@ -20,7 +20,6 @@ final class SettingsCoordinator {
     var isShowing = false
     
     let windowCoordinator : WindowCoordinator
-    let applicationSupport: URL
     let configPath: URL
     var themeCoordinator: ThemeCoordinator?
     let fileManagement : FileManagementProviding
@@ -40,8 +39,8 @@ final class SettingsCoordinator {
     
     init(windowCoordinator: WindowCoordinator) {
         self.windowCoordinator = windowCoordinator
-        applicationSupport = Self.comfyEditorConfigDirectory()
-        configPath = Self.getOrCreateConfigJson()
+        configPath = Self.comfyEditorConfigDirectory()
+        print("Config Path: \(configPath)")
         
         dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -61,40 +60,27 @@ final class SettingsCoordinator {
 extension SettingsCoordinator {
     
     /// Creates a Default Project Directory
-    public func createDefaultProjectDirectory() async {
+    @discardableResult
+    public func createDefaultProjectDirectory() async -> URL? {
         let date = dateFormatter.string(from: .now)
         let time = timeFormatter.string(from: .now)
         
         let name = "Untitled-\(date)-\(time)"
         do {
-            try await fileManagement.createDirectory(
+            let url = try await fileManagement.createDirectory(
                 directory: configPath,
                 named: name
             )
+            return url
         } catch {
-            
+            print("Error Creating File: \(error.localizedDescription)")
+            return nil
         }
     }
     
     /// This will open the ApplicationSupport Folder
     public func openInFinder() {
         NSWorkspace.shared.activateFileViewerSelecting([configPath])
-    }
-    /// creates or gets the config.json file in the applicationSupport folder
-    private static func getOrCreateConfigJson() -> URL {
-        let fm = FileManager.default
-        
-        let dir = comfyEditorConfigDirectory()
-        let file = dir.appendingPathComponent("config.json")
-        
-        // If file doesn’t exist, create an empty `{}` config
-        if !fm.fileExists(atPath: file.path) {
-            let empty: [String: Any] = [:]
-            let data = try? JSONSerialization.data(withJSONObject: empty, options: [.prettyPrinted])
-            fm.createFile(atPath: file.path, contents: data)
-        }
-        
-        return file
     }
     
     private static func comfyEditorConfigDirectory() -> URL {

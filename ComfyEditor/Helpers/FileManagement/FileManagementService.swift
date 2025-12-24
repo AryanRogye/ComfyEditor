@@ -18,7 +18,7 @@ public actor FileManagementService: FileManagementProviding {
     public func createDirectory(
         directory: URL,
         named name: String
-    ) async throws {
+    ) async throws -> URL {
         
         /// FullPath
         let fullPath = directory.appendingPathComponent(name)
@@ -28,6 +28,7 @@ public actor FileManagementService: FileManagementProviding {
             withIntermediateDirectories: true,
             attributes: nil
         )
+        
+        return fullPath
     }
 }
-

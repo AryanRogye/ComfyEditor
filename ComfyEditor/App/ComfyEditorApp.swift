@@ -18,7 +18,8 @@ struct ComfyEditorApp: App {
                 #if JUST_EDITOR
                 ComfyEditorScreen(
                     settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator,
-                    themeCoordinator: appDelegate.appCoordinator.themeCoordinator
+                    themeCoordinator: appDelegate.appCoordinator.themeCoordinator,
+                    comfyEditorVM: ComfyEditorViewModel()
                 )
                 #else
                 ComfyEditorHome()

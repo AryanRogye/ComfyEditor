@@ -12,11 +12,12 @@ struct ComfyEditorScreen: View {
     
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
-    
+
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
     @Bindable var themeCoordinator    : ThemeCoordinator
-    
+    @Bindable var comfyEditorVM       : ComfyEditorViewModel
+
     @State private var shouldRefreshTrafficLights = false
     
     @State var text: String = """
@@ -67,6 +68,7 @@ struct ComfyEditorScreen: View {
             ComfyEditorTopBar(
                 settingsCoordinator: settingsCoordinator,
                 themeCoordinator   : themeCoordinator,
+                comfyEditorVM      : comfyEditorVM,
                 cameFromOtherView  : cameFromOtherView,
                 pop                : superPop,
             )

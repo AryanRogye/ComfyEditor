@@ -10,7 +10,7 @@ import Foundation
 public protocol FileManaging: Sendable {
     
     /// Allows FileManager to be testable cuz i can put it in tests with a custom implementation
-    /// not isolated to any actor, can be called from any thread
+    /// `FileManager.default` is is thread safe, so that means that it can be set as nonisolated
     nonisolated func createDirectory(
         at url: URL,
         withIntermediateDirectories createIntermediates: Bool,

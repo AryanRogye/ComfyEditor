@@ -13,6 +13,7 @@ struct ComfyEditorTopBar: View {
     @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator: SettingsCoordinator
     @Bindable var themeCoordinator   : ThemeCoordinator
+    @Bindable var comfyEditorVM      : ComfyEditorViewModel
 
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
@@ -38,6 +39,10 @@ struct ComfyEditorTopBar: View {
                 .frame(width: 77)
 
             backButton
+            
+            divider
+            
+            projectName
 
             divider
 
@@ -64,7 +69,7 @@ struct ComfyEditorTopBar: View {
             vim
 
             divider
-
+            
             Spacer()
 
         }
@@ -102,6 +107,17 @@ struct ComfyEditorTopBar: View {
                 action: pop,
             )
         }
+    }
+    
+    // MARK: - Project Name
+    @ViewBuilder
+    private var projectName: some View {
+        TopBarButton(
+            content: .text("\(comfyEditorVM.projectURL?.lastPathComponent, default: "DEBUG")"),
+            selection: .constant(false),
+            ignoreWidth: true,
+            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
+        )
     }
 
     // MARK: - Bold
