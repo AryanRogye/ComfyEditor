@@ -6,8 +6,9 @@
 //
 
 import Testing
+import FileManagement
 import Foundation
-import ComfyEditor
+
 
 class FakeFileManager : FileManaging, @unchecked Sendable {
     
@@ -50,29 +51,23 @@ private extension FileManaging {
 }
 
 
-@MainActor
 struct FileManagementTests {
-    
-    let fileManagement : FileManagementProviding
-    let fakeFileManager = FakeFileManager()
-    let dateFormatter : DateFormatter
-    let timeFormatter : DateFormatter
-    
-    init() {
-        dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.timeZone = .current
-        dateFormatter.dateFormat = "yyyy-MM-dd" // customize as needed
-        
-        timeFormatter = DateFormatter()
-        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
-        timeFormatter.timeZone = .current
-        timeFormatter.dateFormat = "HH:mm:ss" // 24h; use "h:mm a" for 12h
-        fileManagement = FileManagementService(fileManager: fakeFileManager)
-    }
     
     @Test
     func testCreateDirectory() async throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.timeZone = .current
+        timeFormatter.dateFormat = "HH:mm:ss"
+        
+        let fakeFileManager = FakeFileManager()
+        let fileManagement: FileManagementProviding = FileManagementService(fileManager: fakeFileManager)
+        
         let name = "Untitled-\(dateFormatter.string(from: .now))-\(timeFormatter.string(from: .now))"
         let base = FakeFileManager.DefaultDir()
         
@@ -86,6 +81,19 @@ struct FileManagementTests {
     
     @Test
     func testCreateFile() async throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.timeZone = .current
+        timeFormatter.dateFormat = "HH:mm:ss"
+        
+        let fakeFileManager = FakeFileManager()
+        let fileManagement: FileManagementProviding = FileManagementService(fileManager: fakeFileManager)
+        
         let name = "Untitled-\(dateFormatter.string(from: .now))-\(timeFormatter.string(from: .now))"
         let base = FakeFileManager.DefaultDir()
         
@@ -100,6 +108,19 @@ struct FileManagementTests {
     
     @Test
     func testWriteToFile() async throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.timeZone = .current
+        timeFormatter.dateFormat = "HH:mm:ss"
+        
+        let fakeFileManager = FakeFileManager()
+        let fileManagement: FileManagementProviding = FileManagementService(fileManager: fakeFileManager)
+        
         let name = "Untitled-\(dateFormatter.string(from: .now))-\(timeFormatter.string(from: .now))"
         let base = FakeFileManager.DefaultDir()
         
@@ -116,3 +137,4 @@ struct FileManagementTests {
         #expect(content == CONTENT_SET)
     }
 }
+

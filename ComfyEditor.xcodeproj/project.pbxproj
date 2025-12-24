@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B0778AC2EFCB0B500DF6071 /* FileManagement in Frameworks */ = {isa = PBXBuildFile; productRef = 9B0778AB2EFCB0B500DF6071 /* FileManagement */; };
 		9B0953042EE64B3E005D9BFB /* EditorDebug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9B0953032EE64B3E005D9BFB /* EditorDebug.xcconfig */; };
 		9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */; };
 		9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7212EE26ED400B64D36 /* LocalShortcuts */; };
@@ -59,12 +60,20 @@
 				9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */,
 				9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */,
 				9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */,
+				9B0778AC2EFCB0B500DF6071 /* FileManagement in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9B0778AA2EFCB0B500DF6071 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9BB0B68E2EDBD6FF0040A42F = {
 			isa = PBXGroup;
 			children = (
@@ -72,6 +81,7 @@
 				9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */,
 				9BB0B6992EDBD7000040A42F /* ComfyEditor */,
 				9B1189802EFB5C910074ABAE /* ComfyEditorTests */,
+				9B0778AA2EFCB0B500DF6071 /* Frameworks */,
 				9BB0B6982EDBD7000040A42F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +141,7 @@
 				9B2CD7212EE26ED400B64D36 /* LocalShortcuts */,
 				9B2CD7242EE2972B00B64D36 /* Defaults */,
 				9B2CD7592EE2B89500B64D36 /* TextEditor */,
+				9B0778AB2EFCB0B500DF6071 /* FileManagement */,
 			);
 			productName = ComfyEditor;
 			productReference = 9BB0B6972EDBD7000040A42F /* ComfyEditor.app */;
@@ -165,6 +176,7 @@
 			mainGroup = 9BB0B68E2EDBD6FF0040A42F;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				9B0778AD2EFCB0B500DF6071 /* XCLocalSwiftPackageReference "FileManagement" */,
 				9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */,
 				9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */,
 				9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */,
@@ -613,6 +625,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = LocalShortcuts;
 		};
+		9B0778AD2EFCB0B500DF6071 /* XCLocalSwiftPackageReference "FileManagement" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = FileManagement;
+		};
 		9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = TextEditor;
@@ -631,6 +647,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9B0778AB2EFCB0B500DF6071 /* FileManagement */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B0778AD2EFCB0B500DF6071 /* XCLocalSwiftPackageReference "FileManagement" */;
+			productName = FileManagement;
+		};
 		9B2CD7212EE26ED400B64D36 /* LocalShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LocalShortcuts;

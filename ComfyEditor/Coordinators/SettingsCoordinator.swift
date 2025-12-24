@@ -7,6 +7,7 @@
 
 import AppKit
 import Defaults
+import FileManagement
 
 extension Defaults.Keys {
     static let isVimEnabled = Key<Bool>("isVimEnabled", default: false)
@@ -22,7 +23,7 @@ final class SettingsCoordinator {
     let windowCoordinator : WindowCoordinator
     let configPath: URL
     var themeCoordinator: ThemeCoordinator?
-    let fileManagement : FileManagementProviding
+    let fileManagement : any FileManagementProviding
     let dateFormatter : DateFormatter
     let timeFormatter : DateFormatter
     

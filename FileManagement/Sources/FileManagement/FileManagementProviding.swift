@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol FileManagementProviding {
+public protocol FileManagementProviding: Actor {
     
     func createDirectory(
         directory: URL,
