@@ -26,19 +26,21 @@ struct ComfyEditorHome: View {
     ]
 
     var body: some View {
-        contentView
-            .navigationDestination(for: Route.self) { route in
-                switch route {
-                case .editor(let cameFromOtherView):
-                    ComfyEditorScreen(
-                        cameFromOtherView: cameFromOtherView,
-                        pop: { path.removeLast() },
-                        settingsCoordinator: settingsCoordinator,
-                        themeCoordinator: themeCoordinator,
-                        comfyEditorVM: comfyEditorVM
-                    )
+        NavigationStack(path: $path) {
+            contentView
+                .navigationDestination(for: Route.self) { route in
+                    switch route {
+                    case .editor(let cameFromOtherView):
+                        ComfyEditorScreen(
+                            cameFromOtherView: cameFromOtherView,
+                            pop: { path.removeLast() },
+                            settingsCoordinator: settingsCoordinator,
+                            themeCoordinator: themeCoordinator,
+                            comfyEditorVM: comfyEditorVM
+                        )
+                    }
                 }
-            }
+        }
     }
     
     @ViewBuilder
@@ -76,29 +78,26 @@ struct ComfyEditorHome: View {
         @Bindable var settingsCoordinator = settingsCoordinator
         @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
-        NavigationStack(path: $path) {
-            
-            Button {
-                Task {
-                    /// Create Default Project Directory
-                    if let url = await settingsCoordinator.createDefaultProjectDirectory() {
-                        
-                        /// Set Project URL in the VM
-                        comfyEditorVM.projectURL = url
-                        
-                        /// set Editor to this
-                        await MainActor.run {
-                            path.append(.editor(
-                                cameFromOtherView: true,
-                            ))
-                        }
+        Button {
+            Task {
+                /// Create Default Project Directory
+                if let url = await settingsCoordinator.createDefaultProjectDirectory() {
+                    
+                    /// Set Project URL in the VM
+                    comfyEditorVM.projectURL = url
+                    
+                    /// set Editor to this
+                    await MainActor.run {
+                        path.append(.editor(
+                            cameFromOtherView: true,
+                        ))
                     }
                 }
-            } label: {
-                addButtonView(theme: theme)
             }
-            .tint(theme.primaryForegroundStyle)
+        } label: {
+            addButtonView(theme: theme)
         }
+        .tint(theme.primaryForegroundStyle)
         .buttonStyle(.plain)
     }
     

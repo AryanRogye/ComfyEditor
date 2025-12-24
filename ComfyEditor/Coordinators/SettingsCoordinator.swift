@@ -50,7 +50,7 @@ final class SettingsCoordinator {
         timeFormatter = DateFormatter()
         timeFormatter.locale = Locale(identifier: "en_US_POSIX")
         timeFormatter.timeZone = .current
-        timeFormatter.dateFormat = "HH:mm:ss" // 24h; use "h:mm a" for 12h
+        timeFormatter.dateFormat = "HH-mm-ss" // 24h; use "h:mm a" for 12h
         
         fileManagement = FileManagementService(fileManager: FileManager.default)
     }
