@@ -79,13 +79,18 @@ struct ComfyEditorHome: View {
         }
     }
     
+    @State var isAdding: Bool = false
+    
     @ViewBuilder
     private func addButton(theme: Theme) -> some View {
         @Bindable var settingsCoordinator = settingsCoordinator
         @Bindable var themeCoordinator = themeCoordinator
         // Add Project Button
         Button {
+            if isAdding { return }
+            isAdding = true
             Task { @MainActor in
+                defer { isAdding = false }
                 /// Create Default Project Directory
                 if let url = await settingsCoordinator.createDefaultProjectDirectory() {
                     
@@ -102,6 +107,7 @@ struct ComfyEditorHome: View {
         }
         .tint(theme.primaryForegroundStyle)
         .buttonStyle(.plain)
+        .disabled(isAdding)
     }
     
     private func addButtonView(theme: Theme) -> some View {
