@@ -2,6 +2,8 @@ import AppKit
 @testable import TextEditor
 
 final class FakeBuffer: BufferView {
+    var onUpdateInsertionPoint: (() -> Void)?
+    
     
     // MARK: - Stored state
     
