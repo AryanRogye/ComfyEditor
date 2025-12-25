@@ -41,6 +41,16 @@ class FakeFileManager : FileManaging, @unchecked Sendable {
     func content(at url: URL) throws -> String? {
         contents[url]
     }
+    
+    func fileExists(atPath path: String, isDirectory: UnsafeMutablePointer<ObjCBool>?) -> Bool {
+        let url : URL = URL(filePath: path)
+        if let isDirectory, isDirectory.pointee.boolValue {
+            return createdDirectories.contains(where: { $0 ==  url })
+        } else {
+            return files.contains(where: { $0 == url })
+        }
+    }
+
 }
 
 private extension FileManaging {
