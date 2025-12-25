@@ -25,7 +25,8 @@ final class AppCoordinator {
         keybindCoordinator.setupKeybinds(
             onToggleBold: comfyEditorVM.toggleBold,
             onIncreaseFont: comfyEditorVM.increaseFont,
-            onDecreaseFont: comfyEditorVM.decreaseFont
+            onDecreaseFont: comfyEditorVM.decreaseFont,
+            onSave:         comfyEditorVM.saveFile
         )
         settingsCoordinator.themeCoordinator = themeCoordinator
     }

@@ -18,6 +18,8 @@ class VimEngine: ObservableObject {
 
     @Published var position : Position?
     @Published var isOnNewLine: Bool = false
+    
+    @Published var commandBuffer: String = ":"
 
     var lastShortcut: LocalShortcuts.Shortcut?
 
@@ -26,6 +28,8 @@ class VimEngine: ObservableObject {
     internal lazy var motionEngine = MotionEngine(buffer: buffer)
 
     @Published var visualAnchorLocation: Int?
+    
+    var onSave: (() -> Void)? = nil
 
     public func updatePosition() {
         let p = buffer.cursorPosition()
@@ -51,94 +55,169 @@ class VimEngine: ObservableObject {
         /// First Check if is control c
 
         var didJustInsert: Bool = false
+        var didJustCommand: Bool = false
         var didPressInsertButIsInsertMode: Bool = false
+        var didPressCommandButIsCommandMode: Bool = false
         var didJustMoveToEndOfLine: Bool = false
 
         switch shortcut {
             
-            // MARK: - Mode's
-            /// User Requested Normal Mode
+            // MARK: - Escape
+        case Self.escape:
+            /// In insert mode if "escape" switches to normal mode
+            if state == .insert  { enterNormalMode() }
+            /// In command mode if "escape" switches to normal mode
+            else if state == .command { enterNormalMode() }
+            
+            /// In visual mode if "escape" exit visual + enter normal
+            else if state == .visual {
+                exitVisualMode()
+                enterNormalMode()
+            }
+            /// In visual line mode if "escape" exit visual line + enter normal
+            else if state == .visualLine {
+                exitVisualLineMode()
+                enterNormalMode()
+            }
+            /// ================================================================================================
+            // MARK: - Command-Mode
+        case Self.command_mode:
+            /// Just Return on this
+            if state == .command {
+                didPressCommandButIsCommandMode = true
+                break
+            }
+            /// Insert is the only case in which it should break on
+            if state == .insert { break }
+            /// else we enter command mode
+            enterCommandMode()
+            didJustCommand = true
+            
+            // MARK: - Normal Mode
         case Self.normal_mode:
+            /// If Visual Exit
             if state == .visual { exitVisualMode() }
-            if state == .visualLine { exitVisualLineMode() }
+            /// If Visual Line Exit
+            else if state == .visualLine { exitVisualLineMode() }
+            
+            /// Enter Normal Mode
             enterNormalMode()
-            /// User Requested Insert Mode
+            
+            // MARK: - Insert Mode
         case Self.insert_mode:
-            if state == .visual { exitVisualMode() }
-            if state == .visualLine { exitVisualLineMode() }
-            if state == .insert {
+            /// if we're in command mode, dont do anything
+            if state == .command ||
+                /// if we're in visual break dont do anything
+                state == .visual ||
+                /// If we're in visual line dont do anything
+                state == .visualLine { break }
+            /// if we press insert, but we're already in insert, just break out as well but
+            /// mark it
+            else if state == .insert {
                 didPressInsertButIsInsertMode = true
                 break
             }
+            /// Set Insert
             state = .insert
             didJustInsert = true
-
-            /// User Requested Visual Mode
+            
+            // MARK: - Visual Mode
         case Self.visual_mode:
-            if state == .insert { break }
+            /// If we're in insert, dont do anything
+            if state == .insert ||
+                /// if we're in command, dont do anything
+                state == .command { break }
+            
+            /// Enter Visual Mode
             enterVisualMode()
-            /// User Requested Visual Line Mode
+            
+            // MARK: - Visual Line Mode
         case Self.visual_line_mode:
-            if state == .insert { break }
+            /// If we're in insert, dont do anything
+            if state == .insert ||
+                /// if we're in command, dont do anything
+                state == .command { break }
+            
+            /// Enter Visual Line Mode
             enterVisualLineMode()
+            /// ================================================================================================
+            
             
             // MARK: - Deletion
         case Self.delete:
+            /// If we're in insert, dont do anything
+            if state == .insert ||
+                /// if we're in command, dont do anything
+                state == .command { break }
             /// Normal Delete is just delete char underneath
-            if state != .insert {
-                deleteUnderCursor()
-                state = .normal
-            }
+            deleteUnderCursor()
+            
+            /// Enter Normal Mode
+            enterNormalMode()
+            
             // MARK: - MOVEMENT
         case Self.move_left_one:
+            if state == .command  { break }
             if state != .insert {
+                print("MOVING LEFT")
                 moveLeft()
             }
         case Self.move_right_one:
+            if state == .command  { break }
             if state != .insert {
                 moveRight()
             }
         case Self.move_up_one:
+            if state == .command  { break }
             if state != .insert {
                 moveUp()
             }
         case Self.move_down_one:
+            if state == .command  { break }
             if state != .insert {
                 moveDown()
             }
 
         case Self.move_word_next_leading:
+            if state == .command  { break }
             if state != .insert {
                 handleNextWordLeading()
             }
         case Self.move_word_next_trailing:
+            if state == .command  { break }
             if state != .insert {
                 handleNextWordTrailing()
             }
         case Self.move_word_back:
+            if state == .command  { break }
             if state != .insert {
                 handleLastWordLeading()
             }
 
         case Self.move_end_line_insert:
+            if state == .command  { break }
             if state != .insert {
                 didJustMoveToEndOfLine = true
                 moveToEndOfLine()
                 state = .insert
             }
         case Self.move_end_of_line:
+            if state == .command  { break }
             if state != .insert {
                 moveToEndOfLine()
             }
         case Self.move_start_of_line:
+            if state == .command  { break }
             if state != .insert {
                 moveToStartOfLine()
             }
         case Self.bottom_of_file:
+            if state == .command  { break }
             if state != .insert {
                 moveToBottomOfFile()
             }
         case Self.g_modifier:
+            if state == .command  { break }
             if state != .insert {
                 if let lastShortcut = lastShortcut {
                     let top_of_file_pattern: [LocalShortcuts.Shortcut] = [
@@ -169,18 +248,58 @@ class VimEngine: ObservableObject {
                 buffer.updateCursorAndSelectLine(anchor: visualAnchorLocation, to: range.location)
             }
         }
-        
-        if didPressInsertButIsInsertMode {
+        if state == .command && !didJustCommand {
+            if let c = event.characters {
+                debugPrint("C: \(c)")
+                if c == "\n" || c == "\r" {
+                    evaluateCommandBuffer()
+                    enterNormalMode()
+                }
+                else if c == "\u{7F}" {
+                    if commandBuffer.count > 1 {
+                        let sub = commandBuffer.dropLast(1)
+                        commandBuffer = sub.description
+                    }
+                }
+                else {
+                    commandBuffer += c
+                }
+            }
+        }
+
+        /// Returning True allows us to type in what we just did
+        if didPressInsertButIsInsertMode || didPressCommandButIsCommandMode {
             return true
         }
 
-        if didJustInsert || didJustMoveToEndOfLine {
+        if didJustCommand || didJustInsert || didJustMoveToEndOfLine {
             return false
         }
+        
 
         return state == .insert
     }
+    
+    private func evaluateCommandBuffer() {
+        switch commandBuffer {
+        case ":w": onSave?()
+        default: break
+        }
+        
+        commandBuffer = ":"
+    }
+    
+    private func clearCommandBuffer() {
+        commandBuffer = ":"
+    }
 
+    private func enterCommandMode() {
+        clearCommandBuffer()
+        state = .command
+    }
+    private func exitCommandMode() {
+        enterNormalMode()
+    }
     private func enterNormalMode() {
         state = .normal
         let currentPos = buffer.cursorPosition()

@@ -38,20 +38,28 @@ public class TextViewController: NSViewController, EditorCommands {
     internal var isAppActive: Bool {
         NSApplication.shared.isActive
     }
-
+    
+    
     // MARK: - Init
     init(
-        foregroundStyle : Color,
-        textViewDelegate    : TextViewDelegate,
-        magnificationDelegate: MagnificationDelegate
+        foregroundStyle       : Color,
+        textViewDelegate      : TextViewDelegate,
+        magnificationDelegate : MagnificationDelegate,
+        onSave                : @escaping () -> Void
     ) {
         self.foregroundStyle = foregroundStyle
-        
         self.textViewDelegate = textViewDelegate
         self.magnificationDelegate = magnificationDelegate
         
         super.init(nibName: nil, bundle: nil)
+        
+        /// Assign On Save Values
+        vimEngine.onSave = onSave
+        
+        /// Assign VimEngine
         textViewDelegate.vimEngine = vimEngine
+        
+        /// On Updating Insertion Point we should let the textViewDelegate refresh
         vimEngine.buffer.onUpdateInsertionPoint = {
             textViewDelegate.refresh()
         }

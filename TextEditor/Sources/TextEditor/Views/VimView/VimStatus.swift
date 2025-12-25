@@ -32,6 +32,7 @@ struct VimStatus: View {
     }
     var color: Color {
         switch vimEngine.state {
+        case .command: .yellow
         case .normal: .gray
         case .insert: .purple
         case .visual: .cyan
@@ -41,16 +42,24 @@ struct VimStatus: View {
     
     var body: some View {
         HStack {
-            Text(vimEngine.state.displayName)
-                .font(.system(size: 12, weight: .regular, design: .rounded))
-                .foregroundStyle(vimStatusVM.foregroundStyle)
-                .opacity(opacity)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(color.opacity(opacityBackground))
-                }
+            if vimEngine.state == .command {
+                Text(vimEngine.commandBuffer)
+                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                    .foregroundStyle(vimStatusVM.foregroundStyle)
+                    .opacity(opacity)
+                    .padding(.vertical, 2)
+            } else {
+                Text(vimEngine.state.displayName)
+                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                    .foregroundStyle(vimStatusVM.foregroundStyle)
+                    .opacity(opacity)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(color.opacity(opacityBackground))
+                    }
+            }
             Spacer()
             Text("Line: \(vimEngine.position.map { String($0.line) } ?? "_")  Col: \(vimEngine.position.map { String($0.column) } ?? "_")")
                 .font(.system(size: 12, weight: .regular, design: .rounded))

@@ -43,6 +43,7 @@ struct ComfyEditorHome: View {
                     }
                 }
         }
+        .onAppear { comfyEditorVM.screen = .home }
         .task {
             comfyEditorVM.settingsCoordinator = settingsCoordinator
         }

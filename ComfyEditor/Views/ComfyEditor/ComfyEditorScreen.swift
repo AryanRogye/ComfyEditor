@@ -40,6 +40,12 @@ struct ComfyEditorScreen: View {
                 borderColor             : themeCoordinator.currentTheme.theme.borderColor,
                 onReady                 : { editorCommands in
                     comfyEditorVM.registerCommands(editorCommands)
+                },
+                onSave                  : {
+                    /// In JUST_EDITOR we dont want to save
+                    #if DEBUG || RELEASE
+                    comfyEditorVM.saveFile()
+                    #endif
                 }
             )
             .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
@@ -53,6 +59,7 @@ struct ComfyEditorScreen: View {
                 pop                : superPop,
             )
         }
+        .onAppear { comfyEditorVM.screen = .editor }
         .frame(minWidth: 600, minHeight: 400)
         .navigationBarBackButtonHidden()
         .windowTitlebarArea(
@@ -72,8 +79,9 @@ struct ComfyEditorScreen: View {
             }
         }
     }
-    
+
     func superPop() {
+        comfyEditorVM.screen = .home
         pop()
         shouldRefreshTrafficLights = true
     }

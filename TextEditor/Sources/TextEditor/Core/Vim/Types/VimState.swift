@@ -6,7 +6,7 @@
 //
 
 enum VimState {
-    /// Sometimes alternal `Vim` in its mode is normal
+    case command
     case normal
     case insert
     case visual
@@ -16,6 +16,8 @@ enum VimState {
 extension VimState {
     var displayName: String {
         switch self {
+        case .command:
+            return "Command"
         case .normal:
             return "Vim"
         case .insert:

@@ -68,6 +68,10 @@ struct ComfyEditorTopBar: View {
             vim
 
             divider
+
+            lastSavedStatus
+
+            divider
             
             Spacer()
 
@@ -179,4 +183,28 @@ struct ComfyEditorTopBar: View {
             foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
         )
     }
+
+    // MARK: - Last Saved
+    private var lastSavedStatus: some View {
+        TopBarButton(
+            content: .label(lastSavedText, "clock"),
+            selection: .constant(false),
+            ignoreWidth: true,
+            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle
+        )
+    }
+
+    private var lastSavedText: String {
+        guard let lastSaved = comfyEditorVM.lastSaved else {
+            return "Not saved yet"
+        }
+        return "Saved \(lastSavedFormatter.string(from: lastSaved))"
+    }
+
+    private let lastSavedFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
 }

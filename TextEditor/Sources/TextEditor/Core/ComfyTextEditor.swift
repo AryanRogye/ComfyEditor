@@ -34,6 +34,7 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     let magnificationDelegate = MagnificationDelegate()
     
     var onReady: (EditorCommands) -> Void
+    var onSave : () -> Void
 
     public init(
         text: Binding<String>,
@@ -46,9 +47,11 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         editorBackground: Color = .white,
         editorForegroundStyle: Color = .black,
         borderColor: Color = Color.gray.opacity(0.3),
-        onReady: @escaping (EditorCommands) -> Void = { _ in }
+        onReady: @escaping (EditorCommands) -> Void = { _ in },
+        onSave : @escaping () -> Void = { },
     ) {
         self.onReady = onReady
+        self.onSave = onSave
         self._text = text
         self._font = font
         self._magnification = magnification
@@ -82,15 +85,17 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
             editorBackground: editorBackground,
             editorForegroundStyle: editorForegroundStyle,
             borderColor: borderColor,
-            onReady: { _ in }
+            onReady: { _ in },
+            onSave: { }
         )
     }
     
     public func makeNSViewController(context: Context) -> TextViewController {
         let viewController = TextViewController(
-            foregroundStyle: editorForegroundStyle,
-            textViewDelegate: textViewDelegate,
-            magnificationDelegate: magnificationDelegate
+            foregroundStyle       : editorForegroundStyle,
+            textViewDelegate      : textViewDelegate,
+            magnificationDelegate : magnificationDelegate,
+            onSave                : onSave
         )
         onReady(viewController)
         viewController.textView.string = text

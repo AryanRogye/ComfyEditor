@@ -11,8 +11,13 @@ import TextEditor
 @Observable @MainActor
 final class ComfyEditorViewModel {
     
+    enum Screen { case none, home, editor }
+    var screen: Screen = .none
+    
     var settingsCoordinator: SettingsCoordinator? = nil
     var projectURL : URL?
+    
+    var lastSaved  : Date?
     
 #if JUST_EDITOR
     var text: String = """
@@ -40,11 +45,7 @@ final class ComfyEditorViewModel {
         }
         """
 #else
-    var text : String = "" {
-        didSet {
-            saveFile()
-        }
-    }
+    var text : String = ""
 #endif
     
     var font: CGFloat = 0
@@ -53,13 +54,36 @@ final class ComfyEditorViewModel {
 
     init() {
         self.projectURL = nil
+        observeScreen()
+    }
+    
+    func observeScreen() {
+        withObservationTracking {
+            _ = screen
+        } onChange: {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                if screen == .home {
+                    print("Screen Home")
+                    clearCommands()
+                    text = ""
+                    lastSaved = nil
+                    font = 0
+                    projectURL = nil
+                    magnification = 0
+                    isBold = false
+                }
+                self.observeScreen()
+            }
+        }
     }
     
     func assignSettingsCoordinator(_ settingsCoordinator: SettingsCoordinator) {
         self.settingsCoordinator = settingsCoordinator
     }
     
-    func saveFile() {
+    public func saveFile() {
+        guard screen == .editor else { return }
         guard let projectURL else { return }
         guard let settingsCoordinator else { return }
         
@@ -67,6 +91,7 @@ final class ComfyEditorViewModel {
             text,
             to: projectURL
         )
+        lastSaved = .now
     }
     
     weak var commands: EditorCommands?
@@ -80,14 +105,17 @@ final class ComfyEditorViewModel {
     }
     
     func toggleBold() {
+        guard screen == .editor else { return }
         commands?.toggleBold()
     }
     
     func increaseFont() {
+        guard screen == .editor else { return }
         commands?.increaseFontOrZoomIn()
     }
     
     func decreaseFont() {
+        guard screen == .editor else { return }
         commands?.decreaseFontOrZoomOut()
     }
 }

@@ -9,6 +9,10 @@ import LocalShortcuts
 
 extension VimEngine {
     
+    static let escape = LocalShortcuts.Shortcut(
+        modifier: [],
+        keys: [.escape]
+    )
     static let normal_mode = LocalShortcuts.Shortcut(
         modifier: [.control],
         keys: [.c]
@@ -25,6 +29,11 @@ extension VimEngine {
         modifier: [.shift],
         keys: [.V]
     )
+    static let command_mode = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.semi_colon]
+    )
+    
     static let move_left_one = LocalShortcuts.Shortcut(
         modifier: [],
         keys: [.h]

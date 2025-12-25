@@ -35,6 +35,8 @@ extension LocalShortcuts {
         case eight = "8"
         case nine  = "9"
         
+        case semi_colon = ":"
+        
         case dollar = "$"
         case underscore = "_"
         
@@ -106,6 +108,7 @@ extension LocalShortcuts.Key {
             case "x": key = .x
             case "y": key = .y
             case "z": key = .z
+            case ":": key = .semi_colon
                 
             case "0": key = .zero
             case "1": key = .one
