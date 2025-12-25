@@ -18,12 +18,14 @@ struct ComfyEditorApp: App {
                 #if JUST_EDITOR
                 ComfyEditorScreen(
                     settingsCoordinator: appDelegate.appCoordinator.settingsCoordinator,
-                    themeCoordinator: appDelegate.appCoordinator.themeCoordinator
+                    themeCoordinator: appDelegate.appCoordinator.themeCoordinator,
+                    comfyEditorVM: appDelegate.appCoordinator.comfyEditorVM
                 )
                 #else
                 ComfyEditorHome()
                     .environment(appDelegate.appCoordinator.settingsCoordinator)
                     .environment(appDelegate.appCoordinator.themeCoordinator)
+                    .environment(appDelegate.appCoordinator.comfyEditorVM)
                 #endif
             }
         }

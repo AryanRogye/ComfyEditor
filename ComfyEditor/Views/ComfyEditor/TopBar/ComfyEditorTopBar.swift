@@ -7,15 +7,22 @@
 
 import SwiftUI
 import TextEditor
+import Combine
 
 struct ComfyEditorTopBar: View {
 
-    @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator: SettingsCoordinator
     @Bindable var themeCoordinator   : ThemeCoordinator
+    @Bindable var comfyEditorVM      : ComfyEditorViewModel
 
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
+
+    @State private var statusText: String = "Not saved yet"
+    @State private var pendingStatusTask: Task<Void, Never>?
+    @State private var savingStartedAt: Date?
+    private let relativeFormatter = RelativeTimeFormatter()
+    private let statusTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private let magnificationText = {
         let f = NumberFormatter()
@@ -38,6 +45,10 @@ struct ComfyEditorTopBar: View {
                 .frame(width: 77)
 
             backButton
+            
+            divider
+            
+            projectName
 
             divider
 
@@ -65,6 +76,10 @@ struct ComfyEditorTopBar: View {
 
             divider
 
+            lastSavedStatus
+
+            divider
+            
             Spacer()
 
         }
@@ -78,6 +93,26 @@ struct ComfyEditorTopBar: View {
         .overlay {
             topBarShape
                 .stroke(themeCoordinator.currentTheme.theme.borderColor, lineWidth: 1)
+        }
+        .onAppear { refreshStatus() }
+        .onChange(of: comfyEditorVM.isSaving) { _, newValue in
+            if newValue {
+                showSavingState()
+            } else {
+                updateSavedState(with: comfyEditorVM.lastSaved)
+            }
+        }
+        .onChange(of: comfyEditorVM.lastSaved) { _, newValue in
+            guard !comfyEditorVM.isSaving else { return }
+            updateSavedState(with: newValue)
+        }
+        .onDisappear {
+            pendingStatusTask?.cancel()
+        }
+        .onReceive(statusTimer) { _ in
+            guard !comfyEditorVM.isSaving else { return }
+            guard let lastSaved = comfyEditorVM.lastSaved else { return }
+            statusText = "Saved \(relativeFormatter.string(since: lastSaved))"
         }
     }
 
@@ -103,15 +138,23 @@ struct ComfyEditorTopBar: View {
             )
         }
     }
+    
+    // MARK: - Project Name
+    @ViewBuilder
+    private var projectName: some View {
+        TopBarButton(
+            content: .text(projectTitle),
+            selection: .constant(false),
+            ignoreWidth: true,
+            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
+        )
+    }
 
     // MARK: - Bold
     private var bold: some View {
         TopBarButton(
             content: .text("B"),
-            selection: Binding(
-                get: { editorCommandCenter.isBoldEnabled },
-                set: { _ in }
-            ),
+            selection: $comfyEditorVM.isBold,
             foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
         )
     }
@@ -129,19 +172,11 @@ struct ComfyEditorTopBar: View {
 
     // MARK: - Current Font
     private var currentFont: some View {
-        if let currentFont = editorCommandCenter.currentFont {
-            TopBarButton(
-                content: .value(currentFont),
-                selection: .constant(false),
-                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
-            )
-        } else {
-            TopBarButton(
-                content: .text("_"),
-                selection: .constant(false),
-                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
-            )
-        }
+        TopBarButton(
+            content: .value(comfyEditorVM.font),
+            selection: .constant(false),
+            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
+        )
     }
 
     // MARK: - Plus
@@ -159,7 +194,7 @@ struct ComfyEditorTopBar: View {
     private var zoom: some View {
         TopBarButton(
             content: .label(
-                magnificationText.string(from: editorCommandCenter.magnification as NSNumber) ?? "–",
+                magnificationText.string(from: comfyEditorVM.magnification as NSNumber) ?? "–",
                 "magnifyingglass"
             ),
             selection: .constant(false),
@@ -174,5 +209,94 @@ struct ComfyEditorTopBar: View {
             selection: $settingsCoordinator.isVimEnabled,
             foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
         )
+    }
+
+    // MARK: - Last Saved
+    @ViewBuilder
+    private var lastSavedStatus: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            TopBarButton(
+                content: .label(statusText, "clock"),
+                selection: .constant(false),
+                ignoreWidth: true,
+                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle
+            )
+        }
+        .frame(width: 120, alignment: .leading)
+    }
+
+    private var projectTitle: String {
+        comfyEditorVM.projectURL?.lastPathComponent ?? "DEBUG"
+    }
+
+    private func refreshStatus() {
+        if comfyEditorVM.isSaving {
+            showSavingState()
+        } else {
+            updateSavedState(with: comfyEditorVM.lastSaved)
+        }
+    }
+
+    private func showSavingState() {
+        pendingStatusTask?.cancel()
+        savingStartedAt = .now
+        withAnimation(.easeInOut) {
+            statusText = "Saving..."
+        }
+    }
+
+    private func updateSavedState(with date: Date?) {
+        pendingStatusTask?.cancel()
+        guard let date else {
+            withAnimation(.easeInOut) {
+                statusText = "Not saved yet"
+            }
+            return
+        }
+
+        let elapsed = savingStartedAt.map { Date().timeIntervalSince($0) } ?? 0
+        let minimumVisibleTime: TimeInterval = 0.6
+        let delay = max(minimumVisibleTime - elapsed, 0)
+
+        pendingStatusTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            withAnimation(.easeInOut) {
+                statusText = "Saved \(relativeFormatter.string(since: date))"
+            }
+        }
+    }
+}
+
+private struct RelativeTimeFormatter {
+    func string(since date: Date, now: Date = .now) -> String {
+        let seconds = max(Int(now.timeIntervalSince(date)), 1)
+
+        if seconds < 60 {
+            return format(seconds, unit: "second")
+        }
+
+        let minutes = seconds / 60
+        if minutes < 60 {
+            return format(minutes, unit: "minute")
+        }
+
+        let hours = minutes / 60
+        if hours < 24 {
+            return format(hours, unit: "hour")
+        }
+
+        let days = hours / 24
+        let remainingHours = hours % 24
+
+        if remainingHours > 0 {
+            return "\(format(days, unit: "day")) \(format(remainingHours, unit: "hour")) ago"
+        }
+
+        return "\(format(days, unit: "day")) ago"
+    }
+
+    private func format(_ value: Int, unit: String) -> String {
+        let pluralized = value == 1 ? unit : "\(unit)s"
+        return "\(value) \(pluralized) ago"
     }
 }

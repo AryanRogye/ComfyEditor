@@ -55,7 +55,7 @@ extension TextEditorTests {
         
         #expect(line == text)               // no change
         #expect(cursor.line == 0)
-        #expect(cursor.column == text.count) // still at EOF
+        #expect(cursor.column == text.count - 1) // still at EOF
     }
     
     // 3. Visual mode: delete should delete selection range

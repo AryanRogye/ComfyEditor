@@ -14,12 +14,20 @@ final class AppCoordinator {
     let keybindCoordinator  : KeybindCoordinator
     let settingsCoordinator : SettingsCoordinator
     let themeCoordinator    : ThemeCoordinator
+    let comfyEditorVM       : ComfyEditorViewModel
     
     init() {
         keybindCoordinator  = KeybindCoordinator(windowCoordinator: windowCoordinator)
         settingsCoordinator = SettingsCoordinator(windowCoordinator: windowCoordinator)
         themeCoordinator    = ThemeCoordinator()
-        
+        comfyEditorVM = ComfyEditorViewModel()
+
+        keybindCoordinator.setupKeybinds(
+            onToggleBold: comfyEditorVM.toggleBold,
+            onIncreaseFont: comfyEditorVM.increaseFont,
+            onDecreaseFont: comfyEditorVM.decreaseFont,
+            onSave:         comfyEditorVM.saveFile
+        )
         settingsCoordinator.themeCoordinator = themeCoordinator
     }
 }

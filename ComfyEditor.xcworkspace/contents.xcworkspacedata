@@ -13,4 +13,7 @@
    <FileRef
       location = "group:ComfyLogger">
    </FileRef>
+   <FileRef
+      location = "group:FileManagement">
+   </FileRef>
 </Workspace>

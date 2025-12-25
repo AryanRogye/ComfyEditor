@@ -15,7 +15,7 @@ extension Color {
         }
         
         var rgb: UInt64 = 0
-        Scanner(string: cleanedHex).scanHexInt64(&rgb)
+        unsafe Scanner(string: cleanedHex).scanHexInt64(&rgb)
         
         let red = Double((rgb & 0xFF0000) >> 16) / 255.0
         let green = Double((rgb & 0x00FF00) >> 8) / 255.0

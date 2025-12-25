@@ -1,4 +1,4 @@
-name: TextEditor Tests
+name: FileManagement Tests
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: TextEditor Unit Tests
+    name: FileManagement Unit Tests
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v3
@@ -26,4 +26,4 @@ jobs:
 
       - name: Build & test (macOS 15.0)
         run: |
-          swift test --package-path TextEditor/
+          swift test --package-path FileManagement/

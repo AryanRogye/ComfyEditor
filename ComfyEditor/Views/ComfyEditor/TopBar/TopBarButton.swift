@@ -21,6 +21,7 @@ struct TopBarButton: View {
     var isButton: Bool = false
     var action: () -> Void = {}
     let labelWidth: CGFloat
+    let ignoreWidth : Bool
     let textWidth : CGFloat
     let foregroundStyle: Color
     
@@ -28,6 +29,7 @@ struct TopBarButton: View {
         content: Contents? = nil,
         selection: Binding<Bool>,
         isButton: Bool = false,
+        ignoreWidth: Bool = false,
         labelWidth: CGFloat = 50,
         textWidth : CGFloat = 40,
         foregroundStyle: Color,
@@ -40,6 +42,7 @@ struct TopBarButton: View {
         self.labelWidth = labelWidth
         self.foregroundStyle = foregroundStyle
         self.textWidth = textWidth
+        self.ignoreWidth = ignoreWidth
     }
     
     var body: some View {
@@ -70,8 +73,8 @@ struct TopBarButton: View {
     
     private func labelView(_ text: String, _ systemName: String) -> some View {
         Label(text, systemImage: systemName)
-            .font(.system(.body, design: .monospaced))
-            .frame(width: labelWidth, alignment: .leading)
+            .font(.system(.body))
+            .if(!ignoreWidth) { $0.frame(width: labelWidth, alignment: .leading) }
             .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }
     
@@ -82,7 +85,7 @@ struct TopBarButton: View {
     
     private func textView(_ text: String) -> some View {
         Text(text)
-            .frame(width: textWidth)
+            .if(!ignoreWidth) { $0.frame(width: textWidth) }
             .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }
     

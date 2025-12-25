@@ -7,6 +7,7 @@
 
 import AppKit
 import Defaults
+import FileManagement
 
 extension Defaults.Keys {
     static let isVimEnabled = Key<Bool>("isVimEnabled", default: false)
@@ -20,10 +21,15 @@ final class SettingsCoordinator {
     var isShowing = false
     
     let windowCoordinator : WindowCoordinator
-    let applicationSupport: URL
     let configPath: URL
     var themeCoordinator: ThemeCoordinator?
+    let fileManagement : any FileManagementProviding
+    let dateFormatter : DateFormatter
+    let timeFormatter : DateFormatter
     
+    var savingContentError: String? = nil
+    var shouldShowSavingContentError = false
+
     var isVimEnabled: Bool = Defaults[.isVimEnabled]  {
         didSet {
             Defaults[.isVimEnabled] = isVimEnabled
@@ -37,35 +43,99 @@ final class SettingsCoordinator {
     
     init(windowCoordinator: WindowCoordinator) {
         self.windowCoordinator = windowCoordinator
-        applicationSupport = Self.comfyEditorConfigDirectory()
-        configPath = Self.getOrCreateConfigJson()
+        configPath = Self.comfyEditorConfigDirectory()
+        print("Config Path: \(configPath)")
+        
+        dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "yyyy-MM-dd" // customize as needed
+        
+        timeFormatter = DateFormatter()
+        timeFormatter.locale = Locale(identifier: "en_US_POSIX")
+        timeFormatter.timeZone = .current
+        timeFormatter.dateFormat = "HH-mm-ss" // 24h; use "h:mm a" for 12h
+        
+        fileManagement = FileManagementService(fileManager: FileManager.default)
+    }
+    
+}
+
+extension SettingsCoordinator {
+    // MARK: - Saving Writing Content
+    @discardableResult
+    public func saveContentAsWrites(_ content: String, to project_url: URL) async -> Date? {
+        /// Project_url has a content in it, if it doesnt, we throw an error
+        let contentURL = project_url.appendingPathComponent("content")
+        var date: Date?
+        do {
+            try await fileManagement.write(
+                to: contentURL,
+                content
+            )
+            shouldShowSavingContentError = false
+        } catch {
+            savingContentError = error.localizedDescription
+            shouldShowSavingContentError = true
+        }
+        
+        do {
+            date = try await fileManagement.getLastModified(url: contentURL, isDirectory: false)
+        } catch {
+            print("Could Not Get Last Modified for Content URL: \(error.localizedDescription)")
+        }
+        return date
+    }
+    
+    public func saveContentForce(_ content: String, to project_url: URL) async throws {
+        let contentURL = project_url.appendingPathComponent("content")
+        try await fileManagement.write(
+            to: contentURL,
+            content
+        )
+        shouldShowSavingContentError = false
     }
 }
 
 extension SettingsCoordinator {
     
-    /// This will open the ApplicationSupport Folder
-    func openInFinder() {
-        NSWorkspace.shared.activateFileViewerSelecting([configPath])
-    }
-    /// creates or gets the config.json file in the applicationSupport folder
-    static func getOrCreateConfigJson() -> URL {
-        let fm = FileManager.default
+    /// Creates a Default Project Directory
+    @discardableResult
+    public func createDefaultProjectDirectory() async -> URL? {
+        let date = dateFormatter.string(from: .now)
+        let time = timeFormatter.string(from: .now)
         
-        let dir = comfyEditorConfigDirectory()
-        let file = dir.appendingPathComponent("config.json")
-        
-        // If file doesn’t exist, create an empty `{}` config
-        if !fm.fileExists(atPath: file.path) {
-            let empty: [String: Any] = [:]
-            let data = try? JSONSerialization.data(withJSONObject: empty, options: [.prettyPrinted])
-            fm.createFile(atPath: file.path, contents: data)
+        let name = "Untitled-\(date)-\(time)"
+        do {
+            let directoryURL = try await fileManagement.createDirectory(
+                directory: configPath,
+                named: name
+            )
+            
+            do {
+                try await fileManagement.createFile(
+                    named: "content",
+                    at: directoryURL
+                )
+            } catch let error as FileManagementError {
+                print("Error Creating File: \(error.localizedDescription)")
+                return nil
+            }
+            
+            /// Just return config path, all times its going to be a content file
+            return directoryURL
+        } catch {
+            print("Error Creating Directory: \(error.localizedDescription)")
+            return nil
         }
-        
-        return file
     }
     
-    static func comfyEditorConfigDirectory() -> URL {
+    /// This will open the ApplicationSupport Folder
+    public func openInFinder() {
+        NSWorkspace.shared.open(configPath)
+    }
+    
+    private static func comfyEditorConfigDirectory() -> URL {
         let fm = FileManager.default
         
         // ~/Library/Application Support

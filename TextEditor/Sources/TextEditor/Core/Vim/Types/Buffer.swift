@@ -8,6 +8,9 @@ import AppKit
 
 @MainActor
 public protocol BufferView {
+    
+    var onUpdateInsertionPoint: (() -> Void)? { get set }
+    
     func getString() -> NSString?
     func deleteUnderCursor()
     func setTextView(_ textView: NSTextView)

@@ -25,6 +25,10 @@ extension LocalShortcuts.Name {
         "IncreaseFont",
         .init(modifier: [.command], keys: [.minus])
     )
+    static let save = LocalShortcuts.Name (
+        "Save",
+        .init(modifier: [.command], keys: [.s])
+    )
 }
 
 @Observable @MainActor
@@ -35,23 +39,31 @@ class KeybindCoordinator {
     
     let windowCoordinator : WindowCoordinator
     
-    init(windowCoordinator: WindowCoordinator) {
+    init(
+        windowCoordinator: WindowCoordinator,
+    ) {
         self.windowCoordinator = windowCoordinator
-        
-        handleKeybinds()
     }
 }
 
 extension KeybindCoordinator {
-    func handleKeybinds() {
+    public func setupKeybinds(
+        onToggleBold    : @escaping () -> Void,
+        onIncreaseFont  : @escaping () -> Void,
+        onDecreaseFont  : @escaping () -> Void,
+        onSave          : @escaping () -> Void
+    ) {
         LocalShortcuts.Name.onKeyDown(for: .toggleBold) {
-            EditorCommandCenter.shared.toggleBold()
+            onToggleBold()
         }
         LocalShortcuts.Name.onKeyDown(for: .increaseFont) {
-            EditorCommandCenter.shared.increaseFont()
+            onIncreaseFont()
         }
         LocalShortcuts.Name.onKeyDown(for: .decreaseFont) {
-            EditorCommandCenter.shared.decreaseFont()
+            onDecreaseFont()
+        }
+        LocalShortcuts.Name.onKeyDown(for: .save) {
+            onSave()
         }
     }
 }
