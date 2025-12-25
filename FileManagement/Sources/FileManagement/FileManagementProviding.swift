@@ -29,4 +29,8 @@ public protocol FileManagementProviding: Actor {
         at url: URL
     ) async throws -> String?
     
+    func getLastModified(
+        url: URL,
+        isDirectory: Bool
+    ) async throws -> Date?
 }

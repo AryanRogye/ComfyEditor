@@ -89,4 +89,26 @@ public actor FileManagementService: FileManagementProviding {
         
         return fullPath
     }
+    
+    public func getLastModified(
+        url: URL,
+        isDirectory: Bool
+    ) async throws -> Date? {
+        
+        var isDirectory: ObjCBool = isDirectory
+                                ? true as ObjCBool
+                                : false as ObjCBool
+        guard fileManager.fileExists(
+            atPath: url.path,
+            isDirectory: &isDirectory
+        ) else { return nil }
+        
+        var values = URLResourceValues()
+        
+        let keys : Set<URLResourceKey> = [
+            .contentModificationDateKey
+        ]
+        let resourceValues = try url.resourceValues(forKeys: keys)
+        return resourceValues.contentModificationDate
+    }
 }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import TextEditor
+import Combine
 
 struct ComfyEditorTopBar: View {
 
@@ -16,6 +17,12 @@ struct ComfyEditorTopBar: View {
 
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
+
+    @State private var statusText: String = "Not saved yet"
+    @State private var pendingStatusTask: Task<Void, Never>?
+    @State private var savingStartedAt: Date?
+    private let relativeFormatter = RelativeTimeFormatter()
+    private let statusTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     private let magnificationText = {
         let f = NumberFormatter()
@@ -87,6 +94,26 @@ struct ComfyEditorTopBar: View {
             topBarShape
                 .stroke(themeCoordinator.currentTheme.theme.borderColor, lineWidth: 1)
         }
+        .onAppear { refreshStatus() }
+        .onChange(of: comfyEditorVM.isSaving) { _, newValue in
+            if newValue {
+                showSavingState()
+            } else {
+                updateSavedState(with: comfyEditorVM.lastSaved)
+            }
+        }
+        .onChange(of: comfyEditorVM.lastSaved) { _, newValue in
+            guard !comfyEditorVM.isSaving else { return }
+            updateSavedState(with: newValue)
+        }
+        .onDisappear {
+            pendingStatusTask?.cancel()
+        }
+        .onReceive(statusTimer) { _ in
+            guard !comfyEditorVM.isSaving else { return }
+            guard let lastSaved = comfyEditorVM.lastSaved else { return }
+            statusText = "Saved \(relativeFormatter.string(since: lastSaved))"
+        }
     }
 
     // MARK: - TopBarShape
@@ -116,7 +143,7 @@ struct ComfyEditorTopBar: View {
     @ViewBuilder
     private var projectName: some View {
         TopBarButton(
-            content: .text("\(comfyEditorVM.projectURL?.lastPathComponent, default: "DEBUG")"),
+            content: .text(projectTitle),
             selection: .constant(false),
             ignoreWidth: true,
             foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
@@ -185,26 +212,91 @@ struct ComfyEditorTopBar: View {
     }
 
     // MARK: - Last Saved
+    @ViewBuilder
     private var lastSavedStatus: some View {
-        TopBarButton(
-            content: .label(lastSavedText, "clock"),
-            selection: .constant(false),
-            ignoreWidth: true,
-            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle
-        )
-    }
-
-    private var lastSavedText: String {
-        guard let lastSaved = comfyEditorVM.lastSaved else {
-            return "Not saved yet"
+        ScrollView(.horizontal, showsIndicators: false) {
+            TopBarButton(
+                content: .label(statusText, "clock"),
+                selection: .constant(false),
+                ignoreWidth: true,
+                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle
+            )
         }
-        return "Saved \(lastSavedFormatter.string(from: lastSaved))"
+        .frame(width: 120, alignment: .leading)
     }
 
-    private let lastSavedFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return formatter
-    }()
+    private var projectTitle: String {
+        comfyEditorVM.projectURL?.lastPathComponent ?? "DEBUG"
+    }
+
+    private func refreshStatus() {
+        if comfyEditorVM.isSaving {
+            showSavingState()
+        } else {
+            updateSavedState(with: comfyEditorVM.lastSaved)
+        }
+    }
+
+    private func showSavingState() {
+        pendingStatusTask?.cancel()
+        savingStartedAt = .now
+        withAnimation(.easeInOut) {
+            statusText = "Saving..."
+        }
+    }
+
+    private func updateSavedState(with date: Date?) {
+        pendingStatusTask?.cancel()
+        guard let date else {
+            withAnimation(.easeInOut) {
+                statusText = "Not saved yet"
+            }
+            return
+        }
+
+        let elapsed = savingStartedAt.map { Date().timeIntervalSince($0) } ?? 0
+        let minimumVisibleTime: TimeInterval = 0.6
+        let delay = max(minimumVisibleTime - elapsed, 0)
+
+        pendingStatusTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            withAnimation(.easeInOut) {
+                statusText = "Saved \(relativeFormatter.string(since: date))"
+            }
+        }
+    }
+}
+
+private struct RelativeTimeFormatter {
+    func string(since date: Date, now: Date = .now) -> String {
+        let seconds = max(Int(now.timeIntervalSince(date)), 1)
+
+        if seconds < 60 {
+            return format(seconds, unit: "second")
+        }
+
+        let minutes = seconds / 60
+        if minutes < 60 {
+            return format(minutes, unit: "minute")
+        }
+
+        let hours = minutes / 60
+        if hours < 24 {
+            return format(hours, unit: "hour")
+        }
+
+        let days = hours / 24
+        let remainingHours = hours % 24
+
+        if remainingHours > 0 {
+            return "\(format(days, unit: "day")) \(format(remainingHours, unit: "hour")) ago"
+        }
+
+        return "\(format(days, unit: "day")) ago"
+    }
+
+    private func format(_ value: Int, unit: String) -> String {
+        let pluralized = value == 1 ? unit : "\(unit)s"
+        return "\(value) \(pluralized) ago"
+    }
 }

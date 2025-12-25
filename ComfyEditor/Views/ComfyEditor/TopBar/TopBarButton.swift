@@ -73,7 +73,7 @@ struct TopBarButton: View {
     
     private func labelView(_ text: String, _ systemName: String) -> some View {
         Label(text, systemImage: systemName)
-            .font(.system(.body, design: .monospaced))
+            .font(.system(.body))
             .if(!ignoreWidth) { $0.frame(width: labelWidth, alignment: .leading) }
             .modifier(Background(selection: $selection, foregroundStyle: foregroundStyle))
     }

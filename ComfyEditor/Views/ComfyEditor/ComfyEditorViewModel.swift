@@ -17,7 +17,6 @@ final class ComfyEditorViewModel {
     var settingsCoordinator: SettingsCoordinator? = nil
     var projectURL : URL?
     
-    var lastSaved  : Date?
     
 #if JUST_EDITOR
     var text: String = """
@@ -51,6 +50,10 @@ final class ComfyEditorViewModel {
     var font: CGFloat = 0
     var magnification: CGFloat = 0
     var isBold: Bool = false
+    
+    var lastSaved  : Date?
+    
+    var isSaving : Bool = false
 
     init() {
         self.projectURL = nil
@@ -83,15 +86,19 @@ final class ComfyEditorViewModel {
     }
     
     public func saveFile() {
-        guard screen == .editor else { return }
-        guard let projectURL else { return }
-        guard let settingsCoordinator else { return }
-        
-        settingsCoordinator.saveContentAsWrites(
-            text,
-            to: projectURL
-        )
-        lastSaved = .now
+        if isSaving { return }
+        isSaving = true
+        Task {
+            defer { isSaving = false }
+            guard screen == .editor else { return }
+            guard let projectURL else { return }
+            guard let settingsCoordinator else { return }
+            
+            lastSaved = await settingsCoordinator.saveContentAsWrites(
+                text,
+                to: projectURL
+            )
+        }
     }
     
     weak var commands: EditorCommands?

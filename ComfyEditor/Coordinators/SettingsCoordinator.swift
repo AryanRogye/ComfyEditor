@@ -63,21 +63,28 @@ final class SettingsCoordinator {
 
 extension SettingsCoordinator {
     // MARK: - Saving Writing Content
-    public func saveContentAsWrites(_ content: String, to project_url: URL) {
+    @discardableResult
+    public func saveContentAsWrites(_ content: String, to project_url: URL) async -> Date? {
         /// Project_url has a content in it, if it doesnt, we throw an error
         let contentURL = project_url.appendingPathComponent("content")
-        Task {
-            do {
-                try await fileManagement.write(
-                    to: contentURL,
-                    content
-                )
-                shouldShowSavingContentError = false
-            } catch {
-                savingContentError = error.localizedDescription
-                shouldShowSavingContentError = true
-            }
+        var date: Date?
+        do {
+            try await fileManagement.write(
+                to: contentURL,
+                content
+            )
+            shouldShowSavingContentError = false
+        } catch {
+            savingContentError = error.localizedDescription
+            shouldShowSavingContentError = true
         }
+        
+        do {
+            date = try await fileManagement.getLastModified(url: contentURL, isDirectory: false)
+        } catch {
+            print("Could Not Get Last Modified for Content URL: \(error.localizedDescription)")
+        }
+        return date
     }
     
     public func saveContentForce(_ content: String, to project_url: URL) async throws {

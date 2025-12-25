@@ -42,8 +42,9 @@ struct ComfyEditorScreen: View {
                     comfyEditorVM.registerCommands(editorCommands)
                 },
                 onSave                  : {
+                    #if JUST_EDITOR
                     /// In JUST_EDITOR we dont want to save
-                    #if DEBUG || RELEASE
+                    #else
                     comfyEditorVM.saveFile()
                     #endif
                 }

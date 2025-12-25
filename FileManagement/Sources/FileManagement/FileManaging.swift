@@ -21,6 +21,15 @@ public protocol FileManaging: Sendable {
         attributes: [FileAttributeKey : Any]?
     ) throws
     
+    /// Replicated
+    /// - (BOOL) fileExistsAtPath:(NSString *)path
+    ///               isDirectory:(nullable BOOL *)isDirectory;
+    /// From `FileManager.default`
+    func fileExists(
+        atPath path: String,
+        isDirectory: UnsafeMutablePointer<ObjCBool>?
+    ) -> Bool
+    
     nonisolated func createFile(
         to path: URL,
         options: Data.WritingOptions
