@@ -35,23 +35,30 @@ class KeybindCoordinator {
     
     let windowCoordinator : WindowCoordinator
     
-    init(windowCoordinator: WindowCoordinator) {
+    init(
+        windowCoordinator: WindowCoordinator,
+    ) {
         self.windowCoordinator = windowCoordinator
-        
-        handleKeybinds()
     }
 }
 
 extension KeybindCoordinator {
-    func handleKeybinds() {
+    public func setupKeybinds(
+        onToggleBold: @escaping () -> Void,
+        onIncreaseFont: @escaping () -> Void,
+        onDecreaseFont: @escaping () -> Void
+    ) {
         LocalShortcuts.Name.onKeyDown(for: .toggleBold) {
-            EditorCommandCenter.shared.toggleBold()
+            onToggleBold()
+//            EditorCommandCenter.shared.toggleBold()
         }
         LocalShortcuts.Name.onKeyDown(for: .increaseFont) {
-            EditorCommandCenter.shared.increaseFont()
+            onIncreaseFont()
+//            EditorCommandCenter.shared.increaseFont()
         }
         LocalShortcuts.Name.onKeyDown(for: .decreaseFont) {
-            EditorCommandCenter.shared.decreaseFont()
+            onDecreaseFont()
+//            EditorCommandCenter.shared.decreaseFont()
         }
     }
 }

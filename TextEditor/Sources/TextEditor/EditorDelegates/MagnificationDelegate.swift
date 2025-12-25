@@ -7,13 +7,18 @@
 
 import AppKit
 import Combine
+import SwiftUI
 
 @MainActor
 final class MagnificationDelegate: NSObject, ScrollViewMagnificationDelegate, ObservableObject {
     
-    @Published var magnification: CGFloat = 4.0
+    var magnification: Binding<CGFloat> = .constant(4.0)
+    
+    public func observeMagnification(_ val: Binding<CGFloat>) {
+        self.magnification = val
+    }
     
     func scrollView(_ scrollView: NSScrollView, didChangeMagnification magnification: CGFloat) {
-        self.magnification = magnification
+        self.magnification.wrappedValue = magnification
     }
 }

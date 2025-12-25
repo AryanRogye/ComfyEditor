@@ -9,7 +9,7 @@ import AppKit
 import Combine
 import SwiftUI
 
-public class TextViewController: NSViewController {
+public class TextViewController: NSViewController, EditorCommands {
 
     /// macOS Given font manager
     let fontManager = NSFontManager.shared
@@ -30,9 +30,9 @@ public class TextViewController: NSViewController {
 
     // MARK: - Delegates
     /// Text Delegate
-    let textDelegate = EditorCommandCenter.shared.textViewDelegate
+    let textViewDelegate : TextViewDelegate
     /// Magnification Delegate
-    let magnificationDelegate = EditorCommandCenter.shared.magnificationDelegate
+    let magnificationDelegate : MagnificationDelegate
 
     /// Flag to know if the app is focussed or not
     internal var isAppActive: Bool {
@@ -40,10 +40,21 @@ public class TextViewController: NSViewController {
     }
 
     // MARK: - Init
-    init(foregroundStyle: Color) {
+    init(
+        foregroundStyle : Color,
+        textViewDelegate    : TextViewDelegate,
+        magnificationDelegate: MagnificationDelegate
+    ) {
         self.foregroundStyle = foregroundStyle
+        
+        self.textViewDelegate = textViewDelegate
+        self.magnificationDelegate = magnificationDelegate
+        
         super.init(nibName: nil, bundle: nil)
-        textDelegate.vimEngine = vimEngine
+        textViewDelegate.vimEngine = vimEngine
+        vimEngine.buffer.onUpdateInsertionPoint = {
+            textViewDelegate.refresh()
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -52,7 +63,7 @@ public class TextViewController: NSViewController {
 
     public override func viewDidAppear() {
         super.viewDidAppear()
-        EditorCommandCenter.shared.currentEditor = self
+//        EditorCommandCenter.shared.currentEditor = self
 
         /// Helps when the text editor is brought back into view
         /// for some reason if the request is:
@@ -75,7 +86,7 @@ public class TextViewController: NSViewController {
         scrollView.magnificationDelegate = magnificationDelegate
 
         /// Assign TextView delegate's
-        textView.delegate = textDelegate
+        textView.delegate = textViewDelegate
         textView.setupCursorView()
 
         // Use RedrawClipView for optimized redrawing during zoom
@@ -112,69 +123,13 @@ public class TextViewController: NSViewController {
 
 // MARK: - Bold
 extension TextViewController {
-
-    /// Bold information that is returned
-    typealias BoldFontInfo = (Bool, [NSAttributedString.Key: Any], NSFont)
-
     /// Public Function to toggle bold
     /// Could be on selection OR entire editor
     ///     Currently set to 1 or the other
     ///     TODO: Maybe have a "Bold on Selection, Configures"
     public func toggleBold() {
         guard isAppActive else { return }
-
-        /// See if TextView is currently selected or not
-        if let range = textDelegate.range {
-            guard let storage = textView.textStorage else { return }
-            let (isBold, _, currentFont) = isCurrentlyBold(range, in: storage)
-
-            let newFont =
-                isBold
-                ? fontManager.convert(currentFont, toNotHaveTrait: .boldFontMask)
-                : fontManager.convert(currentFont, toHaveTrait: .boldFontMask)
-
-            storage.addAttribute(.font, value: newFont, range: range)
-
-            /// false because we did not "set" bold
-            return
-        } else {
-            let (isBold, currentAttrs, currentFont) = isCurrentlyBold()
-            let newFont =
-                isBold
-                ? fontManager.convert(currentFont, toNotHaveTrait: .boldFontMask)
-                : fontManager.convert(currentFont, toHaveTrait: .boldFontMask)
-
-            var newAttrs = currentAttrs
-            newAttrs[.font] = newFont
-            textView.typingAttributes = newAttrs
-
-            return
-        }
-    }
-
-    /// Internal function to get if is bold under a range
-    internal func isCurrentlyBold(_ range: NSRange, in storage: NSTextStorage) -> BoldFontInfo {
-        let attrs = storage.attributes(at: range.location, effectiveRange: nil)
-        let currentFont =
-            attrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
-        return (fontManager.traits(of: currentFont).contains(.boldFontMask), attrs, currentFont)
-    }
-    /// Internal function to get if is bold in general
-    /// Returns `(Bool, [NSAttributedString.Key : Any], NSFont)`
-    internal func isCurrentlyBold() -> BoldFontInfo {
-        let currentAttrs = textView.typingAttributes
-        let currentFont =
-            currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
-        return (
-            fontManager.traits(of: currentFont).contains(.boldFontMask), currentAttrs, currentFont
-        )
-    }
-    /// Public function to get if is bold `no information`
-    public func isCurrentlyBold() -> Bool {
-        let currentAttrs = textView.typingAttributes
-        let currentFont =
-            currentAttrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
-        return fontManager.traits(of: currentFont).contains(.boldFontMask)
+        textViewDelegate.toggleBold(in: textView)
     }
 }
 
@@ -187,10 +142,10 @@ extension TextViewController {
     public func increaseFontOrZoomIn() {
         guard isAppActive else { return }
 
-        if let range = textDelegate.range, range.length > 0 {
+        if let range = textViewDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: true)
-            textDelegate.forceFontRefresh(textView: textView)
+            textViewDelegate.forceFontRefresh(textView: textView)
         } else {
             let newMag = scrollView.magnification + 0.1
             scrollView.setZoom(newMag)
@@ -203,10 +158,10 @@ extension TextViewController {
     public func decreaseFontOrZoomOut() {
         guard isAppActive else { return }
 
-        if let range = textDelegate.range, range.length > 0 {
+        if let range = textViewDelegate.range, range.length > 0 {
             guard let storage = textView.textStorage else { return }
             updateFont(range, storage: storage, increase: false)
-            textDelegate.forceFontRefresh(textView: textView)
+            textViewDelegate.forceFontRefresh(textView: textView)
         } else {
             let newMag = scrollView.magnification - 0.1
             scrollView.setZoom(newMag)

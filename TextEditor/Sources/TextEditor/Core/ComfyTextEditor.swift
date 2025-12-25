@@ -11,6 +11,12 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
 
     /// Text to type into
     @Binding var text: String
+    
+    /// TODO: COMMENT
+    @Binding var font: CGFloat
+    @Binding var magnification: CGFloat
+    @Binding var isBold       : Bool
+    
     /// Boolean if is in VimMode or not
     @Binding var isInVimMode: Bool
     /// Boolean if is showing scrollbar or not
@@ -23,17 +29,30 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
     var borderColor: Color
     /// Border Radius of the entire editor
     var borderRadius: CGFloat
+    
+    let textViewDelegate = TextViewDelegate()
+    let magnificationDelegate = MagnificationDelegate()
+    
+    var onReady: (EditorCommands) -> Void
 
     public init(
         text: Binding<String>,
+        font: Binding<CGFloat> = .constant(0),
+        isBold: Binding<Bool>,
+        magnification: Binding<CGFloat> = .constant(1),
         showScrollbar: Binding<Bool>,
-        borderRadius: CGFloat,
+        borderRadius: CGFloat = 8,
         isInVimMode: Binding<Bool> = .constant(false),
         editorBackground: Color = .white,
         editorForegroundStyle: Color = .black,
         borderColor: Color = Color.gray.opacity(0.3),
+        onReady: @escaping (EditorCommands) -> Void = { _ in }
     ) {
+        self.onReady = onReady
         self._text = text
+        self._font = font
+        self._magnification = magnification
+        self._isBold = isBold
         self._showScrollbar = showScrollbar
         self._isInVimMode = isInVimMode
         self.editorBackground = editorBackground
@@ -41,16 +60,52 @@ public struct ComfyTextEditor: NSViewControllerRepresentable {
         self.borderRadius = borderRadius
         self.borderColor = borderColor
     }
-
+    
+    /// Convenience initializer for simple usage with only text + scrollbar bindings.
+    public init(
+        text: Binding<String>,
+        showScrollbar: Binding<Bool>,
+        isInVimMode: Binding<Bool> = .constant(false),
+        editorBackground: Color = .white,
+        editorForegroundStyle: Color = .black,
+        borderColor: Color = Color.gray.opacity(0.3),
+        borderRadius: CGFloat = 8
+    ) {
+        self.init(
+            text: text,
+            font: .constant(0),
+            isBold: .constant(false),
+            magnification: .constant(1),
+            showScrollbar: showScrollbar,
+            borderRadius: borderRadius,
+            isInVimMode: isInVimMode,
+            editorBackground: editorBackground,
+            editorForegroundStyle: editorForegroundStyle,
+            borderColor: borderColor,
+            onReady: { _ in }
+        )
+    }
+    
     public func makeNSViewController(context: Context) -> TextViewController {
-        let viewController = TextViewController(foregroundStyle: editorForegroundStyle)
+        let viewController = TextViewController(
+            foregroundStyle: editorForegroundStyle,
+            textViewDelegate: textViewDelegate,
+            magnificationDelegate: magnificationDelegate
+        )
+        onReady(viewController)
         viewController.textView.string = text
         viewController.textView.layer?.backgroundColor = NSColor(editorBackground).cgColor
         viewController.setEditorBackground(NSColor(editorBackground))
         viewController.vimBottomView.setBackground(color: NSColor(editorBackground))
         viewController.textView.textColor = NSColor(editorForegroundStyle)
         viewController.vimBottomView.setBorderColor(color: NSColor(borderColor))
-        EditorCommandCenter.shared.textViewDelegate.observeTextChange($text)
+        
+        /// Observe Text Changes
+        textViewDelegate.observeTextChange($text)
+        textViewDelegate.observeFontChange($font)
+        textViewDelegate.observeBoldUnderCursor($isBold)
+        magnificationDelegate.observeMagnification($magnification)
+        
         return viewController
     }
 

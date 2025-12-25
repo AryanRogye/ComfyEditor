@@ -17,7 +17,8 @@ struct ComfyEditorHome: View {
 
     @Environment(SettingsCoordinator.self) var settingsCoordinator
     @Environment(ThemeCoordinator.self) var themeCoordinator
-    @State private var comfyEditorVM = ComfyEditorViewModel()
+    @Environment(ComfyEditorViewModel.self) var comfyEditorVM
+    
     @State private var path: [Route] = []
 
     // Adaptive grid for responsive layout
@@ -26,6 +27,7 @@ struct ComfyEditorHome: View {
     ]
 
     var body: some View {
+        @Bindable var comfyEditorVM = comfyEditorVM
         NavigationStack(path: $path) {
             contentView
                 .navigationDestination(for: Route.self) { route in

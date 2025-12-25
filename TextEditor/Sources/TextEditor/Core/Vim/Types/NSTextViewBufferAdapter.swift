@@ -9,7 +9,10 @@ import AppKit
 
 @MainActor
 public final class NSTextViewBufferAdapter: BufferView {
+
     weak var textView: NSTextView?
+    
+    public var onUpdateInsertionPoint: (() -> Void)?
     
     public func setTextView(_ textView: NSTextView) {
         self.textView = textView
@@ -285,7 +288,7 @@ public final class NSTextViewBufferAdapter: BufferView {
     public func updateInsertionPoint() {
         guard let textView else { return }
         textView.updateInsertionPointStateAndRestartTimer(true)
-        EditorCommandCenter.shared.textViewDelegate.refresh(textView)
+        onUpdateInsertionPoint?()
     }
 
     public func exitVisualMode() {

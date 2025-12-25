@@ -21,7 +21,7 @@ class VimEngine: ObservableObject {
 
     var lastShortcut: LocalShortcuts.Shortcut?
 
-    public let buffer : BufferView
+    public var buffer : BufferView
 
     internal lazy var motionEngine = MotionEngine(buffer: buffer)
 

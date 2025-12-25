@@ -61,15 +61,25 @@ You can clone this repo and copy the `TextEditor` package directly into your app
 
 #### Usage
 - ```swift
+    // Simple usage
     ComfyTextEditor(
         text: $text,
         showScrollbar: $settingsCoordinator.showScrollbar,
         isInVimMode: $settingsCoordinator.isVimEnabled
     )
-    /// Also Supports
+    // Advanced usage (capture editor commands, custom styling)
     ComfyTextEditor(
         text: $text,
-        showScrollbar: $settingsCoordinator.showScrollbar
-    )
+        font: $fontSize,
+        magnification: $zoomLevel,
+        showScrollbar: $settingsCoordinator.showScrollbar,
+        borderRadius: 8,
+        isInVimMode: $settingsCoordinator.isVimEnabled,
+        editorBackground: theme.editorBackground,
+        editorForegroundStyle: theme.editorForegroundStyle,
+        borderColor: theme.borderColor
+    ) { commands in
+        // commands conforms to EditorCommands; hold a weak ref if needed
+        self.editorCommands = commands
+    }
    ```
-

@@ -10,7 +10,6 @@ import TextEditor
 
 struct ComfyEditorTopBar: View {
 
-    @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator: SettingsCoordinator
     @Bindable var themeCoordinator   : ThemeCoordinator
     @Bindable var comfyEditorVM      : ComfyEditorViewModel
@@ -124,10 +123,7 @@ struct ComfyEditorTopBar: View {
     private var bold: some View {
         TopBarButton(
             content: .text("B"),
-            selection: Binding(
-                get: { editorCommandCenter.isBoldEnabled },
-                set: { _ in }
-            ),
+            selection: $comfyEditorVM.isBold,
             foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
         )
     }
@@ -145,19 +141,11 @@ struct ComfyEditorTopBar: View {
 
     // MARK: - Current Font
     private var currentFont: some View {
-        if let currentFont = editorCommandCenter.currentFont {
-            TopBarButton(
-                content: .value(currentFont),
-                selection: .constant(false),
-                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
-            )
-        } else {
-            TopBarButton(
-                content: .text("_"),
-                selection: .constant(false),
-                foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
-            )
-        }
+        TopBarButton(
+            content: .value(comfyEditorVM.font),
+            selection: .constant(false),
+            foregroundStyle: themeCoordinator.currentTheme.theme.secondaryForegroundStyle,
+        )
     }
 
     // MARK: - Plus
@@ -175,7 +163,7 @@ struct ComfyEditorTopBar: View {
     private var zoom: some View {
         TopBarButton(
             content: .label(
-                magnificationText.string(from: editorCommandCenter.magnification as NSNumber) ?? "–",
+                magnificationText.string(from: comfyEditorVM.magnification as NSNumber) ?? "–",
                 "magnifyingglass"
             ),
             selection: .constant(false),

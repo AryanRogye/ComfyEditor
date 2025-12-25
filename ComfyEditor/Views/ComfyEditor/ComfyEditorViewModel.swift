@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TextEditor
 
 @Observable @MainActor
 final class ComfyEditorViewModel {
@@ -45,6 +46,10 @@ final class ComfyEditorViewModel {
         }
     }
 #endif
+    
+    var font: CGFloat = 0
+    var magnification: CGFloat = 0
+    var isBold: Bool = false
 
     init() {
         self.projectURL = nil
@@ -62,5 +67,27 @@ final class ComfyEditorViewModel {
             text,
             to: projectURL
         )
+    }
+    
+    weak var commands: EditorCommands?
+    
+    func registerCommands(_ commands: EditorCommands) {
+        self.commands = commands
+    }
+    
+    func clearCommands() {
+        self.commands = nil
+    }
+    
+    func toggleBold() {
+        commands?.toggleBold()
+    }
+    
+    func increaseFont() {
+        commands?.increaseFontOrZoomIn()
+    }
+    
+    func decreaseFont() {
+        commands?.decreaseFontOrZoomOut()
     }
 }

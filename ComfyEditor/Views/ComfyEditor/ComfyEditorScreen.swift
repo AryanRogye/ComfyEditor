@@ -13,7 +13,6 @@ struct ComfyEditorScreen: View {
     var cameFromOtherView : Bool = false
     var pop: () -> Void = { }
 
-    @Bindable var editorCommandCenter = EditorCommandCenter.shared
     @Bindable var settingsCoordinator : SettingsCoordinator
     @Bindable var themeCoordinator    : ThemeCoordinator
     @Bindable var comfyEditorVM       : ComfyEditorViewModel
@@ -30,12 +29,18 @@ struct ComfyEditorScreen: View {
             /// Editor View
             ComfyTextEditor(
                 text                    : $comfyEditorVM.text,
+                font                    : $comfyEditorVM.font,
+                isBold                  : $comfyEditorVM.isBold,
+                magnification           : $comfyEditorVM.magnification,
                 showScrollbar           : $settingsCoordinator.showScrollbar,
                 borderRadius            : 8,
                 isInVimMode             : $settingsCoordinator.isVimEnabled,
                 editorBackground        : themeCoordinator.currentTheme.theme.secondaryBackground,
                 editorForegroundStyle   : themeCoordinator.currentTheme.theme.primaryForegroundStyle,
                 borderColor             : themeCoordinator.currentTheme.theme.borderColor,
+                onReady                 : { editorCommands in
+                    comfyEditorVM.registerCommands(editorCommands)
+                }
             )
             .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
             
