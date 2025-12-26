@@ -20,8 +20,12 @@ extension LocalShortcuts {
              g, G,
              h, i, j, k, l, m,
              n, o, p, q, r, s, t, u,
+             
              v, V,
-             w, x, y, z
+             w, W,
+             x, X,
+             y, Y,
+             z, Z
         
         // Numbers
         case zero = "0"
@@ -108,8 +112,11 @@ extension LocalShortcuts.Key {
             case "V": key = .V
             case "w": key = .w
             case "x": key = .x
+            case "X": key = .X
             case "y": key = .y
+            case "Y": key = .Y
             case "z": key = .z
+            case "Z": key = .Z
             case ";", ":": key = .semi_colon
             case ".": key = .period
             case ">": key = .period

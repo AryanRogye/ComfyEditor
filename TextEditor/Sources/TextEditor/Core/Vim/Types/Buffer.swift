@@ -14,6 +14,7 @@ public protocol BufferView {
     var onUpdateInsertionPoint: (() -> Void)? { get set }
     
     func getString() -> NSString?
+    func deleteBeforeCursor()
     func deleteUnderCursor()
     func paste()
     func setTextView(_ textView: NSTextView)

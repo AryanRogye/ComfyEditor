@@ -124,6 +124,10 @@ extension VimEngine {
         modifier: [],
         keys: [.x]
     )
+    static let deleteBeforeCursor = LocalShortcuts.Shortcut(
+        modifier: [.shift],
+        keys: [.X]
+    )
     
     /// p
     static let paste = LocalShortcuts.Shortcut(

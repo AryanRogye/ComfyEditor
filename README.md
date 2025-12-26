@@ -16,6 +16,29 @@ This project is an exploration of editor internals, input handling, and Vim-styl
 - Cursor behavior is line-aware and built directly on NSTextView
 - This is very much an exploration of editor internals, not a polished replacement (yet)
 
+## Vim Keybindings
+Quick reference for the built-in motions and edits:
+
+| Keys              | Mode(s)          | Action |
+| ----------------- | ---------------- | ------ |
+| `Esc`, `Ctrl+C`   | Any              | Return to Normal |
+| `i`               | Normal           | Enter Insert |
+| `v`               | Normal           | Enter Visual |
+| `V` (`Shift+v`)   | Normal           | Enter Visual Line |
+| `:` (`Shift+;`)   | Normal           | Enter Command mode (state only) |
+| `h` `j` `k` `l`   | Normal/Visual    | Move left / down / up / right |
+| `w`               | Normal/Visual    | Next word (leading) |
+| `e`               | Normal/Visual    | Next word (trailing) |
+| `b`               | Normal/Visual    | Previous word |
+| `$` (`Shift+4`)   | Normal/Visual    | End of line |
+| `_` (`Shift+-`)   | Normal/Visual    | Start of line |
+| `A` (`Shift+a`)   | Normal           | Append at end of line (enters Insert) |
+| `G` (`Shift+g`)   | Normal/Visual    | Bottom of file |
+| `gg`              | Normal/Visual    | Top of file |
+| `x`               | Normal/Visual    | Delete under cursor (Visual: delete selection) |
+| `X` (`Shift+x`)   | Normal/Visual    | Delete before cursor (Visual: delete selection) |
+| `p`               | Normal/Visual    | Paste (replaces selection if active) |
+
 ## Built Local Packages
 
 ### LocalShortcuts
@@ -83,3 +106,48 @@ You can clone this repo and copy the `TextEditor` package directly into your app
         self.editorCommands = commands
     }
    ```
+
+# Vim TODO
+## Operator-Pending Deletes (`d{motion}`)
+### Core Motions (MVP)
+- [ ] `dw` — delete to start of next word
+- [ ] `de` — delete to end of word
+- [ ] `dd` — delete current line
+- [ ] `D` / `d$` — delete to end of line
+
+### Word / WORD Motions
+- [ ] `dW` — delete to start of next WORD
+- [ ] `dE` — delete to end of WORD
+
+### Linewise Variants
+- [ ] `d0` — delete to start of line
+- [ ] `d^` — delete to first non-blank character
+
+### Text Objects
+- [ ] `diw` / `daw` — inner / around word
+- [ ] `di"` / `da"` — inside / around quotes
+- [ ] `di(` / `da(` — inside / around parentheses
+
+### Find / Till Motions
+- [ ] `df{char}` — delete through next `{char}`
+- [ ] `dt{char}` — delete up to next `{char}`
+- [ ] `dF{char}` — delete backward through `{char}`
+- [ ] `dT{char}` — delete backward up to `{char}`
+
+---
+
+## Paste & Registers
+
+### Paste Behavior
+- [ ] `P` — paste before cursor
+- [ ] Visual paste preserves yank register  
+      _(replaced text stored separately so `p` repeats yank)_
+
+### Registers
+- [ ] Separate yank vs delete registers
+- [ ] Numbered delete registers (`1–9`)
+- [ ] Black-hole register (`"_`)
+- [ ] Named registers (`a–z`)
+
+### Insert / Command Mode
+- [ ] `Ctrl+R {register}` — insert register contents

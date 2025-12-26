@@ -72,23 +72,27 @@ public final class NSTextViewBufferAdapter: BufferView {
     /// In NSTextView, `selectedRange.location` is always the start (left side).
     /// We need to know if we are selecting forwards or backwards to find the real head.
     public func currentVisualHead(anchor: Int?) -> Position? {
-        guard let anchor else { return nil }
-        guard let textView = textView else { return nil }
-
+        guard let anchor, let textView else { return nil }
+        
         let range = textView.selectedRange
-        let currentLocation = range.location
-
-        // If the range starts AT the anchor, we are selecting FORWARDS.
-        // The Head is at the end of the range.
-        if currentLocation == anchor {
-            // -1 because Visual Mode is inclusive (cursor is on the last char)
-            let pos = max(currentLocation, currentLocation + range.length - 1)
-            return cursorOffsetToPosition(pos)
+        let start = range.location
+        let endExclusive = range.location + range.length
+        let endInclusive = max(start, endExclusive - 1)
+        
+        // If anchor is the start of the normalized range, head is the end.
+        if anchor == start {
+            return cursorOffsetToPosition(endInclusive)
         }
-
-        // If the range starts BEFORE the anchor, we are selecting BACKWARDS.
-        // The Head is at the location.
-        return cursorOffsetToPosition(currentLocation)
+        
+        // If anchor is the end, head is the start.
+        if anchor == endInclusive {
+            return cursorOffsetToPosition(start)
+        }
+        
+        // Fallback: anchor is "inside" (can happen if text changed).
+        // Pick whichever end is farther from anchor (keeps direction consistent).
+        let head = (abs(endInclusive - anchor) >= abs(anchor - start)) ? endInclusive : start
+        return cursorOffsetToPosition(head)
     }
     
     public func deleteRange(_ range: NSRange) {
@@ -112,6 +116,41 @@ public final class NSTextViewBufferAdapter: BufferView {
         let pb = NSPasteboard.general
         pb.clearContents()
         pb.setString(text, forType: .string)
+    }
+    
+    public func deleteBeforeCursor() {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return }
+        
+        let currentRange = textView.selectedRange
+        let string = textStorage.string as NSString
+        let totalLength = string.length
+        
+        /// If we have a selection (Visual Mode), delete under cursor "X"
+        /// `X` should not do this
+        if currentRange.length > 0 {
+            deleteUnderCursor()
+            return
+        }
+        guard currentRange.location > 0 else { return }
+        
+        if currentRange.location >= totalLength {
+            return
+        }
+        
+        let current = cursorPosition()
+        let c = line(at: current.line).char(at: current.column)
+        if current.column == 0 { return }
+        if c == "\n" { return }
+        
+        // 3. Calculate the range to delete.
+        // We use 'rangeOfComposedCharacterSequence' to ensure we don't break
+        // Emojis or special characters that take up more than 1 UTF-16 index.
+        let rangeToDelete = string.rangeOfComposedCharacterSequence(at: currentRange.location - 1)
+        
+        // 4. Perform the deletion via the Input Manager (preserves Undo history).
+        copyToClipboard(text: string.substring(with: rangeToDelete))
+        textView.insertText("", replacementRange: rangeToDelete)
     }
 
     public func deleteUnderCursor() {
@@ -150,12 +189,22 @@ public final class NSTextViewBufferAdapter: BufferView {
     
     public func paste() {
         guard let textView = textView,
+              let textStorage = textView.textStorage,
               var clip = getPasteboard() else { return }
+        
+        let string = textStorage.string as NSString
         
         // Normalize CRLF → LF so content is consistent
         clip = clip.replacingOccurrences(of: "\r\n", with: "\n")
         
         let sel = textView.selectedRange
+        let selectedText = string.substring(with: sel)
+        
+        /// Only if something is selected copy it
+        if sel.length > 0 {
+            /// Copy
+            copyToClipboard(text: selectedText)
+        }
         
         // Vim-like rule: selection gets replaced
         textView.insertText(clip, replacementRange: sel)

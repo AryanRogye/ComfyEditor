@@ -143,7 +143,7 @@ class VimEngine: ObservableObject {
             /// ================================================================================================
             
             
-            // MARK: - Deletion
+            // MARK: - Deletion on Word
         case Self.delete:
             /// If we're in insert, dont do anything
             if state == .insert ||
@@ -154,7 +154,20 @@ class VimEngine: ObservableObject {
             
             /// Enter Normal Mode
             enterNormalMode()
+        case Self.deleteBeforeCursor:
+            /// If we're in insert, dont do anything
+            if state == .insert ||
+                /// if we're in command, dont do anything
+                state == .command { break }
             
+            if state == .visual || state == .visualLine {
+                deleteUnderCursor()
+            } else {
+                deleteBeforeCursor()
+            }
+            
+            enterNormalMode()
+
             // MARK: -
         case Self.paste:
             /// If we're in insert, dont do anything

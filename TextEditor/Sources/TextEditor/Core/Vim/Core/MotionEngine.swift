@@ -165,7 +165,6 @@ final class MotionEngine {
         guard current.column > 0 else { return current }
         return Position(line: current.line, column: current.column - 1)
     }
-    
 
     // MARK: - resolveVerticalMove
     /// Resolves vertical cursor movement (used by both `up` and `down`)

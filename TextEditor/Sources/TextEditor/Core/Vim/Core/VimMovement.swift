@@ -55,6 +55,9 @@ extension VimEngine {
     internal func deleteUnderCursor() {
         buffer.deleteUnderCursor()
     }
+    internal func deleteBeforeCursor() {
+        buffer.deleteBeforeCursor()
+    }
     internal func moveToBottomOfFile() {
         buffer.moveToBottomOfFile()
     }
