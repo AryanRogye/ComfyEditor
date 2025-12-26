@@ -2,6 +2,7 @@ import AppKit
 @testable import TextEditor
 
 final class FakeBuffer: BufferView {
+    
     var onUpdateInsertionPoint: (() -> Void)?
     
     
@@ -323,6 +324,54 @@ final class FakeBuffer: BufferView {
         applyString(newString, newCursorLocation: rangeToDelete.location)
     }
     
+    func paste() {
+        guard let clip = NSPasteboard.general.string(forType: .string),
+              let string = getString() else { return }
+        
+        // Normalize CRLF -> LF
+        let normalized = clip.replacingOccurrences(of: "\r\n", with: "\n")
+        
+        let totalLength = string.length
+        var range = selection
+        
+        // Clamp selection into bounds
+        if range.location < 0 {
+            range.location = 0
+        } else if range.location > totalLength {
+            range.location = totalLength
+        }
+        
+        if range.length > 0 {
+            let maxEnd = min(range.location + range.length, totalLength)
+            let safeRange = NSRange(
+                location: range.location,
+                length: maxEnd - range.location
+            )
+            
+            let newString = string.replacingCharacters(
+                in: safeRange,
+                with: normalized
+            ) as NSString
+            
+            applyString(
+                newString,
+                newCursorLocation: safeRange.location + (normalized as NSString).length
+            )
+        } else {
+            let insertRange = NSRange(location: range.location, length: 0)
+            
+            let newString = string.replacingCharacters(
+                in: insertRange,
+                with: normalized
+            ) as NSString
+            
+            applyString(
+                newString,
+                newCursorLocation: insertRange.location + (normalized as NSString).length
+            )
+        }
+    }
+
     // MARK: - Private helper
     
     private func applyString(_ newString: NSString, newCursorLocation: Int) {
