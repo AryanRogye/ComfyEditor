@@ -9,10 +9,14 @@ import AppKit
 @MainActor
 public protocol BufferView {
     
+    typealias PositionRange = (Position, Position)
+    
     var onUpdateInsertionPoint: (() -> Void)? { get set }
     
     func getString() -> NSString?
+    func deleteBeforeCursor()
     func deleteUnderCursor()
+    func paste()
     func setTextView(_ textView: NSTextView)
     func updateInsertionPoint()
     func exitVisualMode()

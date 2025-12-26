@@ -2,6 +2,8 @@ import AppKit
 @testable import TextEditor
 
 final class FakeBuffer: BufferView {
+    
+    
     var onUpdateInsertionPoint: (() -> Void)?
     
     
@@ -287,6 +289,60 @@ final class FakeBuffer: BufferView {
         return full as NSString
     }
     
+    func deleteBeforeCursor() {
+        guard let string = getString() else { return }
+        
+        let totalLength = string.length
+        var currentRange = selection
+        
+        // Clamp currentRange.location into [0, totalLength]
+        if currentRange.location < 0 {
+            currentRange.location = 0
+        } else if currentRange.location > totalLength {
+            currentRange.location = totalLength
+        }
+        
+        // If we have a selection (Visual Mode), behave like your real deleteBeforeCursor:
+        // it calls deleteUnderCursor (i.e. deletes the selection via that path)
+        if currentRange.length > 0 {
+            deleteUnderCursor()
+            return
+        }
+        
+        // Need at least 1 char behind cursor
+        guard currentRange.location > 0 else { return }
+        
+        // If we’re “past the end” do nothing (matches your real guard)
+        if currentRange.location >= totalLength { return }
+        
+        // Vim-ish extra rules you have in the real implementation:
+        // - don’t delete when at column 0
+        // - don’t delete a newline (backspacing across lines disabled)
+        let current = cursorPosition()              // your fake should have this
+        if current.column == 0 { return }
+        
+        let lineStr = line(at: current.line)        // your fake should have this
+        if let c = lineStr.char(at: current.column), c == "\n" {
+            return
+        }
+        
+        // Delete composed char sequence *before* cursor
+        let rangeToDelete = string.rangeOfComposedCharacterSequence(at: currentRange.location - 1)
+        
+        // Copy deleted text (so "X"/"x" behavior stays consistent with your fake)
+        copyToClipboard(text: string.substring(with: rangeToDelete))
+        
+        // Apply the deletion + put cursor at deletion start
+        let newString = string.replacingCharacters(in: rangeToDelete, with: "") as NSString
+        applyString(newString, newCursorLocation: rangeToDelete.location)
+    }
+    
+    func copyToClipboard(text: String) {
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.setString(text, forType: .string)
+    }
+
     func deleteUnderCursor() {
         guard let string = getString() else { return }
         
@@ -323,6 +379,54 @@ final class FakeBuffer: BufferView {
         applyString(newString, newCursorLocation: rangeToDelete.location)
     }
     
+    func paste() {
+        guard let clip = NSPasteboard.general.string(forType: .string),
+              let string = getString() else { return }
+        
+        // Normalize CRLF -> LF
+        let normalized = clip.replacingOccurrences(of: "\r\n", with: "\n")
+        
+        let totalLength = string.length
+        var range = selection
+        
+        // Clamp selection into bounds
+        if range.location < 0 {
+            range.location = 0
+        } else if range.location > totalLength {
+            range.location = totalLength
+        }
+        
+        if range.length > 0 {
+            let maxEnd = min(range.location + range.length, totalLength)
+            let safeRange = NSRange(
+                location: range.location,
+                length: maxEnd - range.location
+            )
+            
+            let newString = string.replacingCharacters(
+                in: safeRange,
+                with: normalized
+            ) as NSString
+            
+            applyString(
+                newString,
+                newCursorLocation: safeRange.location + (normalized as NSString).length
+            )
+        } else {
+            let insertRange = NSRange(location: range.location, length: 0)
+            
+            let newString = string.replacingCharacters(
+                in: insertRange,
+                with: normalized
+            ) as NSString
+            
+            applyString(
+                newString,
+                newCursorLocation: insertRange.location + (normalized as NSString).length
+            )
+        }
+    }
+
     // MARK: - Private helper
     
     private func applyString(_ newString: NSString, newCursorLocation: Int) {
