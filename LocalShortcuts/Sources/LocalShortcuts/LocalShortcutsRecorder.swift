@@ -28,6 +28,7 @@ extension LocalShortcuts {
         }
     }
     
+    @MainActor
     public final class LocalShortcutRecorderContainer: NSView {
         private let searchField: LocalShortcutRecorderSearch
         private let doneButton: NSButton
@@ -83,6 +84,7 @@ extension LocalShortcuts {
         }
     }
     
+    @MainActor
     public final class LocalShortcutRecorderSearch: NSSearchField, NSSearchFieldDelegate {
         
         fileprivate let minimumWidth = 130.0
@@ -112,10 +114,6 @@ extension LocalShortcuts {
             setContentHuggingPriority(.defaultHigh, for: .horizontal)
             
             updateStringValue()
-        }
-        
-        deinit {
-            stopRecording()
         }
         
         @available(*, unavailable)
