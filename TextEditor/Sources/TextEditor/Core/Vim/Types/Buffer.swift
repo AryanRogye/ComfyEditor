@@ -9,15 +9,19 @@ import AppKit
 @MainActor
 public protocol BufferView {
     
+    typealias PositionRange = (Position, Position)
+    
     var onUpdateInsertionPoint: (() -> Void)? { get set }
     
     func getString() -> NSString?
     func deleteUnderCursor()
+    func paste()
     func setTextView(_ textView: NSTextView)
     func updateInsertionPoint()
     func exitVisualMode()
     func updateCursorAndSelection(anchor: Int?, to newCursor: Int)
     func updateCursorAndSelectLine(anchor: Int?, to newCursor: Int)
+    func getSelectedRange(anchor: Int?) -> PositionRange?
     func currentVisualHead(anchor: Int?) -> Position?
     func cursorOffset() -> Int
     func moveTo(position: Position)

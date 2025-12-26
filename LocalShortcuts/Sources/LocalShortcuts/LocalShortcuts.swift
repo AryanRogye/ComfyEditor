@@ -38,7 +38,7 @@ public enum LocalShortcuts {
         }
         
         @MainActor private static func handle(event: NSEvent) {
-            let eventShortcut = Shortcut.getShortcut(event: event)
+            guard let eventShortcut = Shortcut.from(event: event) else { return }
             
             // find the first name whose bound shortcut matches this event
             guard let (name, _) = shortcuts.first(where: { $0.value == eventShortcut }),
@@ -59,7 +59,22 @@ public enum LocalShortcuts {
             self.keys = keys
         }
         
+        /// Convenience to build a shortcut from an event. Returns `nil` if no key could be parsed.
+        @MainActor public static func from(event: NSEvent) -> Shortcut? {
+            let modifiers = LocalShortcuts.Modifier.activeModifiers(from: event)
+            let keys = LocalShortcuts.Key.activeKeys(event: event)
+            
+            guard !keys.isEmpty else { return nil }
+            return Shortcut(modifier: modifiers, keys: keys)
+        }
+        
+        /// Backwards-compatible helper; prefer `from(event:)` when you need to validate.
         @MainActor public static func getShortcut(event: NSEvent) -> Shortcut {
+            if let shortcut = from(event: event) {
+                return shortcut
+            }
+            
+            // Fallback to the previous behavior (empty keys) so existing callers keep working.
             let modifiers = LocalShortcuts.Modifier.activeModifiers(from: event)
             let keys = LocalShortcuts.Key.activeKeys(event: event)
             
@@ -68,21 +83,20 @@ public enum LocalShortcuts {
         
         @MainActor
         public func modifiers() -> String {
-            var str : String = ""
-            for mod in modifier {
-                str.append(mod.rawValue)
-            }
-            return str
+            modifier.map { $0.rawValue }.joined()
         }
         
         @MainActor
         public func keyValues() -> String {
-            var str : String = "";
-            for key in keys {
-                str.append("\(key.rawValue)")
-            }
-            return str
+            keys.map { $0.rawValue }.joined()
+        }
+        
+        /// Human-friendly representation used in UI labels.
+        @MainActor
+        public func displayValue() -> String {
+            [modifiers(), keyValues()]
+                .filter { !$0.isEmpty }
+                .joined(separator: " ")
         }
     }
 }
-

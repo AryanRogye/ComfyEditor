@@ -34,8 +34,10 @@ extension LocalShortcuts {
         case seven = "7"
         case eight = "8"
         case nine  = "9"
-        
+            
         case semi_colon = ":"
+        case period = "."
+        case comma  = ","
         
         case dollar = "$"
         case underscore = "_"
@@ -108,7 +110,11 @@ extension LocalShortcuts.Key {
             case "x": key = .x
             case "y": key = .y
             case "z": key = .z
-            case ":": key = .semi_colon
+            case ";", ":": key = .semi_colon
+            case ".": key = .period
+            case ">": key = .period
+            case ",": key = .comma
+            case "<": key = .comma
                 
             case "0": key = .zero
             case "1": key = .one
@@ -142,6 +148,13 @@ extension LocalShortcuts.Key {
         // Fallback to keyCode for non-character keys
         switch event.keyCode {
         case 53: self = .escape
+        case 51: self = .delete
+        case 36: self = .returnOrEnter
+        case 48: self = .tab
+        case 49: self = .space
+        case 47: self = .period
+        case 43: self = .comma
+        case 41: self = .semi_colon
         case 123: self = .leftArrow
         case 124: self = .rightArrow
         case 125: self = .downArrow

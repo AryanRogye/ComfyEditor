@@ -9,7 +9,6 @@ import AppKit
 
 @MainActor
 public final class NSTextViewBufferAdapter: BufferView {
-
     weak var textView: NSTextView?
     
     public var onUpdateInsertionPoint: (() -> Void)?
@@ -102,6 +101,18 @@ public final class NSTextViewBufferAdapter: BufferView {
               let textStorage = textView.textStorage else { return nil }
         return textStorage.string as NSString
     }
+    
+    
+    public func getPasteboard() -> String? {
+        let pasteboard = NSPasteboard.general
+        return pasteboard.string(forType: .string)
+    }
+    
+    func copyToClipboard(text: String) {
+        let pb = NSPasteboard.general
+        pb.clearContents()
+        pb.setString(text, forType: .string)
+    }
 
     public func deleteUnderCursor() {
         guard let textView = textView,
@@ -113,6 +124,7 @@ public final class NSTextViewBufferAdapter: BufferView {
         
         // 1. If we have a selection (Visual Mode), delete the selection.
         if currentRange.length > 0 {
+            copyToClipboard(text: string.substring(with: currentRange))
             textView.insertText("", replacementRange: currentRange)
             return
         }
@@ -121,9 +133,10 @@ public final class NSTextViewBufferAdapter: BufferView {
         if currentRange.location >= totalLength {
             return
         }
+        
         let current = cursorPosition()
-        let line = line(at: current.line)
-        if line == "\n" { return }
+        let c = line(at: current.line).char(at: current.column)
+        if c == "\n" { return }
 
         // 3. Calculate the range to delete.
         // We use 'rangeOfComposedCharacterSequence' to ensure we don't break
@@ -131,7 +144,21 @@ public final class NSTextViewBufferAdapter: BufferView {
         let rangeToDelete = string.rangeOfComposedCharacterSequence(at: currentRange.location)
         
         // 4. Perform the deletion via the Input Manager (preserves Undo history).
+        copyToClipboard(text: string.substring(with: rangeToDelete))
         textView.insertText("", replacementRange: rangeToDelete)
+    }
+    
+    public func paste() {
+        guard let textView = textView,
+              var clip = getPasteboard() else { return }
+        
+        // Normalize CRLF → LF so content is consistent
+        clip = clip.replacingOccurrences(of: "\r\n", with: "\n")
+        
+        let sel = textView.selectedRange
+        
+        // Vim-like rule: selection gets replaced
+        textView.insertText(clip, replacementRange: sel)
     }
 
     private func cursorOffsetToPosition(_ offset: Int?) -> Position? {
@@ -332,6 +359,48 @@ public final class NSTextViewBufferAdapter: BufferView {
         let length = max(0, clampedEnd - start)
         
         textView.setSelectedRange(NSRange(location: start, length: length))
+    }
+    
+    public func getSelectedRange(anchor: Int?) -> PositionRange? {
+        guard let textView = textView,
+              let storage = textView.textStorage else { return nil }
+        
+        let text = storage.string as NSString
+        let cursor = textView.selectedRange.location
+        
+        // not in visual mode -> just caret as both ends
+        guard let anchor else {
+            let p = position(at: cursor, in: text)
+            return (p, p)
+        }
+        
+        let startIndex = min(anchor, cursor)
+        let endIndex   = max(anchor, cursor)
+        
+        let startPos = position(at: startIndex, in: text)
+        let endPos   = position(at: endIndex, in: text)
+        
+        return (startPos, endPos)
+    }
+    private func position(at index: Int, in text: NSString) -> Position {
+        let safe = min(max(index, 0), text.length)
+        
+        var line = 0
+        var lineStart = 0
+        
+        text.enumerateSubstrings(in: NSRange(location: 0, length: text.length), options: .byLines) {
+            _, r, _, stop in
+            // r is the line range (without newline)
+            if safe <= NSMaxRange(r) {
+                lineStart = r.location
+                stop.pointee = true
+                return
+            }
+            line += 1
+        }
+        
+        let column = safe - lineStart
+        return Position(line: line, column: column)
     }
     
     public func updateCursorAndSelection(anchor: Int?, to newCursor: Int) {

@@ -61,7 +61,7 @@ extension LocalShortcuts {
         
         private func updateStringValue() {
             if let shortcut = LocalShortcuts.Name.shortcuts[name] {
-                stringValue = "\(shortcut.modifiers()) \(shortcut.keyValues())"
+                stringValue = shortcut.displayValue()
             } else {
                 stringValue = ""
             }
@@ -106,13 +106,17 @@ extension LocalShortcuts {
             }
             
             // Build your LocalShortcuts.Shortcut from the NSEvent
-            let shortcut = LocalShortcuts.Shortcut.getShortcut(event: event)
+            guard let shortcut = LocalShortcuts.Shortcut.from(event: event) else {
+                NSSound.beep()
+                updateStringValue()
+                return
+            }
             
             // Store it in your bindings
             LocalShortcuts.Name.shortcuts[name] = shortcut
             
             // Update UI
-            stringValue = "\(shortcut)"
+            stringValue = shortcut.displayValue()
             window?.makeFirstResponder(nil)
         }
     }}

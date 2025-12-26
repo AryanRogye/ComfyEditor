@@ -155,11 +155,24 @@ class VimEngine: ObservableObject {
             /// Enter Normal Mode
             enterNormalMode()
             
+            // MARK: -
+        case Self.paste:
+            /// If we're in insert, dont do anything
+            if state == .insert ||
+                /// If we're in insert, dont do anything
+                state == .command { break}
+            
+            /// Paste at Content
+            pasteAtCursorOrSelection()
+            
+            /// No Matter What at the end we flip to a Normal Mode
+            enterNormalMode()
+            
+            
             // MARK: - MOVEMENT
         case Self.move_left_one:
             if state == .command  { break }
             if state != .insert {
-                print("MOVING LEFT")
                 moveLeft()
             }
         case Self.move_right_one:
