@@ -1,5 +1,7 @@
 # ComfyEditor
 
+<img width="200" alt="ComfyEditor_page_01" src="https://github.com/user-attachments/assets/257da5f8-e172-4d26-8840-06ea268139c7" />
+
 Building a text editor has always been something i've always wanted to do, since i've learned programming
 before swift, always attempted to do this in C, C++, etc, but after learning the apple ecosystem, i've
 been vibing with building out a editor with `NSTextView`
