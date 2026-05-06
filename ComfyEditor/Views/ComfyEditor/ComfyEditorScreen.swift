@@ -35,6 +35,7 @@ struct ComfyEditorScreen: View {
                 showScrollbar           : $settingsCoordinator.showScrollbar,
                 borderRadius            : 8,
                 isInVimMode             : $settingsCoordinator.isVimEnabled,
+                syntaxHighlighting      : .swift,
                 editorBackground        : themeCoordinator.currentTheme.theme.secondaryBackground,
                 editorForegroundStyle   : themeCoordinator.currentTheme.theme.primaryForegroundStyle,
                 borderColor             : themeCoordinator.currentTheme.theme.borderColor,
@@ -47,7 +48,7 @@ struct ComfyEditorScreen: View {
                     #else
                     comfyEditorVM.saveFile()
                     #endif
-                }
+                },
             )
             .modifier(VimToggleViewModifier(settingsCoordinator: settingsCoordinator))
             

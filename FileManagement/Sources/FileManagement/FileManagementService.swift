@@ -103,7 +103,6 @@ public actor FileManagementService: FileManagementProviding {
             isDirectory: &isDirectory
         ) else { return nil }
         
-        var values = URLResourceValues()
         
         let keys : Set<URLResourceKey> = [
             .contentModificationDateKey

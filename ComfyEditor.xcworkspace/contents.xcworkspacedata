@@ -5,15 +5,12 @@
       location = "group:ComfyEditor.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:LocalShortcuts">
-   </FileRef>
-   <FileRef
-      location = "group:TextEditor">
-   </FileRef>
-   <FileRef
       location = "group:ComfyLogger">
    </FileRef>
    <FileRef
       location = "group:FileManagement">
+   </FileRef>
+   <FileRef
+      location = "container:../TextEditor">
    </FileRef>
 </Workspace>

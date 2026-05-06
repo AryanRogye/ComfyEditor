@@ -12,7 +12,9 @@
 		9B2CD67E2EE0060700B64D36 /* ComfyEditor.icon in Resources */ = {isa = PBXBuildFile; fileRef = 9B2CD67D2EE0060700B64D36 /* ComfyEditor.icon */; };
 		9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7212EE26ED400B64D36 /* LocalShortcuts */; };
 		9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7242EE2972B00B64D36 /* Defaults */; };
-		9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9B2CD7592EE2B89500B64D36 /* TextEditor */; };
+		9B35C90E2FABF9AC001CC195 /* TextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9B35C90D2FABF9AC001CC195 /* TextEditor */; };
+		9B35C9112FABF9B6001CC195 /* TextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 9B35C9102FABF9B6001CC195 /* TextEditor */; };
+		9B35C9142FAC000C001CC195 /* LocalShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 9B35C9132FAC000C001CC195 /* LocalShortcuts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,9 +59,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B35C9142FAC000C001CC195 /* LocalShortcuts in Frameworks */,
 				9B2CD7252EE2972B00B64D36 /* Defaults in Frameworks */,
-				9B2CD75A2EE2B89500B64D36 /* TextEditor in Frameworks */,
+				9B35C9112FABF9B6001CC195 /* TextEditor in Frameworks */,
 				9B2CD7222EE26ED400B64D36 /* LocalShortcuts in Frameworks */,
+				9B35C90E2FABF9AC001CC195 /* TextEditor in Frameworks */,
 				9B0778AC2EFCB0B500DF6071 /* FileManagement in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,8 +144,10 @@
 			packageProductDependencies = (
 				9B2CD7212EE26ED400B64D36 /* LocalShortcuts */,
 				9B2CD7242EE2972B00B64D36 /* Defaults */,
-				9B2CD7592EE2B89500B64D36 /* TextEditor */,
 				9B0778AB2EFCB0B500DF6071 /* FileManagement */,
+				9B35C90D2FABF9AC001CC195 /* TextEditor */,
+				9B35C9102FABF9B6001CC195 /* TextEditor */,
+				9B35C9132FAC000C001CC195 /* LocalShortcuts */,
 			);
 			productName = ComfyEditor;
 			productReference = 9BB0B6972EDBD7000040A42F /* ComfyEditor.app */;
@@ -177,9 +183,9 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9B0778AD2EFCB0B500DF6071 /* XCLocalSwiftPackageReference "FileManagement" */,
-				9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */,
 				9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */,
-				9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */,
+				9B35C90F2FABF9B6001CC195 /* XCLocalSwiftPackageReference "../TextEditor" */,
+				9B35C9122FAC000C001CC195 /* XCRemoteSwiftPackageReference "LocalShortcuts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BB0B6982EDBD7000040A42F /* Products */;
@@ -621,17 +627,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		9B2CD7202EE26ED400B64D36 /* XCLocalSwiftPackageReference "LocalShortcuts" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = LocalShortcuts;
-		};
 		9B0778AD2EFCB0B500DF6071 /* XCLocalSwiftPackageReference "FileManagement" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = FileManagement;
 		};
-		9B2CD7582EE2B89500B64D36 /* XCLocalSwiftPackageReference "TextEditor" */ = {
+		9B35C90F2FABF9B6001CC195 /* XCLocalSwiftPackageReference "../TextEditor" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = TextEditor;
+			relativePath = ../TextEditor;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -642,6 +644,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 9.0.6;
+			};
+		};
+		9B35C9122FAC000C001CC195 /* XCRemoteSwiftPackageReference "LocalShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AryanRogye/LocalShortcuts";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -661,9 +671,18 @@
 			package = 9B2CD7232EE2972B00B64D36 /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
 		};
-		9B2CD7592EE2B89500B64D36 /* TextEditor */ = {
+		9B35C90D2FABF9AC001CC195 /* TextEditor */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TextEditor;
+		};
+		9B35C9102FABF9B6001CC195 /* TextEditor */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TextEditor;
+		};
+		9B35C9132FAC000C001CC195 /* LocalShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B35C9122FAC000C001CC195 /* XCRemoteSwiftPackageReference "LocalShortcuts" */;
+			productName = LocalShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
