@@ -12,7 +12,6 @@ final class MotionEngine {
     
     public init(buffer: BufferView) {
         self.buffer = buffer
-        Log.MotionEngine.enable()
     }
     var buffer: BufferView
     var stickyColumn: Int?
