@@ -5,9 +5,6 @@
       location = "group:ComfyEditor.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:LocalShortcuts">
-   </FileRef>
-   <FileRef
       location = "group:ComfyLogger">
    </FileRef>
    <FileRef
