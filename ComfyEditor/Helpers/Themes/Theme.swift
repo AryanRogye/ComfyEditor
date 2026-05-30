@@ -8,10 +8,16 @@
 import SwiftUI
 
 protocol Theme {
-    var primaryBackground        : Color { get }
-    var secondaryBackground      : Color { get }
-    var primaryForegroundStyle   : Color { get }
-    var secondaryForegroundStyle : Color { get }
-    var borderColor              : Color { get }
-    var secondaryBorderColor     : Color { get }
+    var primaryBackground           : Color { get }
+    var secondaryBackground         : Color { get }
+    var primaryForegroundStyle      : Color { get }
+    var secondaryForegroundStyle    : Color { get }
+    var borderColor                 : Color { get }
+    var secondaryBorderColor        : Color { get }
+    
+    var syntaxKeyword               : Color { get }
+    var syntaxString                : Color { get }
+    var syntaxNumber                : Color { get }
+    var syntaxComment               : Color { get }
+    var syntaxJsonKey               : Color { get }
 }
